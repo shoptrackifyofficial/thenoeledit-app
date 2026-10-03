@@ -440,6 +440,27 @@
   }
 }
 
+@keyframes unlock-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--bx)), calc(-50% + var(--by))) rotate(var(--br));
+  }
+}
+@keyframes unlock-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
 /* Hero entrance: staged, CSS-only, never delays the LCP image itself. */
 .rise {
   animation: rise 1s var(--ease-out-soft) both;

@@ -35,12 +35,12 @@ const nextConfig: NextConfig = {
         source: "/(cart|search)(.*)",
         headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
       },
+      { source: "/api/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       {
-        source: "/api/:path*",
-        headers: [
-          { key: "X-Robots-Tag", value: "noindex, nofollow" },
-          { key: "Cache-Control", value: "no-store" },
-        ],
+        // Everything under /api is uncacheable except /api/bag, which sets its
+        // own edge-cache header (public catalog data, nothing per-visitor).
+        source: "/api/:path((?!bag$).*)",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
       },
     ];
   },

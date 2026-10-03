@@ -1,5 +1,5 @@
 import type { ProductRecord } from "@/lib/catalog/types";
-import { plainText } from "@/lib/utils";
+import { plainText, sanitizeHtml } from "@/lib/utils";
 
 /**
  * Client-safe product views: the small, serialisable shapes the PDP islands,
@@ -183,7 +183,7 @@ export function buildProductView(
     packOptionName: packName,
     perks: record.perks,
     saleEndsAt: record.saleEndsAt ?? defaultSaleEndsAt,
-    descriptionHtml: record.descriptionHtml,
+    descriptionHtml: sanitizeHtml(record.descriptionHtml),
     summary: record.seo.description || plainText(record.descriptionHtml, 220),
     giftFor: record.giftFor,
   };
