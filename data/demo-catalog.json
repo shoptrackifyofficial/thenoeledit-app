@@ -1,0 +1,1432 @@
+{
+  "version": 1,
+  "syncedAt": "2026-10-03T20:27:39.667Z",
+  "demo": true,
+  "shop": {
+    "domain": "demo",
+    "name": "The Noel Edit",
+    "currencyCode": "USD"
+  },
+  "products": {
+    "pearl-drop-necklace": {
+      "id": "gid://shopify/Product/1003",
+      "handle": "pearl-drop-necklace",
+      "title": "Pearl Drop Necklace",
+      "vendor": "The Noel Edit",
+      "productType": "Jewelry",
+      "tags": [
+        "noel-edit",
+        "bestseller"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-23T00:00:00.000Z",
+      "updatedAt": "2026-10-23T00:00:00.000Z",
+      "descriptionHtml": "<p>A single freshwater pearl on a whisper-fine chain — the kind of piece she will wear every day long after the tree comes down.</p><ul><li>Freshwater pearl, 8–9 mm</li><li>Sterling silver or 18k gold vermeil</li><li>Presented in a velvet keepsake box</li></ul>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Finish",
+          "values": [
+            "Silver",
+            "Gold"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1001",
+          "title": "Silver",
+          "sku": null,
+          "price": 89,
+          "compareAtPrice": 129,
+          "availableForSale": true,
+          "options": {
+            "Finish": "Silver"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1002",
+          "title": "Gold",
+          "sku": null,
+          "price": 99,
+          "compareAtPrice": 139,
+          "availableForSale": true,
+          "options": {
+            "Finish": "Gold"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Freshwater pearl necklace in an open gift box",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1607344645866-009c320b63e0?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Gold ribbon bows on black gift wrap",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512389142860-9c449e58a543?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Winter greenery flat lay",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Freshwater pearls on a fine chain",
+        "Arrives in a velvet keepsake box",
+        "Adjustable 16–18 in length",
+        "Hypoallergenic clasp"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Mums, partners, bridesmaids and anyone who loves a classic"
+    },
+    "botanical-glow-serum": {
+      "id": "gid://shopify/Product/1007",
+      "handle": "botanical-glow-serum",
+      "title": "Botanical Glow Serum",
+      "vendor": "The Noel Edit",
+      "productType": "Skincare",
+      "tags": [
+        "noel-edit",
+        "bestseller"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-27T00:00:00.000Z",
+      "updatedAt": "2026-10-27T00:00:00.000Z",
+      "descriptionHtml": "<p>A silky botanical oil that sinks in fast and leaves skin looking rested — the self-care gift that feels like a spa weekend in a bottle.</p><p>Buy two or three and tick off the whole list.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Pack",
+          "values": [
+            "1 Pack",
+            "2 Pack",
+            "3 Pack"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1004",
+          "title": "1 Pack",
+          "sku": null,
+          "price": 34,
+          "compareAtPrice": 48,
+          "availableForSale": true,
+          "options": {
+            "Pack": "1 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1005",
+          "title": "2 Pack",
+          "sku": null,
+          "price": 59,
+          "compareAtPrice": 96,
+          "availableForSale": true,
+          "options": {
+            "Pack": "2 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1006",
+          "title": "3 Pack",
+          "sku": null,
+          "price": 79,
+          "compareAtPrice": 144,
+          "availableForSale": true,
+          "options": {
+            "Pack": "3 Pack"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Amber glass serum bottle on a wooden stand",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Gift box tied with gold ribbon",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512474932049-78ac69ede12c?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Christmas tree baubles",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Lightweight daily face oil",
+        "Glass dropper bottle, 30 ml",
+        "Gift-ready box with ribbon",
+        "Fragrance-free formula"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Skincare lovers and self-care Sundays"
+    },
+    "winter-wrap-scarf": {
+      "id": "gid://shopify/Product/1011",
+      "handle": "winter-wrap-scarf",
+      "title": "Winter Wrap Scarf",
+      "vendor": "The Noel Edit",
+      "productType": "Accessories for her",
+      "tags": [
+        "noel-edit",
+        "category:for-her"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-03T00:00:00.000Z",
+      "updatedAt": "2026-10-03T00:00:00.000Z",
+      "descriptionHtml": "<p>An oversized, brushed-soft wrap that doubles as a blanket on the walk home from carols.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Colour",
+          "values": [
+            "Oat",
+            "Pine",
+            "Berry"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1008",
+          "title": "Oat",
+          "sku": null,
+          "price": 39,
+          "compareAtPrice": 65,
+          "availableForSale": true,
+          "options": {
+            "Colour": "Oat"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1009",
+          "title": "Pine",
+          "sku": null,
+          "price": 39,
+          "compareAtPrice": 65,
+          "availableForSale": true,
+          "options": {
+            "Colour": "Pine"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1010",
+          "title": "Berry",
+          "sku": null,
+          "price": 39,
+          "compareAtPrice": 65,
+          "availableForSale": false,
+          "options": {
+            "Colour": "Berry"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Woman in a checked wool scarf holding a latte",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1543258103-a62bdc069871?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Decorated tree in warm light",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Brushed, cashmere-soft weave",
+        "Oversized 200 × 70 cm",
+        "Fringed edges",
+        "Folded in tissue with a ribbon"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Anyone who is always cold"
+    },
+    "minimal-steel-watch": {
+      "id": "gid://shopify/Product/1014",
+      "handle": "minimal-steel-watch",
+      "title": "Minimal Steel Watch",
+      "vendor": "The Noel Edit",
+      "productType": "Watches",
+      "tags": [
+        "noel-edit",
+        "bestseller"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-06T00:00:00.000Z",
+      "updatedAt": "2026-10-06T00:00:00.000Z",
+      "descriptionHtml": "<p>A clean, quiet dial for everyday wear. Swap the strap in seconds — no tools needed.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Strap",
+          "values": [
+            "White",
+            "Black"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1012",
+          "title": "White",
+          "sku": null,
+          "price": 119,
+          "compareAtPrice": 179,
+          "availableForSale": true,
+          "options": {
+            "Strap": "White"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1013",
+          "title": "Black",
+          "sku": null,
+          "price": 119,
+          "compareAtPrice": 179,
+          "availableForSale": true,
+          "options": {
+            "Strap": "Black"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Minimal watch with white strap",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1608755728617-aefab37d2edd?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Wrapped gifts in low light",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Sapphire-coated glass",
+        "5 ATM water resistance",
+        "Quick-release strap",
+        "2-year warranty"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Dads, partners and the man who says he wants nothing"
+    },
+    "studio-wireless-headphones": {
+      "id": "gid://shopify/Product/1016",
+      "handle": "studio-wireless-headphones",
+      "title": "Studio Wireless Headphones",
+      "vendor": "The Noel Edit",
+      "productType": "Tech",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-08T00:00:00.000Z",
+      "updatedAt": "2026-10-08T00:00:00.000Z",
+      "descriptionHtml": "<p>Rich, room-filling sound with noise cancelling that quiets the busiest Boxing Day sale.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1015",
+          "title": "Default Title",
+          "sku": null,
+          "price": 149,
+          "compareAtPrice": 229,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Black wireless headphones on a yellow background",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Red gift box with white twine",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Active noise cancelling",
+        "40-hour battery",
+        "Fold-flat travel case",
+        "USB-C fast charge"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Commuters, gamers and music lovers"
+    },
+    "classic-sunglasses": {
+      "id": "gid://shopify/Product/1018",
+      "handle": "classic-sunglasses",
+      "title": "Classic Sunglasses",
+      "vendor": "The Noel Edit",
+      "productType": "Accessories for him",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-10T00:00:00.000Z",
+      "updatedAt": "2026-10-10T00:00:00.000Z",
+      "descriptionHtml": "<p>The shape that never dates — polarised for the low winter sun.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1017",
+          "title": "Default Title",
+          "sku": null,
+          "price": 59,
+          "compareAtPrice": 95,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Black classic sunglasses",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512909006721-3d6018887383?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Kraft paper gift held out",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Polarised UV400 lenses",
+        "Acetate frame",
+        "Hard case included"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Ski trips and winter sun"
+    },
+    "cuddle-bear-plush": {
+      "id": "gid://shopify/Product/1021",
+      "handle": "cuddle-bear-plush",
+      "title": "Cuddle Bear Plush",
+      "vendor": "The Noel Edit",
+      "productType": "Toys",
+      "tags": [
+        "noel-edit",
+        "bestseller"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-13T00:00:00.000Z",
+      "updatedAt": "2026-10-13T00:00:00.000Z",
+      "descriptionHtml": "<p>A huggable bear made for first Christmases and every night after.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Size",
+          "values": [
+            "Small",
+            "Large"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1019",
+          "title": "Small",
+          "sku": null,
+          "price": 24,
+          "compareAtPrice": 35,
+          "availableForSale": true,
+          "options": {
+            "Size": "Small"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1020",
+          "title": "Large",
+          "sku": null,
+          "price": 39,
+          "compareAtPrice": 55,
+          "availableForSale": true,
+          "options": {
+            "Size": "Large"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1559454403-b8fb88521f11?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Cream teddy bear beside a knitted blanket",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1543258103-a62bdc069871?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Christmas tree",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Super-soft recycled plush",
+        "Safety-tested for 0+",
+        "Machine washable"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Babies, toddlers and big kids at heart"
+    },
+    "wind-up-robot": {
+      "id": "gid://shopify/Product/1023",
+      "handle": "wind-up-robot",
+      "title": "Retro Wind-Up Robot",
+      "vendor": "The Noel Edit",
+      "productType": "Toys",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-15T00:00:00.000Z",
+      "updatedAt": "2026-10-15T00:00:00.000Z",
+      "descriptionHtml": "<p>Wind it up and watch it march across the table — a nostalgic stocking star.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1022",
+          "title": "Default Title",
+          "sku": null,
+          "price": 19,
+          "compareAtPrice": 29,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1563396983906-b3795482a59a?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Green retro tin wind-up robot",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512474932049-78ac69ede12c?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Bauble bokeh",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Tin-plate classic",
+        "Walks and swings its arms",
+        "No batteries needed"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Collectors and curious kids (8+)"
+    },
+    "builder-bricks-set": {
+      "id": "gid://shopify/Product/1025",
+      "handle": "builder-bricks-set",
+      "title": "Builder Bricks Set",
+      "vendor": "The Noel Edit",
+      "productType": "Toys",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-17T00:00:00.000Z",
+      "updatedAt": "2026-10-17T00:00:00.000Z",
+      "descriptionHtml": "<p>Six hundred bricks and zero instructions — just imagination, all the way to New Year.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1024",
+          "title": "Default Title",
+          "sku": null,
+          "price": 45,
+          "compareAtPrice": 69,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1587654780291-39c9404d746b?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Colourful building bricks",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1608755728617-aefab37d2edd?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Wrapped gifts",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "600 mixed bricks",
+        "Compatible with major brands",
+        "Storage tub with lid"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Little builders aged 4+"
+    },
+    "velvet-fir-candle": {
+      "id": "gid://shopify/Product/1029",
+      "handle": "velvet-fir-candle",
+      "title": "Velvet Fir Candle",
+      "vendor": "The Noel Edit",
+      "productType": "Candles",
+      "tags": [
+        "noel-edit",
+        "bestseller"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-21T00:00:00.000Z",
+      "updatedAt": "2026-10-21T00:00:00.000Z",
+      "descriptionHtml": "<p>The smell of a freshly cut tree, bottled. Light it once and the whole room feels like Christmas Eve.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Pack",
+          "values": [
+            "1 Pack",
+            "2 Pack",
+            "3 Pack"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1026",
+          "title": "1 Pack",
+          "sku": null,
+          "price": 28,
+          "compareAtPrice": 38,
+          "availableForSale": true,
+          "options": {
+            "Pack": "1 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1027",
+          "title": "2 Pack",
+          "sku": null,
+          "price": 49,
+          "compareAtPrice": 76,
+          "availableForSale": true,
+          "options": {
+            "Pack": "2 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1028",
+          "title": "3 Pack",
+          "sku": null,
+          "price": 69,
+          "compareAtPrice": 114,
+          "availableForSale": true,
+          "options": {
+            "Pack": "3 Pack"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1603006905003-be475563bc59?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Lit candle in glass beside fairy lights",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Stockings by a fireplace",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1543258103-a62bdc069871?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Christmas tree",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Fir needle, clove & cedar",
+        "45-hour soy wax burn",
+        "Cotton wick",
+        "Reusable glass vessel"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Hosts, neighbours and new homeowners"
+    },
+    "fireside-ceramic-mug": {
+      "id": "gid://shopify/Product/1033",
+      "handle": "fireside-ceramic-mug",
+      "title": "Fireside Ceramic Mug",
+      "vendor": "The Noel Edit",
+      "productType": "Homeware",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-25T00:00:00.000Z",
+      "updatedAt": "2026-10-25T00:00:00.000Z",
+      "descriptionHtml": "<p>A heavy, hand-glazed mug that keeps cocoa warm through a whole Christmas film.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Pack",
+          "values": [
+            "1 Pack",
+            "2 Pack",
+            "4 Pack"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1030",
+          "title": "1 Pack",
+          "sku": null,
+          "price": 22,
+          "compareAtPrice": 30,
+          "availableForSale": true,
+          "options": {
+            "Pack": "1 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1031",
+          "title": "2 Pack",
+          "sku": null,
+          "price": 39,
+          "compareAtPrice": 60,
+          "availableForSale": true,
+          "options": {
+            "Pack": "2 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1032",
+          "title": "4 Pack",
+          "sku": null,
+          "price": 72,
+          "compareAtPrice": 120,
+          "availableForSale": true,
+          "options": {
+            "Pack": "4 Pack"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "White ceramic mug",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Hot chocolate poured into a mug",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Hand-glazed stoneware",
+        "Holds 350 ml",
+        "Dishwasher & microwave safe"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Coffee, tea and cocoa people"
+    },
+    "luxe-wrapping-kit": {
+      "id": "gid://shopify/Product/1035",
+      "handle": "luxe-wrapping-kit",
+      "title": "Luxe Gift Wrapping Kit",
+      "vendor": "The Noel Edit",
+      "productType": "Decor",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-27T00:00:00.000Z",
+      "updatedAt": "2026-10-27T00:00:00.000Z",
+      "descriptionHtml": "<p>Everything for presents that look too good to open.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1034",
+          "title": "Default Title",
+          "sku": null,
+          "price": 18,
+          "compareAtPrice": 26,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1607344645866-009c320b63e0?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Gold satin bows on black wrapping",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512909006721-3d6018887383?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Kraft wrapped present",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "3 rolls of matte paper",
+        "Satin ribbon & 12 bows",
+        "Gift tags included"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "The family's official wrapper"
+    },
+    "gingerbread-cookie-tin": {
+      "id": "gid://shopify/Product/1037",
+      "handle": "gingerbread-cookie-tin",
+      "title": "Gingerbread Cookie Tin",
+      "vendor": "The Noel Edit",
+      "productType": "Treats",
+      "tags": [
+        "noel-edit",
+        "bestseller"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-01T00:00:00.000Z",
+      "updatedAt": "2026-10-01T00:00:00.000Z",
+      "descriptionHtml": "<p>Spiced, buttery and baked in small batches — packed in a tin worth keeping.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1036",
+          "title": "Default Title",
+          "sku": null,
+          "price": 22,
+          "compareAtPrice": 30,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Basket of chocolate chip cookies",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512389142860-9c449e58a543?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Festive flat lay",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Baked in small batches",
+        "24 cookies per tin",
+        "Keepsake tin"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Teachers, colleagues and Secret Santa"
+    },
+    "truffle-selection-box": {
+      "id": "gid://shopify/Product/1040",
+      "handle": "truffle-selection-box",
+      "title": "Truffle Selection Box",
+      "vendor": "The Noel Edit",
+      "productType": "Confectionery",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-04T00:00:00.000Z",
+      "updatedAt": "2026-10-04T00:00:00.000Z",
+      "descriptionHtml": "<p>Salted caramel, mulled spice, hazelnut praline and more — six flavours of pure indulgence.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Size",
+          "values": [
+            "12 pieces",
+            "24 pieces"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1038",
+          "title": "12 pieces",
+          "sku": null,
+          "price": 29,
+          "compareAtPrice": 40,
+          "availableForSale": true,
+          "options": {
+            "Size": "12 pieces"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1039",
+          "title": "24 pieces",
+          "sku": null,
+          "price": 49,
+          "compareAtPrice": 70,
+          "availableForSale": true,
+          "options": {
+            "Size": "24 pieces"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1481391319762-47dff72954d9?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Box of assorted chocolate truffles",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Red gift",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Hand-finished truffles",
+        "Six festive flavours",
+        "Ribbon-tied box"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Chocolate lovers (that's everyone)"
+    },
+    "hot-cocoa-kit": {
+      "id": "gid://shopify/Product/1044",
+      "handle": "hot-cocoa-kit",
+      "title": "Hot Cocoa Kit",
+      "vendor": "The Noel Edit",
+      "productType": "Gourmet",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-08T00:00:00.000Z",
+      "updatedAt": "2026-10-08T00:00:00.000Z",
+      "descriptionHtml": "<p>Proper, rich drinking chocolate with all the trimmings.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Pack",
+          "values": [
+            "1 Pack",
+            "2 Pack",
+            "3 Pack"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1041",
+          "title": "1 Pack",
+          "sku": null,
+          "price": 26,
+          "compareAtPrice": 34,
+          "availableForSale": true,
+          "options": {
+            "Pack": "1 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1042",
+          "title": "2 Pack",
+          "sku": null,
+          "price": 45,
+          "compareAtPrice": 68,
+          "availableForSale": true,
+          "options": {
+            "Pack": "2 Pack"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1043",
+          "title": "3 Pack",
+          "sku": null,
+          "price": 62,
+          "compareAtPrice": 102,
+          "availableForSale": true,
+          "options": {
+            "Pack": "3 Pack"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Hot chocolate being poured",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Fireplace",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Single-origin cocoa",
+        "Marshmallows & peppermint stirrer",
+        "Makes 8 mugs"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Snow days and movie nights"
+    },
+    "pocket-poetry-book": {
+      "id": "gid://shopify/Product/1046",
+      "handle": "pocket-poetry-book",
+      "title": "Pocket Poetry Book",
+      "vendor": "The Noel Edit",
+      "productType": "Books",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-10T00:00:00.000Z",
+      "updatedAt": "2026-10-10T00:00:00.000Z",
+      "descriptionHtml": "<p>A small, beautiful book of verse for quiet mornings after the big day.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1045",
+          "title": "Default Title",
+          "sku": null,
+          "price": 14,
+          "compareAtPrice": 20,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Poetry book on a wooden table",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512909006721-3d6018887383?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Kraft gift",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Cloth-bound hardback",
+        "Ribbon bookmark",
+        "Fits a stocking"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Readers and romantics"
+    },
+    "evergreen-steel-bottle": {
+      "id": "gid://shopify/Product/1049",
+      "handle": "evergreen-steel-bottle",
+      "title": "Evergreen Steel Bottle",
+      "vendor": "The Noel Edit",
+      "productType": "Drinkware",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-13T00:00:00.000Z",
+      "updatedAt": "2026-10-13T00:00:00.000Z",
+      "descriptionHtml": "<p>Double-walled, powder-coated and ready for every January resolution.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Colour",
+          "values": [
+            "Pine",
+            "Snow"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1047",
+          "title": "Pine",
+          "sku": null,
+          "price": 27,
+          "compareAtPrice": 40,
+          "availableForSale": true,
+          "options": {
+            "Colour": "Pine"
+          },
+          "image": null
+        },
+        {
+          "id": "gid://shopify/ProductVariant/1048",
+          "title": "Snow",
+          "sku": null,
+          "price": 27,
+          "compareAtPrice": 40,
+          "availableForSale": true,
+          "options": {
+            "Colour": "Snow"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Green insulated steel bottle",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512389142860-9c449e58a543?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Greenery",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Keeps drinks cold 24h / hot 12h",
+        "500 ml, leak-proof",
+        "Powder-coated finish"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Gym-goers and New Year's resolutions"
+    },
+    "mystery-gift-box": {
+      "id": "gid://shopify/Product/1051",
+      "handle": "mystery-gift-box",
+      "title": "Mystery Gift Box",
+      "vendor": "The Noel Edit",
+      "productType": "Stocking fillers",
+      "tags": [
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-15T00:00:00.000Z",
+      "updatedAt": "2026-10-15T00:00:00.000Z",
+      "descriptionHtml": "<p>Three hand-picked surprises, wrapped and ready — the easiest gift on the list.</p>",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Title",
+          "values": [
+            "Default Title"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/1050",
+          "title": "Default Title",
+          "sku": null,
+          "price": 30,
+          "compareAtPrice": 50,
+          "availableForSale": true,
+          "options": {
+            "Title": "Default Title"
+          },
+          "image": null
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1512909006721-3d6018887383?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Kraft-wrapped gift tied with red and white twine",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?fit=crop&crop=entropy&ar=1:1",
+          "width": 1200,
+          "height": 1200,
+          "alt": "Pink gift with gold ribbon",
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "Three curated surprises",
+        "Wrapped and ready to give",
+        "Includes a gift receipt"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Secret Santa and last-minute heroes"
+    }
+  }
+}

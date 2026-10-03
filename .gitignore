@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+.env
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+data/.sync.lock
+data/*.tmp
+.vercel
+reference

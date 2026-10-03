@@ -1,0 +1,610 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────────────────────────────────
+   The Noel Edit — design tokens
+   Evergreen + cranberry + champagne gold on warm paper. A luxury Christmas
+   catalogue, not a novelty shop: deep colour, generous space, one script
+   flourish at a time.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  --color-pine-950: #07140e;
+  --color-pine-900: #0d2219;
+  --color-pine-800: #133024;
+  --color-pine-700: #1b4332;
+  --color-pine-600: #255a43;
+  --color-pine-500: #3a7359;
+  --color-pine-300: #9fbcab;
+  --color-pine-200: #c5d6cb;
+  --color-pine-100: #e3ece6;
+  --color-pine-50: #f1f5f2;
+
+  --color-berry-900: #4d0a16;
+  --color-berry-800: #6b0f1f;
+  --color-berry-700: #8a1428;
+  --color-berry-600: #a91d33;
+  --color-berry-500: #c63347;
+  --color-berry-100: #f8e4e6;
+
+  --color-gold-700: #8a6a2f;
+  --color-gold-600: #a8853f;
+  --color-gold-500: #c6a15b;
+  --color-gold-400: #d9bd84;
+  --color-gold-300: #e9d6ad;
+  --color-gold-100: #f6eedc;
+
+  --color-cream: #f5ede0;
+  --color-paper: #fbf7f0;
+  --color-linen: #ece2cf;
+  --color-ink: #17140f;
+  --color-ink-soft: #5f584c;
+  --color-ink-faint: #8f8778;
+  --color-line: #e3d8c4;
+  --color-snow: #fffdf9;
+
+  --font-display: var(--ff-display), "Didot", Georgia, serif;
+  --font-sans: var(--ff-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--ff-script), cursive;
+
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --shadow-soft: 0 1px 2px rgb(23 20 15 / 0.04), 0 8px 24px -12px rgb(23 20 15 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(23 20 15 / 0.05), 0 24px 48px -20px rgb(23 20 15 / 0.28);
+  --shadow-glow: 0 0 0 1px rgb(198 161 91 / 0.35), 0 18px 50px -18px rgb(198 161 91 / 0.55);
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-spin-slow: spin 22s linear infinite;
+  --animate-twinkle: twinkle 3.2s ease-in-out infinite;
+}
+
+:root {
+  --header-h: 4rem;
+  --announce-h: 2.25rem;
+  --gallery-h: min(calc(100svh - var(--header-h) - 3rem), 760px);
+  color-scheme: light;
+}
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 4.75rem;
+  }
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--color-berry-600);
+    color: var(--color-snow);
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/* ── Layout + type utilities ─────────────────────────────────────────────── */
+
+@utility container-page {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (min-width: 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+@utility display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(3.1rem, 1.6rem + 7.4vw, 9.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  font-variation-settings: "opsz" 96;
+}
+
+@utility display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 1.5rem + 3vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+  font-variation-settings: "opsz" 72;
+}
+
+@utility display-md {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.25rem + 1.4vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  font-variation-settings: "opsz" 48;
+}
+
+@utility script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+@utility numeral {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-variation-settings: "opsz" 24;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.4s var(--ease-out-soft);
+  &:hover {
+    background-size: 0 1px;
+    background-position: 100% 100%;
+  }
+}
+
+@utility glass {
+  background: rgb(251 247 240 / 0.78);
+  backdrop-filter: saturate(1.4) blur(16px);
+  -webkit-backdrop-filter: saturate(1.4) blur(16px);
+}
+
+/* Paper grain — a tiny inline SVG noise tile, so surfaces feel printed not flat. */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .33 0 0 0 0 .25 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+@utility btn {
+  position: relative;
+  display: inline-flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: var(--radius-pill);
+  padding: 0.85rem 1.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    background-color 0.3s var(--ease-out-soft),
+    color 0.3s var(--ease-out-soft),
+    box-shadow 0.3s var(--ease-out-soft),
+    transform 0.2s var(--ease-out-soft);
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+
+@utility btn-primary {
+  background: var(--color-berry-600);
+  color: var(--color-snow);
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.18);
+  &:hover:not(:disabled) {
+    background: var(--color-berry-700);
+  }
+}
+
+@utility btn-dark {
+  background: var(--color-pine-900);
+  color: var(--color-snow);
+  &:hover:not(:disabled) {
+    background: var(--color-pine-700);
+  }
+}
+
+@utility btn-gold {
+  background: linear-gradient(135deg, var(--color-gold-300), var(--color-gold-500) 55%, var(--color-gold-600));
+  color: var(--color-pine-950);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5);
+  &:hover:not(:disabled) {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      var(--shadow-glow);
+  }
+}
+
+@utility btn-ghost-light {
+  color: var(--color-snow);
+  box-shadow: inset 0 0 0 1px rgb(255 253 249 / 0.55);
+  &:hover {
+    background: rgb(255 253 249 / 0.12);
+  }
+}
+
+@utility btn-outline {
+  color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+  &:hover {
+    background: var(--color-ink);
+    color: var(--color-snow);
+  }
+}
+
+/* Light sweep across a button on hover — the "foil" moment. */
+@utility shine {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 -60%;
+    width: 50%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.45), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.8s var(--ease-out-soft);
+    pointer-events: none;
+  }
+  &:hover::before {
+    left: 120%;
+  }
+}
+
+/* ── Snowfall: pure CSS, three parallax layers, no JS, no layout cost ────── */
+
+.snow,
+.snow::before,
+.snow::after {
+  position: absolute;
+  inset: -100% 0 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+.snow {
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 140px 90px, rgb(255 255 255 / 0.8) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90px 160px, #fff 50%, transparent 51%),
+    radial-gradient(2.5px 2.5px at 200px 210px, rgb(255 255 255 / 0.9) 50%, transparent 51%);
+  background-size: 240px 240px;
+  animation: snow-fall 18s linear infinite;
+  opacity: 0.7;
+}
+.snow::before {
+  content: "";
+  background-image:
+    radial-gradient(3px 3px at 60px 60px, #fff 50%, transparent 51%),
+    radial-gradient(3.5px 3.5px at 250px 180px, rgb(255 255 255 / 0.85) 50%, transparent 51%),
+    radial-gradient(2.5px 2.5px at 330px 40px, #fff 50%, transparent 51%);
+  background-size: 380px 380px;
+  animation: snow-fall 26s linear infinite;
+  filter: blur(0.4px);
+}
+.snow::after {
+  content: "";
+  background-image:
+    radial-gradient(5px 5px at 120px 120px, rgb(255 255 255 / 0.75) 50%, transparent 51%),
+    radial-gradient(4px 4px at 420px 320px, rgb(255 255 255 / 0.6) 50%, transparent 51%);
+  background-size: 560px 560px;
+  animation: snow-fall 34s linear infinite;
+  filter: blur(1.5px);
+}
+@keyframes snow-fall {
+  to {
+    transform: translate3d(40px, 50%, 0);
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes sheet-in {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+@keyframes drawer-in {
+  from {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes ken-burns {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  60%,
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+/* Hero entrance: staged, CSS-only, never delays the LCP image itself. */
+.rise {
+  animation: rise 1s var(--ease-out-soft) both;
+}
+.rise-1 {
+  animation-delay: 0.1s;
+}
+.rise-2 {
+  animation-delay: 0.22s;
+}
+.rise-3 {
+  animation-delay: 0.36s;
+}
+.rise-4 {
+  animation-delay: 0.5s;
+}
+.ken-burns {
+  animation: ken-burns 14s var(--ease-out-soft) both;
+}
+
+/* Scroll-reveal with scroll-driven animations where supported (zero JS);
+   elsewhere content is simply visible. */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header-shell {
+  transition:
+    background-color 0.45s var(--ease-out-soft),
+    color 0.45s var(--ease-out-soft),
+    box-shadow 0.45s var(--ease-out-soft),
+    backdrop-filter 0.45s var(--ease-out-soft);
+}
+.header-shell[data-over-hero="true"] {
+  background: transparent;
+  color: var(--color-snow);
+  box-shadow: none;
+}
+.header-shell[data-over-hero="true"]::before {
+  /* Soft top scrim so white nav stays readable on any hero photo or video. */
+  content: "";
+  position: absolute;
+  inset: 0 0 -2.5rem;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgb(7 20 14 / 0.55), transparent);
+}
+.header-shell[data-over-hero="false"] {
+  background: rgb(251 247 240 / 0.86);
+  backdrop-filter: saturate(1.4) blur(18px);
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  color: var(--color-ink);
+  box-shadow: 0 1px 0 var(--color-line);
+}
+
+.mega-in {
+  animation: rise 0.45s var(--ease-out-soft) both;
+}
+
+/* ── Advent doors (12 Days of Deals) ─────────────────────────────────────── */
+
+.advent-cell {
+  perspective: 1200px;
+}
+.advent-door {
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.9s var(--ease-out-soft);
+  backface-visibility: hidden;
+}
+@media (hover: hover) {
+  .advent-cell:hover .advent-door,
+  .advent-cell:focus-within .advent-door {
+    transform: rotateY(-108deg);
+  }
+}
+@media (hover: none) {
+  /* Touch: doors swing open as they scroll into view. */
+  .advent-door {
+    transform: rotateY(-100deg);
+  }
+  @supports (animation-timeline: view()) {
+    .advent-door {
+      animation: door-open linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 50%;
+    }
+  }
+}
+@keyframes door-open {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-100deg);
+  }
+}
+
+/* ── Rich text from Shopify (product descriptions) ───────────────────────── */
+
+.prose-gift {
+  color: var(--color-ink-soft);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.prose-gift > * + * {
+  margin-top: 1em;
+}
+.prose-gift h2,
+.prose-gift h3 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+.prose-gift ul {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+.prose-gift ul li {
+  position: relative;
+  padding-left: 1.6rem;
+}
+.prose-gift ul li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: var(--color-gold-600);
+  font-size: 0.8rem;
+  top: 0.15em;
+}
+.prose-gift a {
+  color: var(--color-berry-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-gift strong {
+  color: var(--color-ink);
+}
+
+/* ── Reduced motion: everything decorative stops ─────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .snow,
+  .snow::before,
+  .snow::after {
+    display: none;
+  }
+  .advent-door {
+    transform: rotateY(-100deg);
+  }
+}
