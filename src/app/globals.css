@@ -31,6 +31,7 @@
   --color-gold-500: #c6a15b;
   --color-gold-400: #d9bd84;
   --color-gold-300: #e9d6ad;
+  --color-gold-200: #f3e6c6;
   --color-gold-100: #f6eedc;
 
   --color-cream: #f5ede0;
@@ -460,6 +461,21 @@
     opacity: 0;
     transform: scale(1.6);
   }
+}
+
+/* Hero headline over video: a lower optical size gives Bodoni thicker
+   hairlines, a heavier weight and a soft dark halo keep it legible on any frame. */
+.hero-title {
+  font-weight: 600;
+  font-variation-settings: "opsz" 28;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-shadow:
+    0 2px 6px rgb(7 20 14 / 0.55),
+    0 8px 40px rgb(7 20 14 / 0.6);
+}
+.hero-script {
+  text-shadow: 0 2px 14px rgb(7 20 14 / 0.75);
 }
 
 /* Hero entrance: staged, CSS-only, never delays the LCP image itself. */

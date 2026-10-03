@@ -29,11 +29,14 @@ export const site = {
    * and keep `image` as its poster — the poster stays the LCP element.
    */
   hero: {
-    image: "https://images.unsplash.com/photo-1608755728617-aefab37d2edd?fit=crop&crop=entropy",
-    imageMobile: "https://images.unsplash.com/photo-1608755728617-aefab37d2edd?fit=crop&crop=entropy&ar=9:16",
-    video: null as string | null,
-    alt: "Wrapped Christmas gifts tied with twine and dried flowers in warm low light",
+    /** Posters are the LCP element; the videos fade in over them after load (portrait file on phones). */
+    image: "/videos/hero-poster.jpg",
+    imageMobile: "/videos/hero-poster-mobile.jpg",
+    video: "/videos/hero.mp4" as string | null,
+    videoMobile: "/videos/hero-mobile.mp4" as string | null,
+    alt: "A gold satin ribbon unties from an evergreen gift box, releasing warm golden light",
   },
+
 
   /** Order-by dates for Christmas delivery. Update to match your carriers. */
   deliveryCutoffs: [

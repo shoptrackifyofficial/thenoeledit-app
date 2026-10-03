@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { NewsletterForm } from "@/components/content/NewsletterForm";
@@ -16,6 +17,7 @@ export async function Footer() {
 
       <div className="container-page grid gap-12 pt-16 pb-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:gap-10 lg:pt-20">
         <div className="max-w-md">
+          <Image src="/logo-200.webp" alt={site.name} width={200} height={200} className="mb-5 size-28" />
           <p className="script text-[2.6rem] text-gold-400">Stay merry</p>
           <p className="display-md mt-1 text-snow">Early access to every drop.</p>
           <p className="mt-3 text-[0.92rem] text-pine-200">

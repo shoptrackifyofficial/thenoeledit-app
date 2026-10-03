@@ -25,7 +25,7 @@ export function organizationSchema(): Node {
     url: site.url,
     description: site.description,
     email: site.email,
-    logo: abs("/icon.svg"),
+    logo: abs("/logo-512.png"),
     sameAs: Object.values(site.social),
     hasMerchantReturnPolicy: returnPolicy(),
   };

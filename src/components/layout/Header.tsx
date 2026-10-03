@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { BagButton, DesktopNav, HeaderShell, MobileMenu } from "@/components/layout/HeaderClient";
@@ -37,13 +38,16 @@ export async function Header() {
         <DesktopNav menu={menu} />
       </div>
 
-      <Link href="/" aria-label={`${site.name} — home`} className="flex flex-col items-center leading-none">
-        <span className="font-display text-[1.45rem] font-medium tracking-[-0.01em] whitespace-nowrap sm:text-[1.7rem] lg:text-[1.95rem]">
-          The <span className="italic">Noel</span> Edit
-        </span>
-        <span className="mt-0.5 hidden text-[0.55rem] font-bold tracking-[0.42em] uppercase opacity-70 sm:block">
-          Christmas Gift Sale
-        </span>
+      <Link href="/" aria-label={`${site.name} — home`} className="justify-self-center transition-transform duration-500 ease-out-soft hover:scale-105">
+        <Image
+          src="/logo-200.webp"
+          alt={site.name}
+          width={200}
+          height={200}
+          priority
+          sizes="72px"
+          className="size-14 drop-shadow-[0_2px_10px_rgb(0_0_0/0.35)] sm:size-16 lg:size-[4.5rem]"
+        />
       </Link>
 
       <div className="flex items-center justify-end">
