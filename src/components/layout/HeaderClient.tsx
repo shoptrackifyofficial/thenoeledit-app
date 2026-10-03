@@ -37,7 +37,11 @@ export function HeaderShell({ announcement, children }: { announcement: ReactNod
   return (
     <header
       data-home={isHome}
-      className={cn("z-40 w-full", isHome ? "fixed inset-x-0 top-0" : "sticky top-0")}
+      className={cn(
+        "z-40 w-full",
+        // Off the home page the announcement scrolls away and the bar sticks.
+        isHome ? "fixed inset-x-0 top-0" : "sticky top-[calc(-1*var(--announce-h))]",
+      )}
     >
       {!isHome && announcement}
       <div data-over-hero={overHero} className="header-shell relative isolate">

@@ -19,7 +19,7 @@ export const display = Bodoni_Moda({
   variable: "--ff-display",
   display: "swap",
   preload: true,
-  fallback: ["Didot", "Bodoni 72", "Georgia", "serif"],
+  fallback: ["Didot", "Georgia", "serif"],
 });
 
 export const sans = Manrope({

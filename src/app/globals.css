@@ -185,7 +185,8 @@
 @utility numeral {
   font-family: var(--font-display);
   font-variant-numeric: lining-nums tabular-nums;
-  font-variation-settings: "opsz" 24;
+  /* Low optical size = sturdier hairlines, so small prices stay legible. */
+  font-variation-settings: "opsz" 9;
 }
 
 @utility scrollbar-none {
