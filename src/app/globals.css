@@ -1094,20 +1094,20 @@
   }
 }
 
-/* Set by <ContentGuard> on the live site: no text selection or image dragging (form fields excepted). */
-.no-copy body {
+/* No text selection or image dragging anywhere (form fields excepted) — see <ContentGuard>. Switched off by NEXT_PUBLIC_ALLOW_INSPECT=1. */
+html:not(.allow-inspect) body {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
-.no-copy input,
-.no-copy textarea,
-.no-copy select,
-.no-copy [contenteditable="true"] {
+html:not(.allow-inspect) input,
+html:not(.allow-inspect) textarea,
+html:not(.allow-inspect) select,
+html:not(.allow-inspect) [contenteditable="true"] {
   -webkit-user-select: text;
   user-select: text;
 }
-.no-copy img,
-.no-copy video {
+html:not(.allow-inspect) img,
+html:not(.allow-inspect) video {
   -webkit-user-drag: none;
 }

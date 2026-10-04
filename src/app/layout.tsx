@@ -55,7 +55,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable}${process.env.NEXT_PUBLIC_ALLOW_INSPECT === "1" ? " allow-inspect" : ""}`}>
       <head>
         {/* Placeholder + Shopify image CDNs: open the connection before the hero asks. */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />

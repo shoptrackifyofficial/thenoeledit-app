@@ -424,12 +424,25 @@ function BundlePicker({
   onPack: (value: string) => void;
   onPick: (index: number, value: string) => void;
 }) {
-  const plural = (n: number) => `${n} ${noun}${n === 1 ? "" : "s"}`;
   const fanFor = (n: number) =>
     Array.from({ length: n }, (_, i) => imageFor(n === count ? (picks[i] ?? values[i % values.length]!) : values[i % values.length]!));
-  const packLabel = packs.find((p) => p.selected)?.label.toLowerCase() ?? null;
   const selectedIndex = Math.max(0, offers.findIndex((o) => o.n === count));
 
+  /** "2 cameras · 4 stencils each" — camera count and the stencil pack on one line. */
+  const packName = packs.find((p) => p.selected)?.label.toLowerCase() ?? null;
+  const summary = (n: number) => (
+    <>
+      {n} {noun}
+      {n === 1 ? "" : "s"}
+      {packName && (
+        <>
+          {" · "}
+          {packName}
+          {n > 1 && <span className="max-[479px]:hidden sm:inline"> each</span>}
+        </>
+      )}
+    </>
+  );
   const tagFor = (n: number) => (popular === n ? "Most popular" : tags[n - 1] || null);
   const priceBlock = (o: Offer, align: "end" | "center") => (
     <span className={cn("flex flex-col", align === "end" ? "items-end" : "items-center")}>
@@ -547,7 +560,7 @@ function BundlePicker({
             <label
               key={o.n}
               className={cn(
-                "relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 px-3 py-2.5 transition-[border-color,background-color,transform] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500 motion-safe:active:scale-[0.985]",
+                "relative flex cursor-pointer items-center gap-2.5 rounded-2xl border-2 px-2.5 py-2.5 transition-[border-color,background-color,transform] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500 motion-safe:active:scale-[0.985]",
                 checked ? "border-berry-600 bg-berry-50/60" : "border-line bg-surface",
                 tag && "pt-3.5",
               )}
@@ -558,14 +571,13 @@ function BundlePicker({
                   <Icon name={popular === o.n ? "star" : "gift"} className="size-3" /> {tag}
                 </span>
               )}
-              <span className="relative size-14 shrink-0">
+              <span className="relative size-12 min-[400px]:size-14 shrink-0">
                 <Fan images={fanFor(o.n)} size="56px" />
                 <span className="absolute -top-1.5 -left-1.5 z-10">{radioDot(checked)}</span>
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[0.95rem] leading-tight font-bold">Buy {WORDS[o.n]}</span>
-                <span className="block text-[0.74rem] text-ink-soft">{plural(o.n)}</span>
-                {packLabel && <span className="block text-[0.7rem] text-ink-faint">{packLabel} per {noun}</span>}
+                <span className="block text-[0.7rem] leading-snug whitespace-nowrap text-ink-soft">{summary(o.n)}</span>
               </span>
               {priceBlock(o, "end")}
             </label>
@@ -606,8 +618,7 @@ function BundlePicker({
                 <Fan images={fanFor(o.n)} size="96px" />
               </span>
               <span className="mt-2 text-[0.92rem] font-bold">Buy {WORDS[o.n]}</span>
-              <span className="text-[0.72rem] text-ink-soft">{plural(o.n)}</span>
-              <span className="mb-1 text-[0.66rem] text-ink-faint">{packLabel ? `${packLabel} per ${noun}` : "\u00a0"}</span>
+              <span className="mb-1.5 text-[0.7rem] whitespace-nowrap text-ink-soft">{summary(o.n)}</span>
               {priceBlock(o, "center")}
             </label>
           );
@@ -651,7 +662,7 @@ function BundlePicker({
                 <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 tabular-nums">
                   <span className="numeral text-[1.1rem] leading-none font-semibold text-berry-600">{formatMoney(pk.price, currency)}</span>
                   {pk.original != null && <s className="text-[0.74rem] text-ink-faint">{formatMoney(pk.original, currency)}</s>}
-                  <span className="text-[0.7rem] text-ink-soft">each</span>
+                  {count > 1 && <span className="text-[0.7rem] text-ink-soft">each</span>}
                 </span>
               </label>
             ))}
@@ -767,6 +778,10 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
 
   const currentOffer = bundleOffers[count - 1] ?? null;
 
+  /** Struck-through value and saving shown in the floating bar. */
+  const stickyCompare = bundle ? (currentOffer?.compare ?? null) : (variant?.compareAtPrice ?? null);
+  const stickyPct = bundle ? (currentOffer?.pct ?? null) : (variant?.compareAtPercent ?? null);
+
   /** The template-pack choices (e.g. 4 or 12), each with its per-camera price for the current colour. */
   const packChoices: PackChoice[] =
     bundle && packOption
@@ -845,9 +860,10 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   useEffect(() => {
     const el = buttonRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([entry]) =>
-      setShowSticky(!entry!.isIntersecting && entry!.boundingClientRect.top < 0),
-    );
+    const io = new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1]!;
+      setShowSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -1051,7 +1067,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
               <p className="mt-1.5 text-[0.74rem] text-ink-soft">
                 {count > 1 ? `${formatMoney(currentOffer.unit, view.currency)} each · ${count} ${bundle.noun}s` : `1 ${bundle.noun}`}
                 {currentOffer.code && <> · code <span className="numeral font-semibold tracking-wide text-berry-600">{currentOffer.code}</span> applied</>}
-                {packChoices.find((p) => p.selected) && ` · ${packChoices.find((p) => p.selected)!.label.toLowerCase()} per ${bundle.noun}`}
+                {packChoices.find((p) => p.selected) && ` · ${packChoices.find((p) => p.selected)!.label.toLowerCase()}${count > 1 ? ` per ${bundle.noun}` : ""}`}
               </p>
             </div>
             {currentOffer.pct != null && currentOffer.compare != null && (
@@ -1127,28 +1143,40 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
         )}
       </div>
 
-      {/* Sticky mobile bar */}
+      {/* Floating add-to-bag bar: appears once the main button has scrolled out of view (all screen sizes). */}
       <div
         className={cn(
-          "glass fixed inset-x-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] z-30 rounded-[1.4rem] p-2.5 pl-4 shadow-lift ring-1 ring-line transition-transform duration-500 ease-out-soft lg:hidden",
+          "fixed inset-x-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] z-30 mx-auto max-w-2xl rounded-2xl bg-surface p-2 pl-2.5 shadow-lift ring-1 ring-line transition-transform duration-500 ease-out-soft",
           showSticky ? "translate-y-0" : "translate-y-[calc(100%+1.5rem)]",
         )}
         aria-hidden={!showSticky}
         inert={!showSticky}
       >
-        <div className="flex items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[0.88rem] font-semibold">
-              {bundle ? `${count} ${bundle.noun}${count === 1 ? "" : "s"}` : variant?.label || view.name}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* The cameras in the bag, fanned like the bundle card (fixed width, so the text never gets pushed) */}
+          <span className="relative size-14 shrink-0 sm:size-16">
+            <Fan
+              images={bundle ? picks.slice(0, count).map(colourImage) : [variant?.image ?? view.cardImage?.url ?? null]}
+              size="64px"
+            />
+          </span>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <p className="truncate text-[0.82rem] sm:text-[0.86rem] leading-tight font-semibold">
+              {bundle
+                ? `${count} ${bundle.noun}${count === 1 ? "" : "s"} · ${picks.slice(0, count).map(shortName).join(", ")}`
+                : variant?.label || view.name}
             </p>
             {variant && (
-              <p className="numeral flex gap-1.5 text-[0.9rem]">
-                <span className="text-berry-600">{formatMoney(bundle ? orderTotal : variant.price, view.currency)}</span>
-                {!bundle && variant.compareAtPrice && <s className="text-ink-faint">{formatMoney(variant.compareAtPrice, view.currency)}</s>}
+              <p className="mt-0.5 flex min-w-0 items-center gap-x-1.5 overflow-hidden whitespace-nowrap tabular-nums">
+                <span className="numeral text-[1rem] leading-none font-semibold text-berry-600">{formatMoney(orderTotal, view.currency)}</span>
+                {stickyCompare != null && <s className="text-[0.78rem] text-ink-faint max-[389px]:hidden">{formatMoney(stickyCompare, view.currency)}</s>}
+                {stickyPct != null && stickyCompare != null && (
+                  <span className="numeral rounded bg-berry-600 px-1.5 py-[0.2rem] text-[0.62rem] leading-none font-bold text-snow">−{stickyPct}%</span>
+                )}
               </p>
             )}
           </div>
-          <button type="button" className="btn btn-primary min-h-12 px-6" onClick={added ? open : onAdd} disabled={!canBuy}>
+          <button type="button" className="btn btn-primary min-h-12 shrink-0 px-4 sm:px-7" onClick={added ? open : onAdd} disabled={!canBuy}>
             {added ? "View bag" : canBuy ? "Add to bag" : "Sold out"}
           </button>
         </div>

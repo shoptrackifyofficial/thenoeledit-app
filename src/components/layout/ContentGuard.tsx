@@ -8,19 +8,16 @@ import { useEffect } from "react";
  * view-source shortcuts are swallowed. Form fields keep working normally.
  *
  * This is a deterrent, not security — anyone determined can still read a web
- * page (menus, view-source:, the network tab, a scraper). It runs in production
- * only, so development isn't affected; set NEXT_PUBLIC_ALLOW_INSPECT=1 to turn
- * it off on a deployed site (e.g. when you need to debug it).
+ * page (browser menus, view-source:, the network tab, a scraper). It is on
+ * everywhere, development included; set NEXT_PUBLIC_ALLOW_INSPECT=1 in .env
+ * (and restart) to switch it off while you are working on the site.
  */
 const editable = (t: EventTarget | null) =>
   t instanceof HTMLElement && Boolean(t.closest("input, textarea, select, [contenteditable=''], [contenteditable='true']"));
 
 export function ContentGuard() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_INSPECT === "1") return;
-
-    const root = document.documentElement;
-    root.classList.add("no-copy");
+    if (process.env.NEXT_PUBLIC_ALLOW_INSPECT === "1") return;
 
     const block = (e: Event) => {
       if (!editable(e.target)) e.preventDefault();
@@ -43,7 +40,6 @@ export function ContentGuard() {
     events.forEach((name) => document.addEventListener(name, block));
     document.addEventListener("keydown", keys, true);
     return () => {
-      root.classList.remove("no-copy");
       events.forEach((name) => document.removeEventListener(name, block));
       document.removeEventListener("keydown", keys, true);
     };
