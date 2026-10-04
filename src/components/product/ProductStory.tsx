@@ -221,7 +221,17 @@ const INFO_GROUPS: { title: string; labels: string[] }[] = [
 ];
 const INFO_RENAMES: Record<string, string> = { Color: "Stencil packs", Size: "Camera colours" };
 
-export function infoGroups(info: Story["info"]): { title: string; rows: Story["info"] }[] {
+export function infoGroups(
+  info: Story["info"],
+  options: { name: string; values: string[] }[] = [],
+  valueLabels: Record<string, string> = {},
+): { title: string; rows: Story["info"] }[] {
+  // A row named like one of the product's options (the supplier's "Color" / "Size") is filled from the
+  // variants actually on sale, so it can never list things that aren't sold.
+  info = info.map((row) => {
+    const option = options.find((o) => o.name === row.label);
+    return option ? { ...row, value: option.values.map((v) => valueLabels[v] ?? v).join(", ") } : row;
+  });
   const groups = INFO_GROUPS.map((g) => ({
     title: g.title,
     rows: info.filter((r) => g.labels.includes(r.label)).map((r) => ({ ...r, label: INFO_RENAMES[r.label] ?? r.label })),

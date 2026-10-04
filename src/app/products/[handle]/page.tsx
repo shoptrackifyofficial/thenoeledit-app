@@ -184,7 +184,7 @@ export default async function ProductPage({ params }: Props) {
               className="mt-7"
               items={
                 view.story?.info.length
-                  ? infoGroups(view.story.info).map((g) => ({ title: g.title, body: <StoryInfo info={g.rows} /> }))
+                  ? infoGroups(view.story.info, view.options, view.story.valueLabels).map((g) => ({ title: g.title, body: <StoryInfo info={g.rows} /> }))
                   : [
                       {
                         title: "Details",
