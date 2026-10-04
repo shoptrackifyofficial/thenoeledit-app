@@ -1,6 +1,6 @@
 import "server-only";
 
-import { unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 import seed from "../../../data/demo-catalog.json";
 import { CATALOG_PATH, readJsonFile } from "@/lib/catalog/storage";
@@ -20,6 +20,13 @@ import { slugify } from "@/lib/utils";
  */
 
 export const CATALOG_TAG = "catalog";
+
+/** The catalog changed: drop the cached read, the touched product pages, and every page that lists products. */
+export function revalidateCatalog(...handles: (string | null | undefined)[]): void {
+  revalidateTag(CATALOG_TAG);
+  for (const h of new Set(handles)) if (h) revalidatePath(`/products/${h}`);
+  revalidatePath("/", "layout");
+}
 const seedDoc = seed as unknown as CatalogDocument;
 
 const readCatalog = unstable_cache(

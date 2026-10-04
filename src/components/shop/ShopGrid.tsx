@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
+import { useLocalCards } from "@/components/localization/useLocalCards";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Icon } from "@/components/ui/Icon";
 import type { CardView } from "@/lib/commerce/product-view";
-import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 /**
@@ -27,7 +27,8 @@ const SORTS: { value: Sort; label: string }[] = [
 ];
 
 export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; priorityCount?: number }) {
-  const currency = cards[0]?.currency ?? "USD";
+  // Budgets and sorting work in the visitor's currency (Shopify's own prices), shop currency until those land.
+  const { priceOf, band, money } = useLocalCards(cards, cards[0]?.currency ?? "USD");
   const [sort, setSort] = useState<Sort>("featured");
   const [budget, setBudget] = useState<Budget>("all");
   const [inStock, setInStock] = useState(false);
@@ -57,27 +58,27 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
 
   const budgets: { value: Budget; label: string }[] = [
     { value: "all", label: "All prices" },
-    { value: "25", label: `Under ${formatMoney(25, currency)}` },
-    { value: "50", label: `Under ${formatMoney(50, currency)}` },
-    { value: "100", label: `Under ${formatMoney(100, currency)}` },
-    { value: "luxe", label: `${formatMoney(100, currency)}+` },
+    { value: "25", label: `Under ${money(band(25))}` },
+    { value: "50", label: `Under ${money(band(50))}` },
+    { value: "100", label: `Under ${money(band(100))}` },
+    { value: "luxe", label: `${money(band(100))}+` },
   ];
 
-  const shown = useMemo(() => {
+  const shown = (() => {
     let list = cards.filter((c) => {
       if (inStock && !c.available) return false;
-      if (budget === "luxe") return c.price >= 100;
-      if (budget !== "all") return c.price < Number(budget);
+      if (budget === "luxe") return priceOf(c) >= band(100);
+      if (budget !== "all") return priceOf(c) < band(Number(budget));
       return true;
     });
     list = [...list];
     if (sort === "discount") list.sort((a, b) => (b.percentOff ?? 0) - (a.percentOff ?? 0));
-    if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
-    if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
+    if (sort === "price-asc") list.sort((a, b) => priceOf(a) - priceOf(b));
+    if (sort === "price-desc") list.sort((a, b) => priceOf(b) - priceOf(a));
     if (sort === "new") list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     // Sold-out items sink to the end in every order.
     return list.sort((a, b) => Number(b.available) - Number(a.available));
-  }, [cards, sort, budget, inStock]);
+  })();
 
   return (
     <div>

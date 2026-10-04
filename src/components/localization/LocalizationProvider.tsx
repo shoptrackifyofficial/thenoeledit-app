@@ -44,6 +44,10 @@ type LocalizationContextValue = {
   isPriceLoading: (variantId: string) => boolean;
   /** Batches a request for live prices covering these variant IDs; safe to call from many components on the same page. */
   requestPrices: (variantIds: string[]) => void;
+  /** Tells the provider a variant's shop-currency price, so it can work out the visitor's price ÷ shop price ratio. */
+  registerBasePrice: (variantId: string, price: number) => void;
+  /** The visitor's currency and price ÷ shop price ratio, from any variant whose local price has landed (USD / 1 until then). */
+  currencyInfo: () => { currencyCode: string | null; ratio: number };
 };
 
 const LocalizationContext = createContext<LocalizationContextValue | null>(null);
@@ -94,20 +98,26 @@ export function LocalizationProvider({ children }: { children: ReactNode }) {
     pendingIds.current.clear();
     if (ids.length === 0 || !effectiveCountry) return;
 
-    fetch("/api/localization/prices", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ variantIds: ids }),
-    })
-      .then((response) => (response.ok ? response.json() : Promise.reject(new Error("failed"))))
-      .then((data: { prices: Record<string, LocalizedPrice> }) => {
-        if (Object.keys(data.prices).length === 0) return;
-        setPriceMap((current) => ({ ...current, ...data.prices }));
-      })
-      .catch(() => {
-        // A missed overlay just means those items keep showing their base-currency price.
-      })
-      .finally(() => {
+    // The API takes at most 60 ids per call; a shop-wide grid can ask for more, so send chunks.
+    const chunks: string[][] = [];
+    for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
+    Promise.all(
+      chunks.map((chunk) =>
+        fetch("/api/localization/prices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variantIds: chunk }),
+        })
+          .then((response) => (response.ok ? response.json() : Promise.reject(new Error("failed"))))
+          .then((data: { prices: Record<string, LocalizedPrice> }) => {
+            if (Object.keys(data.prices).length === 0) return;
+            setPriceMap((current) => ({ ...current, ...data.prices }));
+          })
+          .catch(() => {
+            // A missed overlay just means those items keep showing their base-currency price.
+          }),
+      ),
+    ).finally(() => {
         setLoadingIds((current) => {
           const next = new Set(current);
           for (const id of ids) next.delete(id);
@@ -134,6 +144,20 @@ export function LocalizationProvider({ children }: { children: ReactNode }) {
     [effectiveCountry, flush],
   );
 
+  const baseRef = useRef<Map<string, number>>(new Map());
+  const registerBasePrice = useCallback((variantId: string, price: number) => {
+    baseRef.current.set(variantId, price);
+  }, []);
+  // Read at render time by consumers; the dependency on priceMap re-renders them when local prices land.
+  const currencyInfo = useCallback(() => {
+    for (const [id, live] of Object.entries(priceMap)) {
+      const base = baseRef.current.get(id);
+      const amount = Number.parseFloat(live.amount);
+      if (base && base > 0 && Number.isFinite(amount)) return { currencyCode: live.currencyCode, ratio: amount / base };
+    }
+    return { currencyCode: null, ratio: 1 };
+  }, [priceMap]);
+
   const localizedPriceFor = useCallback((variantId: string) => priceMap[variantId] ?? null, [priceMap]);
   const isPriceLoading = useCallback((variantId: string) => loadingIds.has(variantId), [loadingIds]);
 
@@ -148,8 +172,10 @@ export function LocalizationProvider({ children }: { children: ReactNode }) {
       localizedPriceFor,
       isPriceLoading,
       requestPrices,
+      registerBasePrice,
+      currencyInfo,
     }),
-    [country, defaultCountry, effectiveCountry, ready, countries, localizedPriceFor, isPriceLoading, requestPrices],
+    [country, defaultCountry, effectiveCountry, ready, countries, localizedPriceFor, isPriceLoading, requestPrices, registerBasePrice, currencyInfo],
   );
 
   return <LocalizationContext.Provider value={value}>{children}</LocalizationContext.Provider>;

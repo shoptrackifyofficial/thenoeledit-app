@@ -31,12 +31,13 @@ export function Price({
   /** The offer percentage behind a worked-back compare-at price, so it can be re-worked in the local currency. */
   percentOff?: number | null;
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   from?: boolean;
   /** Adds a "Save 33%" chip after the prices (worked out from the price and compare-at, so it follows the visitor's currency). */
   showSave?: boolean;
 }) {
-  const { localizedPriceFor, requestPrices } = useLocalization();
+  const { localizedPriceFor, requestPrices, registerBasePrice } = useLocalization();
+  if (variantId) registerBasePrice(variantId, basePrice);
   useEffect(() => {
     if (variantId) requestPrices([variantId]);
   }, [variantId, requestPrices]);
@@ -69,6 +70,7 @@ export function Price({
         className={cn(
           "font-bold tabular-nums",
           onSale ? "text-berry-600" : "text-ink",
+          size === "xs" && "text-[0.82rem] font-semibold",
           size === "sm" && "text-[0.92rem]",
           size === "md" && "text-[1.1rem]",
           size === "lg" && "numeral text-[1.9rem] leading-none font-medium",
@@ -82,7 +84,7 @@ export function Price({
           aria-hidden="true"
           className={cn(
             "text-ink-faint tabular-nums decoration-1",
-            size === "lg" ? "text-[1.05rem]" : "text-[0.8rem]",
+            size === "lg" ? "text-[1.05rem]" : size === "xs" ? "text-[0.74rem]" : "text-[0.8rem]",
           )}
         >
           {formatMoney(compareAtPrice!, currency)}

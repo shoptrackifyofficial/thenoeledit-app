@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { SaleCountdown } from "@/components/product/SaleCountdown";
 import { PaymentIcons } from "@/components/ui/PaymentIcons";
 import { site } from "@/content/site";
+import { useLocalBand } from "@/components/localization/useLocalCards";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ import { cn } from "@/lib/utils";
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
   const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, removeMany, checkout, hydrated, loading, demo, payments } =
     useCart();
+  const budget50 = useLocalBand(50, currency);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // The summary starts short in the drawer; on the full cart page there is room, so it starts open.
@@ -79,7 +81,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
             Shop the sale <Icon name="arrow-right" className="size-4" />
           </Link>
           <Link href="/shop?budget=50" onClick={onNavigate} className="btn btn-outline">
-            Gifts under {formatMoney(50, currency)}
+            Gifts under {budget50}
           </Link>
         </div>
       </div>

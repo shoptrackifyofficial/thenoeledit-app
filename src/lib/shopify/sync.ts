@@ -1,7 +1,7 @@
 import { parseStory } from "@/lib/catalog/story";
 import { adminRequest } from "@/lib/shopify/admin";
 import { shopifyConfig } from "@/lib/shopify/config";
-import { CATALOG_PATH, acquireLock, writeJsonFileAtomic } from "@/lib/catalog/storage";
+import { CATALOG_PATH, acquireLock, readJsonFile, writeJsonFileAtomic } from "@/lib/catalog/storage";
 import type { CatalogDocument, MediaRecord, ProductRecord, VariantRecord } from "@/lib/catalog/types";
 
 /**
@@ -16,9 +16,14 @@ import type { CatalogDocument, MediaRecord, ProductRecord, VariantRecord } from 
  * The record is a read model only: Shopify re-prices every line when the
  * checkout cart is created, so nothing here is trusted for money.
  *
- * Run it with `npm run shopify:sync`, or POST /api/admin/sync. Webhooks can
- * call `syncCatalog()` later — they are intentionally not wired yet.
+ * Run it with `npm run shopify:sync`, or POST /api/admin/sync (full resync).
+ * The products/* webhook calls `syncProduct()` instead: it re-reads just the
+ * product that changed and merges it into the live document under the same lock
+ * (like the reference store), so one edit never rewrites — or races — the rest.
  */
+
+/** Shop currency when Shopify does not report one. */
+const FALLBACK_CURRENCY = "USD";
 
 type AdminVariantNode = {
   id: string;
@@ -229,7 +234,7 @@ export async function syncCatalog(): Promise<SyncResult> {
   const doc: CatalogDocument = {
     version: 1,
     syncedAt: new Date().toISOString(),
-    shop: { domain: cfg.storeDomain, name: shop.shop.name, currencyCode: shop.shop.currencyCode || "USD" },
+    shop: { domain: cfg.storeDomain, name: shop.shop.name, currencyCode: shop.shop.currencyCode || FALLBACK_CURRENCY },
     products,
   };
 
@@ -240,4 +245,79 @@ export async function syncCatalog(): Promise<SyncResult> {
     await lock.release();
   }
   return { products: count, syncedAt: doc.syncedAt, query: cfg.productQuery };
+}
+
+export type ProductSyncResult = {
+  /** "synced": re-read from Shopify; "removed": no longer ours (deleted, untagged, archived); "full": no live document yet, so everything was synced. */
+  action: "synced" | "removed" | "full";
+  handle: string | null;
+  products: number;
+  syncedAt: string;
+};
+
+/**
+ * Webhook entry point: re-syncs one product into the live catalog document.
+ *
+ * `id` (the numeric Shopify id from the webhook payload) identifies the product,
+ * so a renamed handle or a delete (which carries only an id) still finds its old
+ * entry. Read, fetch and write all happen inside the storage lock, so two
+ * webhooks can't overwrite each other with stale data.
+ */
+export async function syncProduct(ref: { id: number | string; handle?: string | null; deleted?: boolean }): Promise<ProductSyncResult> {
+  const cfg = shopifyConfig();
+  if (!cfg.storeDomain) throw new Error("SHOPIFY_STORE_DOMAIN is not set");
+  const idSuffix = `/${ref.id}`;
+
+  const lock = await acquireLock();
+  let result: ProductSyncResult | null = null;
+  try {
+    const existing = await readJsonFile<CatalogDocument>(CATALOG_PATH);
+    if (existing?.products && Object.keys(existing.products).length > 0) {
+      let products = { ...existing.products };
+      // Drop the old entry first: covers a renamed handle, an untag/archive and a delete.
+      for (const [key, p] of Object.entries(products)) if (p.id.endsWith(idSuffix)) delete products[key];
+
+      let fresh: ProductRecord | null = null;
+      if (!ref.deleted && ref.handle) {
+        // The full sync's filter, narrowed to this handle: a product that stopped matching returns nothing.
+        const data: { products: { nodes: ProductNode[] } } = await adminRequest(PRODUCTS_QUERY, {
+          query: `(${cfg.productQuery}) AND handle:${ref.handle.replace(/[^A-Za-z0-9_-]/g, "")}`,
+          after: null,
+        });
+        const node = data.products.nodes.find((n) => n.id.endsWith(idSuffix));
+        if (node) fresh = toRecord(node);
+      }
+      if (fresh) products[fresh.handle] = fresh;
+      // Same order as the full sync (newest first), so an edit never reshuffles the shop.
+      products = Object.fromEntries(Object.entries(products).sort(([, a], [, b]) => b.createdAt.localeCompare(a.createdAt)));
+
+      const shop = await adminRequest<{ shop: { name: string; currencyCode: string } }>(SHOP_QUERY);
+      const doc: CatalogDocument = {
+        ...existing,
+        version: 1,
+        syncedAt: new Date().toISOString(),
+        shop: {
+          domain: cfg.storeDomain,
+          name: shop.shop.name,
+          currencyCode: shop.shop.currencyCode || existing.shop?.currencyCode || FALLBACK_CURRENCY,
+        },
+        products,
+      };
+      delete doc.demo;
+      await writeJsonFileAtomic(CATALOG_PATH, doc);
+      result = {
+        action: fresh ? "synced" : "removed",
+        handle: fresh?.handle ?? ref.handle ?? null,
+        products: Object.keys(products).length,
+        syncedAt: doc.syncedAt,
+      };
+    }
+  } finally {
+    await lock.release();
+  }
+  if (result) return result;
+
+  // Nothing live to merge into yet: do the full sync (it takes the lock itself, so ours is released first).
+  const full = await syncCatalog();
+  return { action: "full", handle: ref.handle ?? null, products: full.products, syncedAt: full.syncedAt };
 }

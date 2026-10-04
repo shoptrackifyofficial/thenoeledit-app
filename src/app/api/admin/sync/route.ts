@@ -1,9 +1,8 @@
 import { timingSafeEqual } from "node:crypto";
 
-import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { CATALOG_TAG } from "@/lib/catalog";
+import { revalidateCatalog } from "@/lib/catalog";
 import { syncCatalog } from "@/lib/shopify/sync";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +15,7 @@ export const maxDuration = 60;
  *
  *   curl -X POST https://<domain>/api/admin/sync -H "Authorization: Bearer $ADMIN_API_KEY"
  *
- * This is the hook a products/* webhook can call later; webhooks are
- * intentionally not registered yet.
+ * Full resync; the products/* webhook syncs only the product that changed.
  */
 function authorized(request: NextRequest): boolean {
   const key = process.env.ADMIN_API_KEY ?? "";
@@ -30,8 +28,7 @@ export async function POST(request: NextRequest) {
   if (!authorized(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const result = await syncCatalog();
-    revalidateTag(CATALOG_TAG);
-    revalidatePath("/", "layout");
+    revalidateCatalog();
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     console.error("[admin/sync]", error instanceof Error ? error.message : error);

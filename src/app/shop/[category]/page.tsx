@@ -10,7 +10,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Icon } from "@/components/ui/Icon";
 import { getCategories, getCategory } from "@/lib/catalog";
 import { getCategoryCards } from "@/lib/commerce/views";
-import { formatMoney } from "@/lib/money";
+import { LocalFrom } from "@/components/shop/LocalFrom";
 import { breadcrumbSchema, graph, itemListSchema } from "@/lib/seo/schema";
 import { cn } from "@/lib/utils";
 
@@ -40,8 +40,6 @@ export default async function CategoryPage({ params }: Props) {
   const [c, all] = await Promise.all([getCategory(category), getCategories()]);
   if (!c) notFound();
   const cards = await getCategoryCards(c.slug);
-  const prices = cards.map((p) => p.price);
-  const currency = cards[0]?.currency ?? "USD";
   const bestSaving = Math.max(0, ...cards.map((p) => p.percentOff ?? 0));
   const crumbs = [
     { label: "Home", href: "/" },
@@ -69,7 +67,7 @@ export default async function CategoryPage({ params }: Props) {
               </div>
               <div className="px-4">
                 <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">From</dt>
-                <dd className="numeral mt-1 text-[1.5rem] leading-none">{formatMoney(Math.min(...prices), currency)}</dd>
+                <dd className="numeral mt-1 text-[1.5rem] leading-none"><LocalFrom cards={cards} /></dd>
               </div>
               <div className="px-4">
                 <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">Save up to</dt>

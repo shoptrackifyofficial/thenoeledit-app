@@ -50,7 +50,16 @@ export function byDiscount(cards: CardView[]): CardView[] {
 
 /* ── Navigation (Shop → Category → Products) ─────────────────────────────── */
 
-export type MenuProduct = { name: string; href: string; image: string | null; price: number; compareAtPrice: number | null };
+export type MenuProduct = {
+  name: string;
+  href: string;
+  image: string | null;
+  price: number;
+  compareAtPrice: number | null;
+  percentOff: number | null;
+  /** The variant whose price is shown — lets the menu swap in the visitor's local-currency price. */
+  variantId: string | null;
+};
 export type MenuCategory = Pick<CategoryInfo, "slug" | "title" | "kicker" | "image" | "count"> & {
   href: string;
   products: MenuProduct[];
@@ -79,6 +88,8 @@ export async function getMenuData(): Promise<MenuData> {
           image: p.image?.url ?? null,
           price: p.price,
           compareAtPrice: p.compareAtPrice,
+          percentOff: p.percentOff,
+          variantId: p.leadVariantId,
         })),
     })),
   };

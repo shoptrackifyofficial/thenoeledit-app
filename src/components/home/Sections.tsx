@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { GiftTiers } from "@/components/home/GiftTiers";
 import { DragScroll } from "@/components/ui/DragScroll";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { ProductCard } from "@/components/product/ProductCard";
 import { site } from "@/content/site";
 import type { CategoryInfo } from "@/lib/catalog";
 import type { CardView } from "@/lib/commerce/product-view";
-import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 /* ── Shared heading ───────────────────────────────────────────────────── */
@@ -226,7 +226,7 @@ export function AdventDeals({ cards }: { cards: CardView[] }) {
                   <Link
                     href={p.href}
                     className="img-skeleton-dark group absolute inset-0 overflow-hidden rounded-2xl ring-1 ring-white/10"
-                    aria-label={`Day ${i + 1}: ${p.name}${p.percentOff ? `, ${p.percentOff}% off` : ""}, now ${formatMoney(p.price, p.currency)}`}
+                    aria-label={`Day ${i + 1}: ${p.name}${p.percentOff ? `, ${p.percentOff}% off` : ""}`}
                   >
                     {/* Behind the door */}
                     {p.image && (
@@ -317,18 +317,6 @@ export function ProductGridSection({
 /* ── Gift finder by budget: hanging gift tags ─────────────────────────── */
 
 export function GiftFinder({ cards }: { cards: CardView[] }) {
-  const currency = cards[0]?.currency ?? "USD";
-  const tiers = [
-    { max: 25, label: "Under", tone: "bg-berry-50 text-ink", accent: "text-berry-600", hole: "bg-paper" },
-    { max: 50, label: "Under", tone: "bg-gold-100 text-ink", accent: "text-gold-700", hole: "bg-paper" },
-    { max: 100, label: "Under", tone: "bg-pine-900 text-snow", accent: "text-gold-300", hole: "bg-paper" },
-    { max: 0, label: "Luxe", tone: "bg-berry-600 text-snow", accent: "text-gold-200", hole: "bg-paper" },
-  ].map((t) => ({
-    ...t,
-    href: t.max ? `/shop?budget=${t.max}` : "/shop?budget=luxe",
-    count: cards.filter((c) => (t.max ? c.price < t.max : c.price >= 100)).length,
-  }));
-
   return (
     <section id="gift-finder" aria-labelledby="finder-title" className="section-y scroll-mt-24">
       <div className="container-page">
@@ -343,33 +331,7 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
           intro="Every price is already discounted — and shipping is free on every order."
           align="center"
         />
-        <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 lg:grid-cols-4 lg:gap-5">
-          {tiers.map((t) => (
-            <li key={t.href} className="flex flex-col items-center">
-              {/* string */}
-              <span aria-hidden="true" className="h-5 w-px bg-ink-faint/50" />
-              <Link
-                href={t.href}
-                className={cn(
-                  "gift-tag group relative flex w-full flex-col items-center overflow-hidden rounded-t-[2.75rem] rounded-b-[1.4rem] px-4 pt-9 pb-5 text-center ring-1 ring-black/5 sm:pt-11 sm:pb-6",
-                  t.tone,
-                )}
-              >
-                {/* punched hole */}
-                <span aria-hidden="true" className={cn("absolute top-3.5 size-3.5 rounded-full shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)]", t.hole)} />
-                <span className={cn("accent text-[1.25rem] leading-none sm:text-[1.45rem]", t.accent)}>{t.label}</span>
-                <span className="numeral mt-1 text-[2.6rem] leading-none tracking-tight sm:text-[3.4rem]">
-                  {t.max ? formatMoney(t.max, currency) : `${formatMoney(100, currency)}+`}
-                </span>
-                <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-current/8 px-3 py-1.5 text-[0.72rem] font-semibold">
-                  <span>{t.count} gifts</span>
-                  <Icon name="arrow-right" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                </span>
-                <Icon name="snowflake" className="absolute -right-5 -bottom-5 size-20 opacity-[0.07]" strokeWidth={1} />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <GiftTiers cards={cards} />
       </div>
     </section>
   );

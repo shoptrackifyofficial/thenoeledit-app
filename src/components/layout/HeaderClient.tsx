@@ -7,8 +7,8 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
 import { Icon } from "@/components/ui/Icon";
+import { Price } from "@/components/ui/Price";
 import type { MenuCategory, MenuData } from "@/lib/commerce/views";
-import { formatMoney } from "@/lib/money";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -210,10 +210,7 @@ export function DesktopNav({ menu }: { menu: MenuData }) {
                         )}
                       </span>
                       <span className="mt-2 block truncate text-[0.85rem] font-semibold">{p.name}</span>
-                      <span className="flex gap-1.5 text-[0.82rem] font-semibold tabular-nums">
-                        <span className={p.compareAtPrice ? "text-berry-600" : ""}>{formatMoney(p.price, menu.currency)}</span>
-                        {p.compareAtPrice && <s className="font-normal text-ink-faint">{formatMoney(p.compareAtPrice, menu.currency)}</s>}
-                      </span>
+                      <Price price={p.price} compareAtPrice={p.compareAtPrice} currency={menu.currency} variantId={p.variantId} percentOff={p.percentOff} size="xs" />
                     </Link>
                   </li>
                 ))}
@@ -409,10 +406,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
                           {p.image && <Image src={p.image} alt="" fill sizes="45vw" className="object-cover" />}
                         </span>
                         <span className="mt-2 block text-[0.85rem] leading-snug font-semibold">{p.name}</span>
-                        <span className="flex gap-1.5 text-[0.82rem] font-semibold tabular-nums">
-                          <span className={p.compareAtPrice ? "text-berry-600" : ""}>{formatMoney(p.price, menu.currency)}</span>
-                          {p.compareAtPrice && <s className="font-normal text-ink-faint">{formatMoney(p.compareAtPrice, menu.currency)}</s>}
-                        </span>
+                        <Price price={p.price} compareAtPrice={p.compareAtPrice} currency={menu.currency} variantId={p.variantId} percentOff={p.percentOff} size="xs" />
                       </Link>
                     </li>
                   ))}
