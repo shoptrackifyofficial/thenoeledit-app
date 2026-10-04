@@ -37,7 +37,7 @@ export async function getProductView(handle: string): Promise<{ view: ProductVie
   const record = await getProductByHandle(handle);
   if (!record) return null;
   const [currency, catOf] = await Promise.all([storeCurrency(), categoryLookup()]);
-  return { record, view: buildProductView(record, currency, catOf(record), site.sale.endsAt) };
+  return { record, view: buildProductView(record, currency, catOf(record)) };
 }
 
 /** Biggest discounts first — used for "12 Days of Deals" and best-sellers fallbacks. */
@@ -96,8 +96,16 @@ export type BagVariant = {
   category?: string;
   /** Quantity-tier discount for this product (see lib/commerce/tiers.ts). */
   tiers?: { discounts: number[]; codePrefix: string };
+  /** The product's "Offer ends at" deadline (future only), for the bag's offer timer. */
+  offerEndsAt?: string | null;
 };
 export type BagCatalog = { currency: string; demo: boolean; payments?: PaymentMethod[]; variants: Record<string, BagVariant> };
+
+/** The soonest upcoming "Offer ends at" among the active products — the deadline the top announcement bar counts down to. */
+export async function getOfferDeadline(): Promise<string | null> {
+  const ends = (await getProducts()).map((p) => p.offerEndsAt).filter((d): d is string => Boolean(d) && Date.parse(d as string) > Date.now());
+  return ends.sort()[0] ?? null;
+}
 
 export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
   const [products, currency, catOf, payments] = await Promise.all([getProducts(), storeCurrency(), categoryLookup(), getPaymentMethods()]);
@@ -123,6 +131,7 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         available: v.availableForSale,
         productId: p.id,
         category: catOf(p).title,
+        offerEndsAt: p.offerEndsAt,
         ...(p.story?.bundle?.discounts.length
           ? { tiers: { discounts: p.story.bundle.discounts, codePrefix: p.story.bundle.codePrefix } }
           : {}),

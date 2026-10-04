@@ -19,7 +19,7 @@ import { graph, organizationSchema, websiteSchema } from "@/lib/seo/schema";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — Christmas Gift Sale, Up to 40% Off`,
+    default: `${site.name} — Christmas Gift Sale, Up to 65% Off`,
     template: `%s · ${site.name}`,
   },
   description: site.description,

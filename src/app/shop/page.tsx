@@ -14,7 +14,7 @@ import { breadcrumbSchema, graph, itemListSchema } from "@/lib/seo/schema";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Shop All Christmas Gifts — Up to 40% Off",
+  title: "Shop All Christmas Gifts — Up to 65% Off",
   description:
     "Browse every gift in The Noel Edit Christmas sale — jewellery, tech, toys, home and festive treats, all discounted, with free shipping on every order and delivery before Christmas.",
   alternates: { canonical: "/shop" },

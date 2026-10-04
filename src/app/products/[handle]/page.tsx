@@ -80,7 +80,9 @@ export default async function ProductPage({ params }: Props) {
   const related = allCards.filter((c) => c.category.slug === view.category.slug).slice(0, 4);
   const more = byDiscount(allCards.filter((c) => c.category.slug !== view.category.slug)).slice(0, 4);
 
-  const saleEnds = new Date(view.saleEndsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
+  const offerEnds = view.offerEndsAt
+    ? new Date(view.offerEndsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" })
+    : null;
   const lead = view.variants.find((v) => v.id === view.defaultVariantId) ?? view.variants[0];
   const crumbs = [
     { label: "Home", href: "/" },
@@ -100,7 +102,7 @@ export default async function ProductPage({ params }: Props) {
       q: `How much is the ${view.name} in the Christmas sale?`,
       a: `It's ${formatMoney(view.fromPrice, view.currency)}${
         lead?.compareAtPrice ? `, down from ${formatMoney(lead.compareAtPrice, view.currency)} (${lead.compareAtPercent}% off)` : ""
-      }. Sale prices run until ${saleEnds} or while stock lasts.`,
+      }. Sale prices run ${offerEnds ? `until ${offerEnds}` : "for the Christmas sale"} or while stock lasts.`,
     },
     {
       q: `Will the ${view.name} arrive before Christmas?`,
@@ -136,11 +138,11 @@ export default async function ProductPage({ params }: Props) {
           <ProductGallery media={view.gallery} productName={view.name} />
 
           <div className="min-w-0 lg:pt-2">
-            <ul className="mb-5 flex flex-wrap gap-2">
+            <ul className="mb-5 flex flex-wrap gap-2 lg:gap-1.5 xl:flex-nowrap">
               {trust.map((t) => (
                 <li
                   key={t.text}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-berry-50 px-3 py-1.5 text-[0.72rem] leading-none font-semibold text-berry-500"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-berry-50 px-3 py-1.5 text-[0.72rem] leading-none font-semibold whitespace-nowrap text-berry-500 xl:px-2.5 xl:text-[0.7rem]"
                 >
                   <Icon name={t.icon} className="size-3.5" />
                   {t.text}
@@ -212,7 +214,7 @@ export default async function ProductPage({ params }: Props) {
                     ? `${formatMoney(view.fromPrice, view.currency)} (−${bundleOff}% off ${formatMoney(originalPrice(view.fromPrice, bundleOff), view.currency)})`
                     : `${formatMoney(view.fromPrice, view.currency)}${lead?.compareAtPercent ? ` (−${lead.compareAtPercent}%)` : ""}`,
                 ],
-                ["Sale ends", saleEnds],
+                ...(offerEnds ? [["Offer ends", offerEnds]] : []),
                 ["Category", view.category.title],
                 ["Shipping", "Tracked · free on every order"],
               ].map(([k, v]) => (

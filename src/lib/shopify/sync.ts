@@ -60,7 +60,7 @@ type ProductNode = {
   variants: { nodes: AdminVariantNode[] };
   media: { nodes: MediaNode[] };
   perks: { value: string } | null;
-  saleEndsAt: { value: string } | null;
+  offerEndsAt: { value: string } | null;
   giftFor: { value: string } | null;
   noelStory: { value: string } | null;
 };
@@ -95,7 +95,7 @@ query Products($query: String!, $after: String) {
         }
       }
       perks: metafield(namespace: "custom", key: "perks") { value }
-      saleEndsAt: metafield(namespace: "custom", key: "sale_ends_at") { value }
+      offerEndsAt: metafield(namespace: "custom", key: "sale_ends_at") { value }
       giftFor: metafield(namespace: "custom", key: "gift_for") { value }
       noelStory: metafield(namespace: "custom", key: "noel_story") { value }
     }
@@ -196,7 +196,7 @@ function toRecord(p: ProductNode): ProductRecord {
     variants,
     media: normalizeMedia(p.media.nodes, variants),
     perks: normalizePerks(p.perks),
-    saleEndsAt: futureIso(p.saleEndsAt),
+    offerEndsAt: futureIso(p.offerEndsAt),
     giftFor: p.giftFor?.value?.trim() || null,
     story: parseStory(p.noelStory?.value),
   };

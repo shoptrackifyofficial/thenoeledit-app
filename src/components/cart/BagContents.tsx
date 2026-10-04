@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
 import { Icon } from "@/components/ui/Icon";
+import { SaleCountdown } from "@/components/product/SaleCountdown";
 import { PaymentIcons } from "@/components/ui/PaymentIcons";
 import { site } from "@/content/site";
 import { formatMoney } from "@/lib/money";
@@ -105,7 +106,12 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                     >
                       {line.productName}
                     </Link>
-                    {line.variantLabel && <p className="truncate text-[0.74rem] text-ink-soft">{line.variantLabel}</p>}
+                    {line.variantLabel && (
+                      <p className="truncate text-[0.74rem] text-ink-soft">
+                        {line.variantLabel}
+                        {line.tiers && line.quantity > 1 && <span className="font-semibold text-ink"> × {line.quantity}</span>}
+                      </p>
+                    )}
                   </div>
                   <p className="flex shrink-0 flex-col items-end tabular-nums">
                     <span className="text-[0.86rem] font-bold">{formatMoney(line.lineTotal, currency)}</span>
@@ -116,7 +122,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                 </div>
 
                 {savedPct != null && (
-                  <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.7rem]">
+                  <p className="mt-1 flex items-center gap-x-1.5 gap-y-1 text-[0.7rem]">
                     <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
                       <Icon name="tag" className="size-3" /> Saved {savedPct}%
                     </span>
@@ -125,42 +131,55 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                         <span className="numeral font-semibold tracking-wide text-berry-600">{line.couponCode}</span> applied
                       </span>
                     )}
+                    {line.tiers && (
+                      // Bundle lines have no stepper (the bundle size is chosen on the product page): the bin sits at the row's right end.
+                      <button
+                        type="button"
+                        onClick={() => remove(line.variantId)}
+                        className="-my-1.5 ml-auto grid size-8 shrink-0 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-berry-50 hover:text-berry-600"
+                      >
+                        <Icon name="trash" className="size-4" />
+                        <span className="sr-only">Remove {line.productName}</span>
+                      </button>
+                    )}
                   </p>
                 )}
                 {!line.available && <p className="mt-1 text-[0.74rem] font-semibold text-berry-600">Sold out — remove to continue</p>}
 
-                <div className="mt-auto flex items-center justify-between pt-2">
-                  <div className="flex items-center rounded-lg bg-cream ring-1 ring-line" role="group" aria-label={`Quantity for ${line.productName}`}>
+                {!(line.tiers && savedPct != null) && (
+                  <div className="mt-auto flex items-center justify-between pt-2">
+                    <div className="flex items-center rounded-lg bg-cream ring-1 ring-line" role="group" aria-label={`Quantity for ${line.productName}`}>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(line.variantId, line.quantity - 1)}
+                        className="grid size-8 place-items-center rounded-lg hover:bg-linen"
+                        aria-label="Decrease quantity"
+                      >
+                        <Icon name="minus" className="size-3.5" />
+                      </button>
+                      <span className="w-6 text-center text-[0.84rem] font-semibold tabular-nums" aria-live="polite">
+                        {line.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(line.variantId, line.quantity + 1)}
+                        disabled={line.quantity >= 10}
+                        className="grid size-8 place-items-center rounded-lg hover:bg-linen disabled:opacity-40"
+                        aria-label="Increase quantity"
+                      >
+                        <Icon name="plus" className="size-3.5" />
+                      </button>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setQuantity(line.variantId, line.quantity - 1)}
-                      className="grid size-8 place-items-center rounded-lg hover:bg-linen"
-                      aria-label="Decrease quantity"
+                      onClick={() => remove(line.variantId)}
+                      className="grid size-8 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-berry-50 hover:text-berry-600"
                     >
-                      <Icon name="minus" className="size-3.5" />
-                    </button>
-                    <span className="w-6 text-center text-[0.84rem] font-semibold tabular-nums" aria-live="polite">
-                      {line.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setQuantity(line.variantId, line.quantity + 1)}
-                      disabled={line.quantity >= 10}
-                      className="grid size-8 place-items-center rounded-lg hover:bg-linen disabled:opacity-40"
-                      aria-label="Increase quantity"
-                    >
-                      <Icon name="plus" className="size-3.5" />
+                      <Icon name="trash" className="size-4" />
+                      <span className="sr-only">Remove {line.productName}</span>
                     </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => remove(line.variantId)}
-                    className="grid size-8 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-berry-50 hover:text-berry-600"
-                  >
-                    <Icon name="trash" className="size-4" />
-                    <span className="sr-only">Remove {line.productName}</span>
-                  </button>
-                </div>
+                )}
               </div>
             </li>
           );
@@ -189,7 +208,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
             <p className="text-[0.82rem] font-semibold">
               {noMinimum ? "Free shipping on every order" : remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
             </p>
-            {noMinimum && <p className="text-[0.72rem] text-ink-soft">Christmas offer — no minimum spend</p>}
+            {noMinimum && <p className="text-[0.72rem] text-ink-soft">Limited-time offer</p>}
             <div hidden={noMinimum} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
               <div
                 className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
@@ -198,9 +217,13 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
             </div>
           </div>
           {remaining === 0 && (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
-              <Icon name="check" className="size-3" strokeWidth={3} /> Free
-            </span>
+            // The "Free" badge, with the offer timer tucked directly under it.
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
+                <Icon name="check" className="size-3" strokeWidth={3} /> Free
+              </span>
+              {freeShipping.endsAt && <SaleCountdown endsAt={freeShipping.endsAt} compact />}
+            </div>
           )}
         </div>
 
@@ -229,6 +252,15 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                 <dd className="font-semibold text-berry-600 tabular-nums">−{formatMoney(savings, currency)}</dd>
               </div>
             </>
+          )}
+          {freeShipping.unlocked && (
+            <div className="flex items-center justify-between">
+              <dt className="text-ink-soft">Shipping</dt>
+              <dd className="flex items-baseline gap-1.5 tabular-nums">
+                {freeShipping.rate > 0 && <s className="text-ink-faint">{formatMoney(freeShipping.rate, currency)}</s>}
+                <span className="font-semibold text-pine-700">Free</span>
+              </dd>
+            </div>
           )}
           <div className="flex items-center justify-between border-t border-dashed border-line pt-2 text-[1rem]">
             <dt className="font-bold">Total</dt>

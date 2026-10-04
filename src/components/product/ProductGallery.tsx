@@ -75,33 +75,45 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
     if (index !== active) setActive(index);
   };
 
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const dragging = useRef(false);
+  /*
+   * Touch and trackpads swipe the track natively (scroll-snap with `snap-always`, so one flick
+   * moves exactly one slide). A mouse can't scroll-drag a native scroller, so a mouse press that
+   * travels a few pixels drags it by hand and settles on the neighbouring slide.
+   */
+  const [dragging, setDragging] = useState(false);
+  const drag = useRef<{ id: number; x: number; left: number; moved: boolean } | null>(null);
+  const dragged = useRef(false);
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    const t = e.touches[0];
-    if (!t || count < 2) return;
-    touchStart.current = { x: t.clientX, y: t.clientY };
-    dragging.current = false;
+  const onPointerDown = (e: React.PointerEvent) => {
+    const track = trackRef.current;
+    if (!track || count < 2 || e.pointerType !== "mouse" || e.button !== 0) return;
+    drag.current = { id: e.pointerId, x: e.clientX, left: track.scrollLeft, moved: false };
   };
-  const onTouchMove = (e: React.TouchEvent) => {
-    const start = touchStart.current;
-    const t = e.touches[0];
-    if (!start || !t) return;
-    const dx = t.clientX - start.x;
-    const dy = t.clientY - start.y;
-    if (!dragging.current && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) dragging.current = true;
-    if (dragging.current) e.preventDefault();
+  const onPointerMove = (e: React.PointerEvent) => {
+    const track = trackRef.current;
+    const d = drag.current;
+    if (!track || !d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x;
+    if (!d.moved) {
+      if (Math.abs(dx) < 6) return;
+      d.moved = true;
+      track.setPointerCapture(e.pointerId);
+      setDragging(true);
+    }
+    track.scrollLeft = d.left - dx;
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const start = touchStart.current;
-    const t = e.changedTouches[0];
-    touchStart.current = null;
-    if (!start || !t || !dragging.current) return;
-    dragging.current = false;
-    const dx = t.clientX - start.x;
-    if (dx <= -SWIPE_THRESHOLD) goTo(active + 1);
-    else if (dx >= SWIPE_THRESHOLD) goTo(active - 1);
+  const endDrag = (e: React.PointerEvent) => {
+    const track = trackRef.current;
+    const d = drag.current;
+    if (!track || !d || d.id !== e.pointerId) return;
+    drag.current = null;
+    if (!d.moved) return;
+    if (track.hasPointerCapture(e.pointerId)) track.releasePointerCapture(e.pointerId);
+    setDragging(false);
+    const dx = e.clientX - d.x;
+    dragged.current = true; // swallow the click that ends a drag, so it doesn't open the zoom
+    window.setTimeout(() => (dragged.current = false), 0);
+    goTo(dx <= -SWIPE_THRESHOLD ? active + 1 : dx >= SWIPE_THRESHOLD ? active - 1 : active);
   };
 
   // Keep the active thumbnail in view — scroll the rail only, never the page.
@@ -144,10 +156,21 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
           <ul
             ref={trackRef}
             onScroll={onScroll}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-            className="scrollbar-none flex snap-x snap-mandatory touch-pan-y overflow-x-auto overscroll-x-contain rounded-[1.75rem] shadow-soft ring-1 ring-line/60 [&::-webkit-scrollbar]:hidden"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onClickCapture={(e) => {
+              if (dragged.current) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
+            onDragStart={(e) => e.preventDefault()}
+            className={cn(
+              "scrollbar-none flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-[1.75rem] shadow-soft ring-1 ring-line/60 [&::-webkit-scrollbar]:hidden",
+              dragging && "snap-none",
+            )}
             aria-live="polite"
           >
             {media.map((item, i) => (
@@ -156,7 +179,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
                 aria-roledescription="slide"
                 aria-label={`${i + 1} of ${count}`}
                 aria-hidden={i !== active}
-                className="w-full shrink-0 snap-center"
+                className="w-full shrink-0 snap-center snap-always"
               >
                 {item.type === "image" ? (
                   <button

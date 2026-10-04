@@ -71,7 +71,7 @@ export function Accent({ children, light = false }: { children: React.ReactNode;
 /* ── Satin ribbon marquee ─────────────────────────────────────────────── */
 
 const ribbon = [
-  "Up to 40% off",
+  "Up to 65% off",
   "Free shipping on every order",
   "Tracked delivery",
   "Order early, stress-free",

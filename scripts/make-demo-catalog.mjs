@@ -63,7 +63,7 @@ function product({ handle, title, type, options = [], variants, media, perks, gi
     variants: vs,
     media,
     perks,
-    saleEndsAt: null,
+    offerEndsAt: null,
     giftFor,
   };
 }

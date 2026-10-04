@@ -6,6 +6,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from "r
 import { useCart } from "@/components/cart/CartProvider";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { LowStockAlert } from "@/components/product/LowStockAlert";
+import { SaleCountdown } from "@/components/product/SaleCountdown";
 import { Icon } from "@/components/ui/Icon";
 import { PaymentIcons } from "@/components/ui/PaymentIcons";
 import type { PaymentMethod } from "@/lib/shopify/payments";
@@ -319,7 +320,14 @@ function FreeShippingStrip({ total, currency, ratio = 1 }: { total: number; curr
           {unlocked ? (
             <>
               <span className="block text-[0.82rem] font-semibold">Free shipping unlocked</span>
-              <span className="block text-[0.7rem] text-ink-soft">{threshold <= 0 ? "On every order — Christmas offer" : "Applied to this order"}</span>
+              <span className="block text-[0.7rem] text-ink-soft">{threshold <= 0 ? (
+                  <>
+                    {site.delivery.rate > 0 && <s className="mr-1 text-ink-faint">{formatMoney(round2(site.delivery.rate * ratio), currency)}</s>}
+                    on every order — limited-time offer
+                  </>
+                ) : (
+                  "Applied to this order"
+                )}</span>
             </>
           ) : (
             <>
@@ -1056,7 +1064,11 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             )}
           </div>
         )}
-        <FreeShippingStrip total={orderTotal / priceRatio} currency={view.currency} ratio={priceRatio} />
+        {/* Shipping strip with the offer deadline beside it (below it on phones). */}
+        <div className="flex flex-wrap items-stretch gap-x-3 gap-y-2.5 sm:flex-nowrap">
+          <FreeShippingStrip total={orderTotal / priceRatio} currency={view.currency} ratio={priceRatio} />
+          {view.offerEndsAt && <SaleCountdown endsAt={view.offerEndsAt} />}
+        </div>
         {lowStock && <LowStockAlert left={lowStock.left} wanted={lowStock.wanted} />}
 
         <div className="flex gap-3">

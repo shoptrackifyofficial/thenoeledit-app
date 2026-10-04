@@ -19,7 +19,7 @@ node scripts/make-demo-catalog.mjs   # regenerate the placeholder catalog
 3. Optional metafields (namespace `custom`):
    - `perks` — list of short benefit lines (shown as bullets on the PDP)
    - `gift_for` — "Who it's for" line
-   - `sale_ends_at` — date/time; overrides the site-wide countdown
+   - "Offer ends at" (key `sale_ends_at`) — date/time; the offer deadline shown in the "Offer ends in" timer on the product page and in the bag
 4. Pack bundles: name an option `Pack` with values like `1 Pack`, `2 Pack`, `3 Pack` and the PDP shows photo pack cards with per-unit prices.
 5. Sale price = Shopify `price`; struck-through price = `compare at price`.
 6. Run `npm run shopify:sync` (or `POST /api/admin/sync` with `Authorization: Bearer $ADMIN_API_KEY`).

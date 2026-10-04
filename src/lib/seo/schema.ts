@@ -83,7 +83,7 @@ export function productSchema(view: ProductView): Node {
     .filter((m) => m.type === "image")
     .slice(0, 6)
     .map((m) => (m.type === "image" ? m.url.split("?")[0] : ""));
-  const validUntil = view.saleEndsAt.slice(0, 10);
+  const validUntil = view.offerEndsAt?.slice(0, 10);
   const offers = view.variants.map((v) => ({
     "@type": "Offer",
     url: `${url}?variant=${v.id.split("/").pop()}`,

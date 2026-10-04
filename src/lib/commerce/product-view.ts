@@ -61,7 +61,8 @@ export type ProductView = {
   cardImage: ViewImage | null;
   packOptionName: string | null;
   perks: string[];
-  saleEndsAt: string;
+  /** The product's "Offer ends at" metafield (`custom.sale_ends_at`) (future dates only), or null — the only deadline the countdown shows. */
+  offerEndsAt: string | null;
   descriptionHtml: string;
   summary: string;
   giftFor: string | null;
@@ -129,7 +130,6 @@ export function buildProductView(
   record: ProductRecord,
   currency: string,
   category: { slug: string; title: string },
-  defaultSaleEndsAt: string,
 ): ProductView {
   const packName =
     record.options.find((o) => PACK_OPTION.test(o.name.trim()) && o.values.length > 1)?.name ?? null;
@@ -195,7 +195,7 @@ export function buildProductView(
     cardImage: firstImage ?? null,
     packOptionName: packName,
     perks: record.perks,
-    saleEndsAt: record.saleEndsAt ?? defaultSaleEndsAt,
+    offerEndsAt: record.offerEndsAt,
     descriptionHtml: sanitizeHtml(record.descriptionHtml),
     summary: record.seo.description || plainText(record.descriptionHtml, 220),
     giftFor: record.giftFor,

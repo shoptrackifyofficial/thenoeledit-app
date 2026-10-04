@@ -54,6 +54,7 @@ export function HeaderShell({ announcement, children }: { announcement: ReactNod
         <div
           data-scrolled={scrolled}
           data-over-hero={isHome && !scrolled}
+          data-rest={!isHome && !scrolled}
           className="header-pill group/header relative mx-auto grid h-(--header-h) max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-full bg-surface/70 px-1.5 shadow-[0_0_0_1px_rgb(255_255_255/0.08)] backdrop-blur-xl backdrop-saturate-150 sm:px-3"
         >
           {children}
@@ -329,7 +330,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
             <Link href="/shop" className="relative mb-6 block overflow-hidden rounded-[1.4rem] bg-berry-600 p-5 text-snow shadow-ribbon">
               <span className="kicker text-gold-300">The Christmas sale</span>
               <span className="mt-1 block font-display text-[1.6rem] leading-tight">
-                Up to <span className="accent">40% off</span>
+                Up to <span className="accent">65% off</span>
               </span>
               <span className="mt-2 inline-flex items-center gap-1.5 text-[0.72rem] font-bold tracking-[0.16em] uppercase">
                 Shop all gifts <Icon name="arrow-right" className="size-4" />

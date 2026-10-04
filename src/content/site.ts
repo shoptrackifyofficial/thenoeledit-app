@@ -10,15 +10,15 @@ export const site = {
   shortName: "Noel Edit",
   tagline: "The Christmas gift sale, beautifully curated.",
   description:
-    "The Noel Edit is a curated Christmas gift sale — up to 40% off jewellery, tech, toys, home and festive treats, with free shipping on every order and tracked delivery before Christmas.",
+    "The Noel Edit is a curated Christmas gift sale — up to 65% off jewellery, tech, toys, home and festive treats, with free shipping on every order and tracked delivery before Christmas.",
   url: siteUrl,
   locale: "en_US",
   email: "hello@thenoeledit.com",
   themeColor: "#f8fafd",
 
   sale: {
-    headline: "Up to 40% off",
-    /** When the sale ends — drives every countdown. Per-product `custom.sale_ends_at` overrides it. */
+    headline: "Up to 65% off",
+    /** When the sale ends — drives the home-page countdown. Each product page shows its own "Offer ends at" metafield instead. */
     endsAt: "2026-12-26T00:00:00Z",
     /** Christmas Day (local midnight is computed in the browser). */
     christmas: { month: 12, day: 25 },
@@ -41,14 +41,14 @@ export const site = {
   /** Fallback Shopify market for checkout when the visitor's country can't be detected (the site's own prices are in USD). When it can — their choice, else the host's geo header — Shopify prices the cart in that country's currency, matching the prices shown. */
   market: "US",
 
-  /** freeOver: order value (shop currency) for free shipping; 0 = free on every order (the Christmas offer). Mirror it in Shopify → Settings → Shipping. */
-  delivery: { minDays: 3, maxDays: 7, freeOver: 0 },
+  /** freeOver: order value (shop currency) for free shipping; 0 = free on every order (a limited-time offer). rate: the regular shipping price (shop currency), shown struck through while shipping is free. Mirror both in Shopify → Settings → Shipping. */
+  delivery: { minDays: 3, maxDays: 7, freeOver: 0, rate: 2.99 },
 
   /** Product pages show a "Low stock" alert when a chosen variant has this many units (or fewer) left. */
   lowStockAt: 10,
 
   promises: [
-    { icon: "tag", title: "Up to 40% off", text: "Christmas sale prices on every gift." },
+    { icon: "tag", title: "Up to 65% off", text: "Christmas sale prices on every gift." },
     { icon: "truck", title: "Early for Christmas", text: "Order early — tracked shipping, no last-minute rush." },
     { icon: "gift", title: "Hand-picked gifts", text: "Every item chosen to be given — and loved." },
     { icon: "shield", title: "Secure checkout", text: "Paid safely through Shopify Checkout." },

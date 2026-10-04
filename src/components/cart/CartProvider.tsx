@@ -57,7 +57,7 @@ type CartContextValue = {
   savings: number;
   currency: string;
   /** Free-shipping progress in the money the shopper sees (the threshold is set in the shop currency). */
-  freeShipping: { unlocked: boolean; threshold: number; remaining: number };
+  freeShipping: { unlocked: boolean; threshold: number; remaining: number; rate: number; endsAt: string | null };
   isOpen: boolean;
   hydrated: boolean;
   loading: boolean;
@@ -218,10 +218,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const savings = round2(lines.reduce((s, l) => s + (l.listTotal - l.lineTotal), 0));
 
   const freeShipping = useMemo(() => {
-    const ratio = baseSubtotal > 0 ? subtotal / baseSubtotal : 1;
+    // Visitor's price ÷ shop price, from the undiscounted prices (1 until Shopify's local prices have landed).
+    const listNow = lines.reduce((sum, l) => sum + l.price * l.quantity, 0);
+    const ratio = baseSubtotal > 0 ? listNow / baseSubtotal : 1;
     const threshold = Math.ceil(site.delivery.freeOver * ratio);
-    return { unlocked: baseSubtotal >= site.delivery.freeOver, threshold, remaining: Math.max(0, round2(threshold - subtotal)) };
-  }, [baseSubtotal, subtotal]);
+    // The regular shipping price, in the money the shopper sees; and the earliest offer deadline among the bag's products.
+    const ends = lines.map((l) => l.offerEndsAt).filter((d): d is string => Boolean(d)).sort()[0] ?? null;
+    return {
+      unlocked: baseSubtotal >= site.delivery.freeOver,
+      threshold,
+      remaining: Math.max(0, round2(threshold - subtotal)),
+      rate: round2(site.delivery.rate * ratio),
+      endsAt: ends,
+    };
+  }, [baseSubtotal, subtotal, lines]);
 
   const toItem = (l: ResolvedLine | (BagVariant & { variantId: string }), quantity: number): AnalyticsItem => ({
     id: l.variantId,

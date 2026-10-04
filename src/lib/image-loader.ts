@@ -26,5 +26,7 @@ export default function imageLoader({
     if (!url.searchParams.has("fit")) url.searchParams.set("fit", "max");
     return url.toString();
   }
-  return src;
+  // Local /public files: nothing to resize, but the URL still carries the width so every size has its own
+  // URL (next/image warns when a loader ignores `width`). Static file servers ignore the query.
+  return `${src}${src.includes("?") ? "&" : "?"}w=${width}`;
 }

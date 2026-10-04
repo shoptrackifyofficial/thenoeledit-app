@@ -743,6 +743,13 @@
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
+/* Other pages, before scrolling: no pill, no shadow — the nav blends into the page background. */
+.header-pill[data-rest="true"] {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
 .header-logo {
   transition: transform 0.5s var(--ease-out-soft);
 }

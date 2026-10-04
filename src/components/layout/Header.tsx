@@ -4,22 +4,26 @@ import Link from "next/link";
 import { BagButton, DesktopNav, HeaderShell, MobileMenu } from "@/components/layout/HeaderClient";
 import { Icon } from "@/components/ui/Icon";
 import { site } from "@/content/site";
-import { getMenuData } from "@/lib/commerce/views";
+import { SaleCountdown } from "@/components/product/SaleCountdown";
+import { getMenuData, getOfferDeadline } from "@/lib/commerce/views";
 import { customerAccountUrl } from "@/lib/shopify/config";
 
-function Announcement() {
+function Announcement({ endsAt }: { endsAt: string | null }) {
   return (
     <div className="bg-berry-600 text-snow">
-      <p className="container-page flex h-(--announce-h) items-center justify-center gap-2.5 text-center text-[0.74rem] font-medium">
-        <Icon name="sparkle" className="size-3.5 shrink-0 animate-twinkle text-gold-300" />
+      <p className="container-page flex h-(--announce-h) items-center justify-center gap-2 text-center text-[0.74rem] font-medium whitespace-nowrap">
+        <Icon name="sparkle" className="hidden size-3.5 shrink-0 animate-twinkle text-gold-300 sm:block" />
         <span>
           <strong className="font-bold">{site.sale.headline}</strong>
-          <span className="opacity-60"> · </span>Free shipping on every order
-          <span className="hidden sm:inline">
-            <span className="opacity-60"> · </span>Shop early for a stress-free Christmas
-          </span>
+          <span className="opacity-60"> · </span>Free shipping<span className="hidden sm:inline"> on every order</span>
+          {!endsAt && (
+            <span className="hidden sm:inline">
+              <span className="opacity-60"> · </span>Shop early for a stress-free Christmas
+            </span>
+          )}
         </span>
-        <Icon name="sparkle" className="size-3.5 shrink-0 animate-twinkle text-gold-300 [animation-delay:1.6s]" />
+        {endsAt && <SaleCountdown endsAt={endsAt} variant="banner" />}
+        <Icon name="sparkle" className="hidden size-3.5 shrink-0 animate-twinkle text-gold-300 [animation-delay:1.6s] sm:block" />
       </p>
     </div>
   );
@@ -27,11 +31,11 @@ function Announcement() {
 
 /** Site header: floating pill, logo badge centred, Shop → Category → Products menu, search, account, bag. */
 export async function Header() {
-  const menu = await getMenuData();
+  const [menu, offerEndsAt] = await Promise.all([getMenuData(), getOfferDeadline()]);
   const accountUrl = customerAccountUrl();
 
   return (
-    <HeaderShell announcement={<Announcement />}>
+    <HeaderShell announcement={<Announcement endsAt={offerEndsAt} />}>
       <div className="flex h-full items-center">
         <MobileMenu menu={menu} accountUrl={accountUrl} />
         <DesktopNav menu={menu} />

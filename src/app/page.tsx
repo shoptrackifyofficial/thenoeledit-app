@@ -24,7 +24,7 @@ import { faqSchema, graph, itemListSchema } from "@/lib/seo/schema";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: `${site.name} — Christmas Gift Sale, Up to 40% Off` },
+  title: { absolute: `${site.name} — Christmas Gift Sale, Up to 65% Off` },
   description: site.description,
   alternates: { canonical: "/" },
 };

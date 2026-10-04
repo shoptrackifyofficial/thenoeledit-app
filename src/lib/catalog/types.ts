@@ -110,8 +110,8 @@ export type ProductRecord = {
   media: MediaRecord[];
   /** `custom.perks` metafield (list of short benefit lines), in Shopify's order. */
   perks: string[];
-  /** `custom.sale_ends_at` metafield — ISO timestamp, only kept while in the future. */
-  saleEndsAt: string | null;
+  /** "Offer ends at" metafield (`custom.sale_ends_at`) — ISO timestamp, only kept while in the future. */
+  offerEndsAt: string | null;
   /** `custom.gift_for` metafield — "Who it's for" line, e.g. "Coffee lovers, new homeowners". */
   giftFor: string | null;
   /** `custom.noel_story` metafield — rich "how it works" content; absent on older synced records. */
