@@ -1163,7 +1163,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
           <div className="min-w-0 flex-1 overflow-hidden">
             <p className="truncate text-[0.82rem] sm:text-[0.86rem] leading-tight font-semibold">
               {bundle
-                ? `${count} ${bundle.noun}${count === 1 ? "" : "s"} · ${picks.slice(0, count).map(shortName).join(", ")}`
+                ? `${count} ${bundle.noun}${count === 1 ? ` · ${shortName(picks[0]!)}` : "s"}`
                 : variant?.label || view.name}
             </p>
             {variant && (
