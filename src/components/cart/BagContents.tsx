@@ -25,6 +25,8 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
     useCart();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The summary starts short in the drawer; on the full cart page there is room, so it starts open.
+  const [open, setOpen] = useState(variant === "page");
 
   /** Free shipping on every order (site.delivery.freeOver = 0): no threshold, no progress bar. */
   const noMinimum = site.delivery.freeOver <= 0;
@@ -281,85 +283,123 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
           variant === "drawer" ? "m-3 mt-2 pb-[max(1rem,env(safe-area-inset-bottom))]" : "mt-4 pb-4 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:mt-0",
         )}
       >
-        {/* Free shipping — real threshold from site settings */}
-        <div className="flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className={cn(
-              "grid size-9 shrink-0 place-items-center rounded-xl",
-              remaining === 0 ? "bg-gold-100 text-gold-700" : "bg-cream text-ink-soft",
+        {/* Short version: total, free shipping and the saving on one row. Tap to open the full breakdown. */}
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="bag-summary-details"
+          className="flex w-full items-center gap-3 rounded-xl text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block text-[0.66rem] font-bold tracking-[0.12em] text-ink-soft uppercase">{open ? "Order summary" : "Total"}</span>
+            {!open && (
+              <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="numeral text-[1.4rem] leading-none font-semibold tabular-nums">{formatMoney(subtotal, currency)}</span>
+                {original > subtotal + 0.009 && <s className="text-[0.8rem] text-ink-faint tabular-nums">{formatMoney(original, currency)}</s>}
+              </span>
             )}
-          >
-            <Icon name="truck" className="size-5" />
           </span>
-          <div className="min-w-0 flex-1">
-            {/* Row 1: title, with the "Free" badge at the far end */}
-            <div className="flex items-center justify-between gap-2">
-              <p className="min-w-0 text-[0.82rem] leading-tight font-semibold">
-                {noMinimum ? "Free shipping on every order" : remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
-              </p>
-              {remaining === 0 && (
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
-                  <Icon name="check" className="size-3" strokeWidth={3} /> Free
+          {!open && (
+            <span className="flex shrink-0 flex-col items-end gap-1">
+              {remaining === 0 ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
+                  <Icon name="truck" className="size-3" /> Free shipping
+                </span>
+              ) : (
+                <span className="rounded-full bg-cream px-2 py-1 text-[0.68rem] leading-none font-semibold text-ink-soft">
+                  Add {formatMoney(remaining, currency)} for free shipping
                 </span>
               )}
-            </div>
-            {/* Row 2: secondary text, with the offer timer at the far end */}
-            {noMinimum && (
-              <div className="mt-0.5 flex items-center justify-between gap-2">
-                <p className="text-[0.72rem] leading-tight text-ink-soft">Limited-time offer</p>
-                {freeShipping.endsAt && <SaleCountdown endsAt={freeShipping.endsAt} compact />}
-              </div>
-            )}
-            <div hidden={noMinimum} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
-              <div
-                className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
-                style={{ width: `${progress * 100}%` }}
-              />
-            </div>
-          </div>
-        </div>
+              {savings > 0.009 && (
+                <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.68rem] leading-none font-bold text-berry-700 ring-1 ring-berry-100">
+                  <Icon name="tag" className="size-3" /> Saved {Math.round((savings / original) * 100)}%
+                </span>
+              )}
+            </span>
+          )}
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-cream text-ink-soft" aria-hidden="true">
+            <Icon name="arrow-right" className={cn("size-4 transition-transform duration-300", open ? "rotate-90" : "-rotate-90")} />
+          </span>
+          <span className="sr-only">{open ? "Hide details" : "Show details"}</span>
+        </button>
 
-        <dl className="mt-3 space-y-1.5 border-t border-line pt-3 text-[0.84rem]">
-          {savings > 0.009 && (
-            <>
-              <div className="flex items-center justify-between">
-                <dt className="text-ink-soft">Subtotal</dt>
-                <dd className="text-ink-soft tabular-nums">{formatMoney(original, currency)}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt className="flex flex-wrap items-center gap-1.5 text-ink-soft">
-                  Discount
-                  {codes.length > 0 && (
-                    <span
-                      className="inline-flex items-center gap-1 rounded-md bg-cream px-1.5 py-0.5 text-[0.7rem] leading-none text-ink-soft"
-                      title={codes.join(" · ")}
-                      aria-label={`Coupon ${codes.join(", ")} applied`}
-                    >
-                      <Icon name="tag" className="size-3 text-berry-600" />
-                      <span className="numeral font-semibold tracking-wide text-berry-600">{codes.join(" · ")}</span>
+        {/* Full version */}
+        <div id="bag-summary-details" className={cn("grid transition-[grid-template-rows] duration-300 ease-out-soft", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+          <div className="overflow-hidden" inert={!open}>
+            <div className="mt-3 flex items-center gap-3 border-t border-line pt-3">
+              <span
+                aria-hidden="true"
+                className={cn("grid size-9 shrink-0 place-items-center rounded-xl", remaining === 0 ? "bg-gold-100 text-gold-700" : "bg-cream text-ink-soft")}
+              >
+                <Icon name="truck" className="size-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="min-w-0 text-[0.82rem] leading-tight font-semibold">
+                    {noMinimum ? "Free shipping on every order" : remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
+                  </p>
+                  {remaining === 0 && (
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
+                      <Icon name="check" className="size-3" strokeWidth={3} /> Free
                     </span>
                   )}
-                  <span className="text-[0.7rem] font-bold text-berry-600 tabular-nums">{Math.round((savings / original) * 100)}% off</span>
-                </dt>
-                <dd className="font-semibold text-berry-600 tabular-nums">−{formatMoney(savings, currency)}</dd>
+                </div>
+                {noMinimum && (
+                  <div className="mt-0.5 flex items-center justify-between gap-2">
+                    <p className="text-[0.72rem] leading-tight text-ink-soft">Limited-time offer</p>
+                    {freeShipping.endsAt && <SaleCountdown endsAt={freeShipping.endsAt} compact />}
+                  </div>
+                )}
+                <div hidden={noMinimum} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
+                  <div
+                    className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
+                    style={{ width: `${progress * 100}%` }}
+                  />
+                </div>
               </div>
-            </>
-          )}
-          {freeShipping.unlocked && (
-            <div className="flex items-center justify-between">
-              <dt className="text-ink-soft">Shipping</dt>
-              <dd className="flex items-baseline gap-1.5 tabular-nums">
-                {freeShipping.rate > 0 && <s className="text-ink-faint">{formatMoney(freeShipping.rate, currency)}</s>}
-                <span className="font-semibold text-pine-700">Free</span>
-              </dd>
             </div>
-          )}
-          <div className="flex items-center justify-between border-t border-dashed border-line pt-2 text-[1rem]">
-            <dt className="font-bold">Total</dt>
-            <dd className="numeral text-[1.25rem] font-semibold tabular-nums">{formatMoney(subtotal, currency)}</dd>
+
+            <dl className="mt-3 space-y-1.5 border-t border-line pt-3 text-[0.84rem]">
+              {savings > 0.009 && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-ink-soft">Subtotal</dt>
+                    <dd className="text-ink-soft tabular-nums">{formatMoney(original, currency)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="flex items-center gap-1.5 text-ink-soft">
+                      Discount
+                      {/* Just the icon (hover / screen reader names the codes), not a chip per coupon */}
+                      <span
+                        title={codes.join(" · ")}
+                        aria-label={`${codes.length || 1} coupon${(codes.length || 1) === 1 ? "" : "s"} applied${codes.length ? `: ${codes.join(", ")}` : ""}`}
+                        className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.7rem] leading-none font-bold text-berry-700 ring-1 ring-berry-100"
+                      >
+                        <Icon name="tag" className="size-3" />
+                        <span className="tabular-nums">{codes.length || 1}</span>
+                      </span>
+                    </dt>
+                    <dd className="font-semibold text-berry-600 tabular-nums">−{formatMoney(savings, currency)}</dd>
+                  </div>
+                </>
+              )}
+              {freeShipping.unlocked && (
+                <div className="flex items-center justify-between">
+                  <dt className="text-ink-soft">Shipping</dt>
+                  <dd className="flex items-baseline gap-1.5 tabular-nums">
+                    {freeShipping.rate > 0 && <s className="text-ink-faint">{formatMoney(freeShipping.rate, currency)}</s>}
+                    <span className="font-semibold text-pine-700">Free</span>
+                  </dd>
+                </div>
+              )}
+              <div className="flex items-center justify-between border-t border-dashed border-line pt-2 text-[1rem]">
+                <dt className="font-bold">Total</dt>
+                <dd className="numeral text-[1.25rem] font-semibold tabular-nums">{formatMoney(subtotal, currency)}</dd>
+              </div>
+            </dl>
           </div>
-        </dl>
+        </div>
 
         {error && (
           <p role="alert" className="mt-3 text-[0.82rem] text-berry-600">

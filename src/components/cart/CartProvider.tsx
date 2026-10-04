@@ -217,17 +217,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [stored, catalog, snapshots, localizedPriceFor]);
 
-  // Badge count shown to shoppers: a bundle (3 cameras, 5 ribbons…) is ONE item however many units it holds;
-  // everything else counts by quantity. Checkout and analytics still use the real unit counts.
-  const count = (() => {
-    const bundles = new Set<string>();
-    let n = 0;
-    for (const l of lines) {
-      if (l.tiers && l.productId) bundles.add(l.productId);
-      else n += l.quantity;
-    }
-    return n + bundles.size;
-  })();
+  // Badge count shown to shoppers: how many different items are in the bag, whatever the quantity (100 of one
+  // item is still 1). A bundle (3 cameras, 5 ribbons in several colours…) is one item. Checkout and analytics
+  // still use the real unit counts.
+  const count = new Set(lines.map((l) => (l.tiers && l.productId ? `bundle:${l.productId}` : l.variantId))).size;
   const subtotal = Math.round(lines.reduce((s, l) => s + l.lineTotal, 0) * 100) / 100;
   const savings = round2(lines.reduce((s, l) => s + (l.listTotal - l.lineTotal), 0));
 
