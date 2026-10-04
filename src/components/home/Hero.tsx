@@ -64,8 +64,8 @@ export function Hero() {
         </h1>
 
         <p className="rise rise-3 mt-4 max-w-md text-[0.95rem] leading-relaxed text-white/80 sm:max-w-lg sm:text-[1.05rem] [@media(max-height:740px)]:hidden">
-          {site.sale.headline} hand-picked Christmas gifts — free shipping over $50, easy returns and tracked
-          delivery before the big day.
+          {site.sale.headline} hand-picked Christmas gifts — free shipping over $50 and tracked
+          delivery that lands before the big day.
         </p>
 
         <div className="rise rise-4 mt-6 flex w-full flex-col items-center justify-center gap-2.5 min-[420px]:w-auto min-[420px]:flex-row lg:justify-start">

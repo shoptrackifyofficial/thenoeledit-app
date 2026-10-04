@@ -75,7 +75,7 @@ const ribbon = [
   "Free shipping over $50",
   "Tracked delivery",
   "Order early, stress-free",
-  "Returns until January 31",
+  `Arrives in ${site.delivery.minDays}–${site.delivery.maxDays} working days`,
   "Secure Shopify checkout",
 ];
 

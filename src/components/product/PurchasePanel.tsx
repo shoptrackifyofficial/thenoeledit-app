@@ -456,14 +456,14 @@ function BundlePicker({
 
   /** Little arrow joining the customise panel to the card it belongs to. */
   const notch =
-    "absolute -top-[7px] z-10 size-3 -translate-x-1/2 rotate-45 border-t border-l border-berry-600/35 bg-cream";
+    "absolute -top-[7px] z-10 size-3 -translate-x-1/2 rotate-45 border-t border-l border-berry-600/50 bg-cream";
 
   /** Customise the chosen set: the stencil pack (with its own price) and a colour for every camera. */
   const panel = (id: "m" | "d", arrow: React.ReactNode) => (
     <div
       key={`${id}-${count}`}
       className={cn(
-        "relative origin-top animate-[bundle-open_0.5s_var(--ease-spring)_both] rounded-2xl border border-berry-600/35 bg-cream p-3 shadow-soft",
+        "relative origin-top animate-[bundle-open_0.5s_var(--ease-spring)_both] rounded-2xl border border-berry-600/50 bg-cream p-3 shadow-soft",
         id === "m" && "sm:hidden",
       )}
     >
@@ -578,10 +578,8 @@ function BundlePicker({
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[0.95rem] leading-tight font-bold">Buy {WORDS[o.n]}</span>
-                <span className="block text-[0.74rem] text-ink-soft">
-                  {plural(o.n)}
-                  {packLabel && <> · {packLabel} each</>}
-                </span>
+                <span className="block text-[0.74rem] text-ink-soft">{plural(o.n)}</span>
+                {packLabel && <span className="block text-[0.7rem] text-ink-faint">{packLabel} each</span>}
               </span>
               {priceBlock(o, "end")}
             </label>
@@ -744,10 +742,14 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
           label: view.story?.valueLabels[value] ?? value,
           selected: selection[packOption.name] === value,
           price: findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0,
-          sale: applyPercent(
-            findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0,
-            tiers ? tierPercent(tiers, count) : 0,
-          ),
+          // Rounded down, like the "each" price on the bundle cards.
+          sale:
+            Math.floor(
+              (findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0) *
+                (1 - (tiers ? tierPercent(tiers, count) : 0) / 100) *
+                100 +
+                1e-6,
+            ) / 100,
         }))
       : [];
   const colourImage = (colour: string) =>
@@ -891,7 +893,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
   };
 
   const priceBlock = useMemo(() => {
-    if (!variant || hasPack) return null;
+    // Bundles show their own discounted price (with the saving) above the shipping strip instead.
+    if (!variant || hasPack || bundle) return null;
     return (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <p className="numeral text-[2rem] leading-none font-semibold text-berry-600" aria-live="polite">
@@ -907,7 +910,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
         )}
       </div>
     );
-  }, [variant, hasPack, view.currency]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variant, hasPack, bundle?.option, view.currency]);
 
   return (
     <div>
@@ -1015,6 +1019,7 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
               </p>
               <p className="mt-1.5 text-[0.74rem] text-ink-soft">
                 {count > 1 ? `${formatMoney(currentOffer.unit, view.currency)} each · ${count} ${bundle.noun}s` : `1 ${bundle.noun}`}
+                {packChoices.find((p) => p.selected) && ` · ${packChoices.find((p) => p.selected)!.label.toLowerCase()} each`}
                 {currentOffer.code && <> · code <span className="numeral font-semibold tracking-wide text-berry-600">{currentOffer.code}</span> applied</>}
               </p>
             </div>

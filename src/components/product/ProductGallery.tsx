@@ -147,7 +147,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            className="scrollbar-none -mx-4 flex snap-x snap-mandatory touch-pan-y overflow-x-auto overscroll-x-contain sm:mx-0 sm:rounded-[1.75rem]"
+            className="scrollbar-none flex snap-x snap-mandatory touch-pan-y overflow-x-auto overscroll-x-contain rounded-[1.75rem] shadow-soft ring-1 ring-line/60 [&::-webkit-scrollbar]:hidden"
             aria-live="polite"
           >
             {media.map((item, i) => (
@@ -192,7 +192,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
 
           {count > 1 && (
             <>
-              <div className="glass pointer-events-none absolute bottom-4 left-4 rounded-full px-3 py-1.5 text-[0.78rem] tabular-nums">
+              <div className="glass pointer-events-none absolute bottom-3.5 left-3.5 rounded-[10px] px-3 py-1.5 sm:bottom-4 sm:left-4 text-[0.78rem] tabular-nums">
                 {active + 1} / {count}
               </div>
               <div className="absolute right-4 bottom-4 hidden gap-2 md:flex">
@@ -222,7 +222,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
         {count > 1 && (
           <ul
             ref={thumbsRef}
-            className="scrollbar-none flex w-full snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain p-0.5 lg:max-h-(--gallery-h) lg:w-22 lg:shrink-0 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto"
+            className="scrollbar-none flex w-full snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain p-0.5 [&::-webkit-scrollbar]:hidden lg:max-h-(--gallery-h) lg:w-22 lg:shrink-0 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto"
             aria-label="Choose image"
           >
             {media.map((item, i) => (
@@ -233,10 +233,10 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
                   aria-label={`Show ${item.type === "video" ? "video" : "image"} ${i + 1}: ${item.alt}`}
                   aria-current={i === active}
                   className={cn(
-                    "img-skeleton relative block size-18 overflow-hidden rounded-2xl transition-[box-shadow,opacity] duration-300 md:size-22",
+                    "img-skeleton relative block size-19 overflow-hidden rounded-[14px] transition-[box-shadow,opacity] duration-300 md:size-22",
                     i === active
-                      ? "shadow-[inset_0_0_0_2px_var(--color-berry-600)]"
-                      : "opacity-65 hover:opacity-100",
+                      ? "shadow-[inset_0_0_0_1.5px_var(--color-ink)]"
+                      : "opacity-70 hover:opacity-100",
                   )}
                 >
                   <Image
@@ -246,7 +246,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
                     sizes="88px"
                     className="-z-0 object-cover"
                   />
-                  {i === active && <span className="absolute inset-0 rounded-2xl shadow-[inset_0_0_0_2px_var(--color-berry-600)]" />}
+                  {i === active && <span className="absolute inset-0 rounded-[14px] shadow-[inset_0_0_0_1.5px_var(--color-ink)]" />}
                   {item.type === "video" && (
                     <span className="absolute inset-0 grid place-items-center">
                       <span className="glass grid size-7 place-items-center rounded-full">

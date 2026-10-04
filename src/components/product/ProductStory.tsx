@@ -208,6 +208,28 @@ export function ProductStory({ story }: { story: Story }) {
 }
 
 /** The full "Product information" list as a tidy label / value table (used in the Details accordion). */
+/**
+ * Splits the spec rows into a few titled groups so the product page can show
+ * each in its own accordion (rows not matched fall into "More details").
+ * Supplier labels that clash with our own option names are renamed:
+ * "Color" lists the stencil packs and "Size" lists the camera colours.
+ */
+const INFO_GROUPS: { title: string; labels: string[] }[] = [
+  { title: "Packs & colours", labels: ["Color", "Size"] },
+  { title: "Material & build", labels: ["Material", "Manufacturing process"] },
+  { title: "Great for", labels: ["Occasion for gifting", "Recipient relationship", "Applicable holidays", "Display method"] },
+];
+const INFO_RENAMES: Record<string, string> = { Color: "Stencil packs", Size: "Camera colours" };
+
+export function infoGroups(info: Story["info"]): { title: string; rows: Story["info"] }[] {
+  const groups = INFO_GROUPS.map((g) => ({
+    title: g.title,
+    rows: info.filter((r) => g.labels.includes(r.label)).map((r) => ({ ...r, label: INFO_RENAMES[r.label] ?? r.label })),
+  })).filter((g) => g.rows.length > 0);
+  const rest = info.filter((r) => !INFO_GROUPS.some((g) => g.labels.includes(r.label)));
+  return rest.length ? [...groups, { title: "More details", rows: rest }] : groups;
+}
+
 export function StoryInfo({ info }: { info: Story["info"] }) {
   return (
     <dl className="divide-y divide-line overflow-hidden rounded-2xl bg-surface text-[0.88rem] ring-1 ring-line">

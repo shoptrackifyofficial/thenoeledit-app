@@ -6,11 +6,14 @@ import { notFound } from "next/navigation";
 import { DeliveryTimeline, FaqList, ProductGridSection, SectionHeading } from "@/components/home/Sections";
 import { getPaymentMethods } from "@/lib/shopify/payments";
 import { ProductVideoShowcase } from "@/components/product/ProductVideoShowcase";
-import { ProductStory, StoryInfo } from "@/components/product/ProductStory";
+import { ProductStory, StoryInfo, infoGroups } from "@/components/product/ProductStory";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { PurchasePanel } from "@/components/product/PurchasePanel";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { applyPercent } from "@/lib/commerce/tiers";
+import { Accordion } from "@/components/ui/Accordion";
+import { DeliveryEstimate } from "@/components/product/DeliveryEstimate";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { faqs as siteFaqs } from "@/content/faqs";
 import { site } from "@/content/site";
@@ -102,8 +105,10 @@ export default async function ProductPage({ params }: Props) {
       q: `Will the ${view.name} arrive before Christmas?`,
       a: `Yes. Order now and it ships tracked in ${site.delivery.minDays}–${site.delivery.maxDays} working days — well before Christmas. Ordering early means no last-minute rush.`,
     },
-    ...siteFaqs.slice(4, 6),
+    ...siteFaqs.slice(3, 5),
   ];
+
+  const bundleOff = view.story?.bundle?.discounts.length ? Math.max(...view.story.bundle.discounts) : 0;
 
   const trust: { icon: IconName; text: string }[] = [
     { icon: "shield", text: "Secure checkout" },
@@ -170,56 +175,41 @@ export default async function ProductPage({ params }: Props) {
               <PurchasePanel view={view} payments={payments} />
             </div>
 
-            <div className="mt-7 divide-y divide-line border-y border-line">
-              {[
-                {
-                  title: "Details",
-                  body: view.story?.info.length ? (
-                    <StoryInfo info={view.story.info} />
-                  ) : view.descriptionHtml ? (
-                    <div className="prose-gift text-[0.92rem]" dangerouslySetInnerHTML={{ __html: view.descriptionHtml }} />
-                  ) : (
-                    <p>{view.summary}</p>
-                  ),
-                },
-                {
-                  title: "Delivery & returns",
-                  body: (
-                    <p>
-                      Tracked delivery in {site.delivery.minDays}–{site.delivery.maxDays} working days, free over{" "}
-                      {formatMoney(site.delivery.freeOver, view.currency)}. Returns and exchanges until January 31.{" "}
-                      <Link href="/pages/shipping" className="link-underline text-ink">
-                        Delivery dates
-                      </Link>
-                    </p>
-                  ),
-                },
-              ].map((item, i) => (
-                <details key={item.title} className="group" open={i === 0}>
-                  <summary className="flex min-h-13 items-center justify-between gap-4 py-2 text-[0.92rem] font-semibold">
-                    {item.title}
-                    <Icon name="plus" className="size-4 shrink-0 text-ink-soft transition-transform duration-300 group-open:rotate-45" />
-                  </summary>
-                  <div className="pb-5 text-[0.9rem] text-ink-soft">{item.body}</div>
-                </details>
-              ))}
-            </div>
+            <Accordion
+              className="mt-7"
+              items={
+                view.story?.info.length
+                  ? infoGroups(view.story.info).map((g) => ({ title: g.title, body: <StoryInfo info={g.rows} /> }))
+                  : [
+                      {
+                        title: "Details",
+                        body: view.descriptionHtml ? (
+                          <div className="prose-gift text-[0.92rem]" dangerouslySetInnerHTML={{ __html: view.descriptionHtml }} />
+                        ) : (
+                          <p>{view.summary}</p>
+                        ),
+                      },
+                    ]
+              }
+            />
 
-            <aside className="mt-4 flex gap-3 rounded-2xl bg-berry-50 p-4 text-[0.86rem] ring-1 ring-berry-100" aria-label="Christmas delivery">
-              <Icon name="snowflake" className="mt-0.5 size-5 shrink-0 text-berry-600" />
-              <p>
-                <strong className="font-semibold">Beat the Christmas rush.</strong> Order now and it&apos;s packed, tracked
-                and with you well before the big day.{" "}
-                <Link href="/pages/shipping" className="link-underline">
-                  Delivery details
-                </Link>
-              </p>
-            </aside>
+            <div className="mt-5">
+              <DeliveryEstimate
+                minDays={site.delivery.minDays}
+                maxDays={site.delivery.maxDays}
+                freeOver={formatMoney(site.delivery.freeOver, view.currency)}
+              />
+            </div>
 
             {/* At a glance — a compact, quotable fact sheet (AEO/GEO) */}
             <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line text-[0.85rem] ring-1 ring-line">
               {[
-                ["Price", `${formatMoney(view.fromPrice, view.currency)}${lead?.compareAtPercent ? ` (−${lead.compareAtPercent}%)` : ""}`],
+                [
+                  "Price",
+                  bundleOff
+                    ? `From ${formatMoney(applyPercent(view.fromPrice, bundleOff), view.currency)} each (−${bundleOff}%)`
+                    : `${formatMoney(view.fromPrice, view.currency)}${lead?.compareAtPercent ? ` (−${lead.compareAtPercent}%)` : ""}`,
+                ],
                 ["Sale ends", saleEnds],
                 ["Category", view.category.title],
                 ["Shipping", `Tracked · free over ${formatMoney(site.delivery.freeOver, view.currency)}`],
@@ -234,19 +224,18 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── See it in action: demo clips (story videos), right after section 1 ── */}
+      {/* ── Product videos (story videos), right after section 1 ── */}
       {view.story && view.story.videos.length > 0 && (
         <section className="py-10 lg:py-14" aria-labelledby="videos-title">
           <div className="container-page">
             <SectionHeading
               id="videos-title"
-              kicker="Real use"
+              kicker="Product videos"
               title={
                 <>
-                  See it <span className="accent text-berry-600">in action.</span>
+                  A closer <span className="accent text-berry-600">look.</span>
                 </>
               }
-              intro="Real clips of the camera at work — press, lift, and the design is in the foam."
               align="center"
             />
           </div>

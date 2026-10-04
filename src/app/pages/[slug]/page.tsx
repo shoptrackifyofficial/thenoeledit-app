@@ -61,7 +61,7 @@ const pages: Record<string, Page> = {
   faq: {
     title: "Help & FAQ",
     script: "good to know",
-    description: `Answers about delivery, free shipping, sale prices and returns at ${site.name}.`,
+    description: `Answers about delivery, free shipping, sale prices and checkout at ${site.name}.`,
     body: <p>Quick answers to the questions we hear most in the run-up to Christmas.</p>,
     faq: true,
   },

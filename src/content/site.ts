@@ -41,7 +41,7 @@ export const site = {
   /** Shopify market checkout is priced in. The site shows USD, so carts are pinned to the US market (otherwise Shopify picks one from the visitor's location and can charge a different currency). */
   market: "US",
 
-  delivery: { minDays: 2, maxDays: 6, freeOver: 50 },
+  delivery: { minDays: 3, maxDays: 7, freeOver: 50 },
 
   /** Product pages show a "Low stock" alert when a chosen variant has this many units (or fewer) left. */
   lowStockAt: 10,
@@ -49,7 +49,7 @@ export const site = {
   promises: [
     { icon: "tag", title: "Up to 40% off", text: "Christmas sale prices on every gift." },
     { icon: "truck", title: "Early for Christmas", text: "Order early — tracked shipping, no last-minute rush." },
-    { icon: "refresh", title: "Returns until January 31", text: "Easy exchanges after the holidays — just email us your order number." },
+    { icon: "gift", title: "Hand-picked gifts", text: "Every item chosen to be given — and loved." },
     { icon: "shield", title: "Secure checkout", text: "Paid safely through Shopify Checkout." },
   ],
 

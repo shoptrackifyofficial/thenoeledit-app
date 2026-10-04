@@ -20,10 +20,6 @@ export const faqs: { q: string; a: string }[] = [
     a: `${site.name} sale prices run until ${new Date(site.sale.endsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" })}, or while stock lasts. Each product shows its own countdown.`,
   },
   {
-    q: "What if the gift isn't quite right?",
-    a: "Christmas gifts bought now can be returned or exchanged until January 31.",
-  },
-  {
     q: "Is checkout secure?",
     a: "Yes. Payment is handled entirely by Shopify Checkout — card details never touch our servers — and you can pay with major cards and express wallets where available.",
   },
