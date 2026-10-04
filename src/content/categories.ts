@@ -32,7 +32,7 @@ export const categories: CategoryContent[] = [
     title: "For Her",
     kicker: "Jewellery, glow & soft layers",
     blurb:
-      "Considered gifts for the women who have everything — fine jewellery, skincare rituals and cosy knits, all wrapped and ready for Christmas morning.",
+      "Considered gifts for the women who have everything — fine jewellery, skincare rituals and cosy knits, all ready for Christmas morning.",
     image: u("1515562141207-7a88fb7ce338"),
     productTypes: ["jewelry", "jewellery", "beauty", "skincare", "accessories for her"],
     order: 1,

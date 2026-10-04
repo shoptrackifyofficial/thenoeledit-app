@@ -37,21 +37,25 @@ export function CartDrawer() {
       onClick={(e) => {
         if (e.target === ref.current) close();
       }}
-      aria-label="Your bag"
-      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-dvh w-[94%] max-w-[420px] rounded-l-[1.75rem] bg-paper p-0 text-ink shadow-lift backdrop:bg-pine-950/45 backdrop:backdrop-blur-[3px] open:flex open:animate-[drawer-in_0.5s_var(--ease-out-soft)] open:flex-col"
+      aria-labelledby="bag-title"
+      className="fixed inset-y-2 right-2 left-auto m-0 h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[440px] rounded-[1.75rem] bg-paper p-0 text-ink shadow-lift ring-1 ring-line backdrop:bg-pine-950/45 backdrop:backdrop-blur-[3px] open:flex open:animate-[drawer-in_0.5s_var(--ease-out-soft)] open:flex-col"
     >
-      <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <p className="display-md">
-          Your bag{" "}
-          {count > 0 && <span className="ml-1 inline-grid min-w-6 place-items-center rounded-full bg-berry-600 px-1.5 align-middle font-sans text-[0.72rem] leading-6 font-bold text-snow">{count}</span>}
-        </p>
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <h2 id="bag-title" className="flex items-center gap-2 font-display text-[1.35rem] leading-none outline-none" tabIndex={-1}>
+          Your bag
+          {count > 0 && (
+            <span className="numeral grid min-w-6 place-items-center rounded-full bg-berry-600 px-1.5 font-sans text-[0.72rem] leading-6 font-bold text-snow">
+              {count}
+            </span>
+          )}
+        </h2>
         <button
           type="button"
           onClick={close}
-          className="grid size-11 place-items-center rounded-full hover:bg-cream"
+          className="grid size-9 place-items-center rounded-xl bg-cream ring-1 ring-line transition-colors hover:bg-linen"
           aria-label="Close bag"
         >
-          <Icon name="close" />
+          <Icon name="close" className="size-4.5" />
         </button>
       </div>
       {isOpen && <BagContents onNavigate={close} />}

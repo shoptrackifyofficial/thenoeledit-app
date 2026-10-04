@@ -16,7 +16,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Shop All Christmas Gifts — Up to 40% Off",
   description:
-    "Browse every gift in The Noel Edit Christmas sale — jewellery, tech, toys, home and festive treats, all discounted, with free gift wrapping and delivery before Christmas.",
+    "Browse every gift in The Noel Edit Christmas sale — jewellery, tech, toys, home and festive treats, all discounted, with free shipping over $50 and delivery before Christmas.",
   alternates: { canonical: "/shop" },
 };
 
@@ -45,8 +45,8 @@ export default async function ShopPage() {
             Every Christmas gift, <span className="accent text-berry-600">on sale</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-ink-soft sm:mx-0">
-            {cards.length} hand-picked gifts, {site.sale.headline.toLowerCase()}. Filter by budget, then let us do the
-            wrapping.
+            {cards.length} hand-picked gifts, {site.sale.headline.toLowerCase()}. Filter by budget and find the
+            one.
           </p>
 
           <ul className="scrollbar-none -mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">

@@ -111,7 +111,7 @@ export async function getCategories(): Promise<CategoryInfo[]> {
       slug,
       title: titleCase(slug),
       kicker: `${count} gift${count === 1 ? "" : "s"}`,
-      blurb: `Christmas gifts in ${titleCase(slug)} — on sale now, gift-wrapped free.`,
+      blurb: `Christmas gifts in ${titleCase(slug)} — on sale now, with free shipping over $50.`,
       image: image ?? categories[0]!.image,
       order: 100 + i,
       count,

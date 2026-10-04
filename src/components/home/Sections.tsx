@@ -72,8 +72,8 @@ export function Accent({ children, light = false }: { children: React.ReactNode;
 
 const ribbon = [
   "Up to 40% off",
-  "Free gift wrapping",
-  "Handwritten gift cards",
+  "Free shipping over $50",
+  "Tracked delivery",
   "Order early, stress-free",
   "Returns until January 31",
   "Secure Shopify checkout",
@@ -340,7 +340,7 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
               Find the gift <Accent>by price</Accent>
             </>
           }
-          intro="Every price is already discounted — and every order is gift-wrapped free."
+          intro="Every price is already discounted — and shipping is free over $50."
           align="center"
         />
         <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 lg:grid-cols-4 lg:gap-5">
@@ -375,7 +375,7 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
   );
 }
 
-/* ── Wrapped with love ────────────────────────────────────────────────── */
+/* ── Made for giving ────────────────────────────────────────────────── */
 
 export function WrappedStory() {
   return (
@@ -407,13 +407,13 @@ export function WrappedStory() {
         </div>
 
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-          <p className="kicker mb-3">Wrapped with love</p>
+          <p className="kicker mb-3">Made for giving</p>
           <h2 id="wrap-title" className="display-lg">
             Every gift arrives <Accent>ready to give.</Accent>
           </h2>
           <p className="mt-4 max-w-lg text-[0.98rem] text-ink-soft">
-            Tick one box in your bag and we wrap it for you — matte paper, satin ribbon and a card with your own words.
-            Send it to them directly, or to you to tuck under the tree.
+            Add a personal message in your bag, then send it straight to them or to you to tuck under the tree. Every
+            order ships tracked.
           </p>
           <ul className="mt-7 grid w-full gap-2.5 text-left sm:grid-cols-2">
             {site.promises.map((p) => (
@@ -442,7 +442,7 @@ export function WrappedStory() {
 export function DeliveryTimeline() {
   const steps: { icon: IconName; title: string; note: string; final?: boolean }[] = [
     { icon: "bag", title: "Order now", note: "Pick gifts at sale prices while stock is full." },
-    { icon: "gift", title: "We wrap it", note: "Ribbon, tag and your handwritten message." },
+    { icon: "gift", title: "We pack it", note: "Checked, packed and sent with tracking." },
     { icon: "truck", title: "Tracked delivery", note: `Arrives in ${site.delivery.minDays}–${site.delivery.maxDays} working days.` },
     { icon: "sparkle", title: "Relax & unwrap", note: "Christmas morning, no last-minute rush.", final: true },
   ];
@@ -458,7 +458,7 @@ export function DeliveryTimeline() {
               A calm Christmas, <Accent>sorted early</Accent>
             </>
           }
-          intro="Buy now and your gifts are wrapped, tracked and waiting well before the big day — no stress, no scramble."
+          intro="Buy now and your gifts are packed, tracked and waiting well before the big day — no stress, no scramble."
           action={{ href: "/pages/shipping", label: "Delivery details" }}
           align="center"
         />

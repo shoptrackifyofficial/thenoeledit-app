@@ -64,12 +64,11 @@ export async function POST(request: NextRequest) {
 
   // Gift options travel as cart attributes + the order note, visible to the
   // merchant on the Shopify order.
-  const wrap = body.gift?.wrap === true;
   const message =
     typeof body.gift?.message === "string"
       ? body.gift.message.replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").trim().slice(0, 240)
       : "";
-  const attributes = [{ key: "Gift wrap", value: wrap ? "Yes" : "No" }];
+  const attributes: { key: string; value: string }[] = [];
   if (message) attributes.push({ key: "Gift message", value: message });
 
   // Ad identity for the server-side Purchase event (the orders/paid webhook

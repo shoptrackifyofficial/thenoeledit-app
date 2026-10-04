@@ -1,4 +1,4 @@
-import type { ProductRecord } from "@/lib/catalog/types";
+import type { ProductRecord, ProductStory } from "@/lib/catalog/types";
 import { plainText, sanitizeHtml } from "@/lib/utils";
 
 /**
@@ -28,6 +28,8 @@ export type ViewVariant = {
   compareAtPrice: number | null;
   compareAtPercent: number | null;
   availableForSale: boolean;
+  /** Units in stock, or null when untracked. */
+  stock: number | null;
   sku: string | null;
   image: string | null;
   /** Units in the pack (1 when the product has no pack option). */
@@ -39,7 +41,7 @@ export type ViewVariant = {
   label: string;
 };
 
-export type ViewOption = { name: string; values: string[] };
+export type ViewOption = { name: string; label: string; values: string[] };
 
 export type ProductView = {
   /** Shopify product GID — used for catalog-matched ad events. */
@@ -63,6 +65,7 @@ export type ProductView = {
   descriptionHtml: string;
   summary: string;
   giftFor: string | null;
+  story: ProductStory | null;
 };
 
 /** The light shape product cards, the menu and search need. */
@@ -150,6 +153,7 @@ export function buildProductView(
       compareAtPrice: v.compareAtPrice,
       compareAtPercent: percentOff(v.price, v.compareAtPrice),
       availableForSale: v.availableForSale,
+      stock: v.stock ?? null,
       sku: v.sku,
       image: v.image,
       units,
@@ -157,7 +161,10 @@ export function buildProductView(
       perUnit: Math.round((v.price / units) * 100) / 100,
       label: record.options
         .filter((o) => o.values.length > 1)
-        .map((o) => v.options[o.name] ?? "")
+        .map((o) => {
+          const value = v.options[o.name] ?? "";
+          return record.story?.valueLabels[value] ?? value;
+        })
         .filter(Boolean)
         .join(" · "),
     };
@@ -179,7 +186,7 @@ export function buildProductView(
     currency,
     options: record.options
       .filter((o) => o.values.length > 1)
-      .map((o) => ({ name: o.name, values: o.values })),
+      .map((o) => ({ name: o.name, label: record.story?.optionLabels[o.name] ?? o.name, values: o.values })),
     variants,
     defaultVariantId: defaultVariant?.id ?? "",
     fromPrice: Math.min(...(singles.length ? singles : variants).map((v) => v.price)),
@@ -192,6 +199,7 @@ export function buildProductView(
     descriptionHtml: sanitizeHtml(record.descriptionHtml),
     summary: record.seo.description || plainText(record.descriptionHtml, 220),
     giftFor: record.giftFor,
+    story: record.story ?? null,
   };
 }
 

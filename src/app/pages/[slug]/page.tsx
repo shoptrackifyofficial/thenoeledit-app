@@ -26,7 +26,7 @@ const pages: Record<string, Page> = {
     body: (
       <>
         <p>
-          Every order ships tracked. The easiest way to a stress-free Christmas is to order now — your gifts are wrapped,
+          Every order ships tracked. The easiest way to a stress-free Christmas is to order now — your gifts are packed,
           on their way and waiting long before the big day.
         </p>
         <p>
@@ -49,7 +49,7 @@ const pages: Record<string, Page> = {
           should be unused and in their original packaging.
         </p>
         <ul>
-          <li>Every gift-wrapped order includes a gift receipt, so recipients can exchange too.</li>
+          <li>Bought it as a gift? Email us your order number and the recipient can exchange it too.</li>
           <li>Refunds go back to the original payment method once the return is received.</li>
           <li>Damaged, faulty or wrong item? Contact us and we&apos;ll put it right.</li>
         </ul>
@@ -62,7 +62,7 @@ const pages: Record<string, Page> = {
   faq: {
     title: "Help & FAQ",
     script: "good to know",
-    description: `Answers about delivery, free gift wrapping, sale prices and returns at ${site.name}.`,
+    description: `Answers about delivery, free shipping, sale prices and returns at ${site.name}.`,
     body: <p>Quick answers to the questions we hear most in the run-up to Christmas.</p>,
     faq: true,
   },

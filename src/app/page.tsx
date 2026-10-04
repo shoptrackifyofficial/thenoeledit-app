@@ -53,7 +53,7 @@ export default async function HomePage() {
             The most-wanted <Accent>list</Accent>
           </>
         }
-        intro="The gifts everyone is asking for this Christmas — on sale, wrapped free."
+        intro="The gifts everyone is asking for this Christmas — on sale, with free shipping over $50."
         cards={mostWanted}
         action={{ href: "/shop", label: "Shop all gifts" }}
       />

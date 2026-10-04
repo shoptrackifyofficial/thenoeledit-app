@@ -44,7 +44,7 @@ export async function Footer() {
               <Image src="/logo-200.webp" alt="" width={200} height={200} sizes="56px" className="size-14 rounded-full bg-snow p-0.5" />
               <span className="font-display text-[1.4rem] text-snow">{site.name}</span>
             </Link>
-            <p className="mt-4 text-[0.86rem] leading-relaxed text-pine-200/80">{site.tagline} Hand-picked gifts, wrapped free and delivered before Christmas.</p>
+            <p className="mt-4 text-[0.86rem] leading-relaxed text-pine-200/80">{site.tagline} Hand-picked gifts, shipped tracked and delivered before Christmas.</p>
             <ul className="mt-5 flex gap-2">
               {(["instagram", "tiktok", "pinterest"] as const).map((s) => (
                 <li key={s}>

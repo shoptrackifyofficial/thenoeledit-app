@@ -11,6 +11,7 @@ import {
 import type { ProductRecord } from "@/lib/catalog/types";
 import { buildCardView, buildProductView, type CardView, type ProductView } from "@/lib/commerce/product-view";
 import { site } from "@/content/site";
+import { getPaymentMethods, type PaymentMethod } from "@/lib/shopify/payments";
 
 /** Server helpers that turn catalog records into the client-safe views. */
 
@@ -94,17 +95,20 @@ export type BagVariant = {
   productId?: string;
   category?: string;
 };
-export type BagCatalog = { currency: string; demo: boolean; variants: Record<string, BagVariant> };
+export type BagCatalog = { currency: string; demo: boolean; payments?: PaymentMethod[]; variants: Record<string, BagVariant> };
 
 export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
-  const [products, currency, catOf] = await Promise.all([getProducts(), storeCurrency(), categoryLookup()]);
+  const [products, currency, catOf, payments] = await Promise.all([getProducts(), storeCurrency(), categoryLookup(), getPaymentMethods()]);
   const variants: BagCatalog["variants"] = {};
   for (const p of products) {
     const fallback = p.media.find((m) => m.type === "image")?.url ?? null;
     for (const v of p.variants) {
       const label = p.options
         .filter((o) => o.values.length > 1)
-        .map((o) => v.options[o.name])
+        .map((o) => {
+          const value = v.options[o.name];
+          return value ? (p.story?.valueLabels[value] ?? value) : value;
+        })
         .filter(Boolean)
         .join(" · ");
       variants[v.id] = {
@@ -120,5 +124,5 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
       };
     }
   }
-  return { currency, demo, variants };
+  return { currency, demo, payments, variants };
 }

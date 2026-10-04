@@ -9,11 +9,11 @@ import { site } from "@/content/site";
 export const faqs: { q: string; a: string }[] = [
   {
     q: "Should I order now or wait?",
-    a: `Order now. Sale prices and stock are at their best, and tracked delivery takes ${site.delivery.minDays}–${site.delivery.maxDays} working days — so your gifts arrive wrapped and ready well before Christmas, with no last-minute rush.`,
+    a: `Order now. Sale prices and stock are at their best, and tracked delivery takes ${site.delivery.minDays}–${site.delivery.maxDays} working days — so your gifts arrive packed and ready well before Christmas, with no last-minute rush.`,
   },
   {
-    q: "Is gift wrapping really free?",
-    a: "Yes. Every order can be gift-wrapped for free with ribbon and a printed card carrying your own message — just tick “Free gift wrapping” in your bag.",
+    q: "Can I add a gift message?",
+    a: "Yes. Write your message in your bag before checkout and it is saved with your order.",
   },
   {
     q: "Can I send a gift straight to someone else?",
@@ -25,7 +25,7 @@ export const faqs: { q: string; a: string }[] = [
   },
   {
     q: "What if the gift isn't quite right?",
-    a: "Christmas gifts bought now can be returned or exchanged until January 31. A gift receipt is included in every wrapped order, so the recipient can exchange it too.",
+    a: "Christmas gifts bought now can be returned or exchanged until January 31. Bought it as a gift? Email us your order number and the recipient can exchange it too.",
   },
   {
     q: "Is checkout secure?",

@@ -4,8 +4,11 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
-import { Countdown } from "@/components/home/Countdown";
+import { LowStockAlert } from "@/components/product/LowStockAlert";
 import { Icon } from "@/components/ui/Icon";
+import { PaymentIcons } from "@/components/ui/PaymentIcons";
+import type { PaymentMethod } from "@/lib/shopify/payments";
+import { site } from "@/content/site";
 import { trackCustomizeProduct, trackViewItem } from "@/lib/analytics";
 import type { ProductView, ViewVariant } from "@/lib/commerce/product-view";
 import { formatMoney } from "@/lib/money";
@@ -36,9 +39,14 @@ const SWATCH: Record<string, string> = {
   black: "#1c1b19", white: "#f7f5f0", snow: "#fbfaf6", silver: "linear-gradient(135deg,#f1f1f1,#a9a9a9)",
   gold: "linear-gradient(135deg,#f3dfa6,#b8913f)", "rose gold": "linear-gradient(135deg,#f6d2c4,#c58b78)",
   red: "#b3202f", berry: "#8a1428", green: "#2d5b45", pine: "#1b4332", oat: "#d9cbb1", cream: "#f2e8d6",
-  navy: "#1f2a44", blue: "#3b6aa0", pink: "#e8b4bc", grey: "#9a9a96", gray: "#9a9a96", brown: "#6b4a33",
+  "dark green": "#2f4a3a", navy: "#1f2a44", blue: "#3b6aa0", pink: "#e8b4bc", grey: "#9a9a96", gray: "#9a9a96", brown: "#6b4a33",
 };
-const swatchFor = (value: string) => SWATCH[value.trim().toLowerCase()] ?? null;
+const swatchFor = (value: string) => SWATCH[value.trim().toLowerCase().replace(/\s+camera$/, "")] ?? null;
+/** "Dark Green Camera" → "Dark green" */
+const shortName = (value: string) => {
+  const v = value.trim().replace(/\s+camera$/i, "").toLowerCase();
+  return v.charAt(0).toUpperCase() + v.slice(1);
+};
 
 /* ── Pack cards (reference "cards" mode) ─────────────────────────────── */
 
@@ -75,14 +83,14 @@ function PackCards({
   const surface = (c: (typeof cards)[number]) =>
     c.featured
       ? cn("bg-gold-100", c.checked ? "border-gold-600" : "border-gold-300 hover:border-gold-600")
-      : cn("bg-surface", c.checked ? "border-gold-500" : "border-line hover:border-pine-300");
+      : cn("bg-surface", c.checked ? "border-berry-600 shadow-ribbon" : "border-line hover:border-berry-500");
 
   const Dot = ({ checked, featured }: { checked: boolean; featured: boolean }) => (
     <span
       aria-hidden="true"
       className={cn(
         "grid size-5 place-items-center rounded-full border-2 transition-colors",
-        checked ? (featured ? "border-gold-600 bg-gold-600" : "border-gold-500 bg-gold-500") : "border-line bg-surface",
+        checked ? (featured ? "border-gold-600 bg-gold-600" : "border-berry-600 bg-berry-600") : "border-line bg-surface",
       )}
     >
       {checked && <Icon name="check" className="size-3 text-snow" strokeWidth={3} />}
@@ -229,7 +237,7 @@ function PackCards({
   );
 }
 
-/* ── "Free gift wrap unlocked" strip (reference's celebratory strip) ──── */
+/* ── "Free shipping unlocked" strip ────────────────────────────────────── */
 
 const CONFETTI = [
   { x: -46, y: -30, r: -200, c: "bg-gold-500" },
@@ -242,43 +250,272 @@ const CONFETTI = [
   { x: -8, y: 44, r: -240, c: "bg-gold-500" },
 ] as const;
 
-function GiftWrapUnlocked() {
+/**
+ * Compact celebratory strip: the truck drives in, a tick pops, confetti bursts
+ * once and a soft light sweeps across now and then (decorative motion only —
+ * the text carries the message, and it all stops under reduced-motion).
+ * Shows "unlocked" once the order reaches the free-shipping threshold, and a
+ * nudge towards it before that, so it never promises something checkout won't
+ * honour. Set `site.delivery.freeOver` to 0 to make shipping always free.
+ */
+function FreeShippingStrip({ total, currency }: { total: number; currency: string }) {
+  const threshold = site.delivery.freeOver;
+  const unlocked = total >= threshold;
   return (
-    <div className="relative min-w-0 flex-1 basis-56 overflow-hidden rounded-xl border border-dashed border-pine-300 bg-pine-900 py-1.5 pr-3 pl-2 text-pine-200">
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/70 to-transparent motion-safe:animate-[sweep_3.6s_ease-in-out_infinite]"
-      />
+    <div
+      className={cn(
+        "relative min-w-0 flex-1 basis-56 overflow-hidden rounded-xl border border-dashed py-1.5 pr-3 pl-2",
+        unlocked ? "border-gold-400 bg-gold-100 text-ink" : "border-line bg-cream text-ink",
+      )}
+    >
+      {unlocked && (
+        <span
+          aria-hidden="true"
+          className="unlock-anim pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/70 to-transparent motion-safe:animate-[unlock-sweep_3.6s_ease-in-out_infinite]"
+        />
+      )}
       <div className="relative flex items-center gap-3">
         <span className="relative grid size-9 shrink-0 place-items-center">
-          <span aria-hidden="true" className="absolute inset-0 rounded-full border-2 border-pine-300 motion-safe:animate-[unlock-ring_1.8s_ease-out_0.5s_2]" />
-          {CONFETTI.map((p, i) => (
-            <span
-              key={i}
-              aria-hidden="true"
-              className={cn(
-                "absolute top-1/2 left-1/2 h-1.5 w-1 rounded-[1px] opacity-0 motion-safe:animate-[unlock-burst_1.1s_ease-out_0.35s_1_both]",
-                p.c,
-              )}
-              style={{ "--bx": `${p.x}px`, "--by": `${p.y}px`, "--br": `${p.r}deg` } as React.CSSProperties}
-            />
-          ))}
-          <span className="relative grid size-9 place-items-center text-berry-600 motion-safe:animate-[pop_0.6s_var(--ease-spring)_both]">
-            <Icon name="gift" className="size-6" strokeWidth={1.6} />
+          {unlocked && (
+            <>
+              <span aria-hidden="true" className="unlock-anim absolute inset-0 rounded-full border-2 border-gold-500/60 motion-safe:animate-[unlock-ring_1.8s_ease-out_0.5s_2]" />
+              {CONFETTI.map((p, i) => (
+                <span
+                  key={i}
+                  aria-hidden="true"
+                  className={cn(
+                    "unlock-anim absolute top-1/2 left-1/2 h-1.5 w-1 rounded-[1px] opacity-0 motion-safe:animate-[unlock-burst_1.1s_ease-out_0.35s_1_both]",
+                    p.c,
+                  )}
+                  style={{ "--bx": `${p.x}px`, "--by": `${p.y}px`, "--br": `${p.r}deg` } as React.CSSProperties}
+                />
+              ))}
+            </>
+          )}
+          <span
+            className={cn(
+              "unlock-anim relative grid size-9 place-items-center",
+              unlocked ? "text-gold-700 motion-safe:animate-[unlock-truck_0.7s_cubic-bezier(0.2,0.8,0.3,1)_both]" : "text-ink-faint",
+            )}
+          >
+            <Icon name="truck" className="size-6" strokeWidth={1.6} />
           </span>
+          {unlocked && (
+            <span
+              aria-hidden="true"
+              className="unlock-anim absolute -right-0.5 -bottom-0.5 grid size-4 place-items-center rounded-full border-2 border-gold-100 bg-pine-600 text-white motion-safe:animate-[unlock-tick_0.4s_cubic-bezier(0.3,1.6,0.5,1)_0.6s_both]"
+            >
+              <Icon name="check" className="size-2.5" strokeWidth={3} />
+            </span>
+          )}
         </span>
         <p className="min-w-0 leading-tight">
-          <span className="block text-[0.82rem] font-semibold">Free gift wrapping unlocked</span>
-          <span className="block text-[0.7rem] text-ink-soft">Ribbon + handwritten card, added in your bag</span>
+          {unlocked ? (
+            <>
+              <span className="block text-[0.82rem] font-semibold">Free shipping unlocked</span>
+              <span className="block text-[0.7rem] text-ink-soft">Applied to this order</span>
+            </>
+          ) : (
+            <>
+              <span className="block text-[0.82rem] font-semibold">Add {formatMoney(threshold - total, currency)} for free shipping</span>
+              <span className="block text-[0.7rem] text-ink-soft">Free on orders over {formatMoney(threshold, currency)}</span>
+            </>
+          )}
         </p>
       </div>
     </div>
   );
 }
 
+/* ── Bundle picker: how many, and which colour for each ─────────────── */
+
+/** A camera-lens swatch: the colour body with a glassy lens ring in the middle. */
+function Lens({ value, active, className }: { value: string; active?: boolean; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("relative grid shrink-0 place-items-center rounded-full ring-1 ring-ink/20 transition-transform duration-300 ease-out-soft", active && "scale-110", className)}
+      style={{ background: swatchFor(value) ?? "#d8d2c6" }}
+    >
+      <span className="size-[46%] rounded-full bg-[radial-gradient(circle_at_35%_30%,#6b7a8f,#10141c_65%)] ring-[1.5px] ring-gold-400/80" />
+    </span>
+  );
+}
+
+type PackChoice = { value: string; label: string; price: number; selected: boolean };
+
+/**
+ * "Build your set": up to `max` camera slots in one row. A filled slot shows
+ * that camera's photo with lens-style colour dots under it; an empty slot is a
+ * dashed "+ Add" tile. Tap + to add a camera, × to remove one, and a small
+ * segmented switch sets the template pack for the set. Every control is a
+ * native radio or button, so keyboard and screen readers work for free.
+ * Prices are Shopify's real per-variant prices; nothing here invents a discount.
+ */
+function BundlePicker({
+  noun,
+  max,
+  values,
+  count,
+  picks,
+  unit,
+  currency,
+  packs,
+  imageFor,
+  isAvailable,
+  onCount,
+  onRemove,
+  onPack,
+  onPick,
+}: {
+  noun: string;
+  max: number;
+  values: string[];
+  count: number;
+  picks: string[];
+  unit: number;
+  currency: string;
+  packs: PackChoice[];
+  imageFor: (value: string) => string | null;
+  isAvailable: (value: string) => boolean;
+  onCount: (n: number) => void;
+  onRemove: (index: number) => void;
+  onPack: (value: string) => void;
+  onPick: (index: number, value: string) => void;
+}) {
+  const packIndex = Math.max(0, packs.findIndex((p) => p.selected));
+  return (
+    <fieldset className="min-w-0">
+      <legend className="sr-only">Build your set</legend>
+
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="flex items-center gap-2 text-[0.95rem] font-semibold whitespace-nowrap">
+          Your set
+          <span className="numeral rounded-full bg-berry-600 px-2 py-0.5 text-[0.72rem] leading-none text-snow">
+            {count} × {noun}
+          </span>
+        </p>
+
+        {/* Template pack: a two-way switch with a sliding thumb */}
+        {packs.length > 1 && (
+          <div
+            role="radiogroup"
+            aria-label="Stencils in each camera"
+            className="relative grid shrink-0 rounded-full bg-cream p-1 ring-1 ring-line"
+            style={{ gridTemplateColumns: `repeat(${packs.length}, minmax(0, 1fr))` }}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-1 left-1 rounded-full bg-surface shadow-soft ring-1 ring-berry-200 transition-transform duration-300 ease-out-soft"
+              style={{ width: `calc((100% - 0.5rem) / ${packs.length})`, transform: `translateX(${packIndex * 100}%)` }}
+            />
+            {packs.map((pk) => (
+              <label
+                key={pk.value}
+                className={cn(
+                  "relative z-10 cursor-pointer rounded-full px-3 py-1.5 text-center text-[0.76rem] leading-none font-bold whitespace-nowrap transition-colors has-focus-visible:outline-2 has-focus-visible:outline-gold-500",
+                  pk.selected ? "text-berry-700" : "text-ink-soft hover:text-ink",
+                )}
+              >
+                <input type="radio" name="bundle-pack" value={pk.value} checked={pk.selected} onChange={() => onPack(pk.value)} className="sr-only" />
+                {pk.label.replace(/\s*(stencils?|templates?)$/i, "")}
+                <span className="font-semibold opacity-70"> stencils</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <ul className="grid grid-cols-3 gap-2">
+        {Array.from({ length: max }, (_, i) => {
+          if (i >= count) {
+            return (
+              <li key={`add-${i}`}>
+                <button
+                  type="button"
+                  onClick={() => onCount(i + 1)}
+                  className="group flex aspect-[4/5] w-full flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-line bg-cream/50 text-ink-soft transition-[border-color,background-color,color] hover:border-berry-500 hover:bg-berry-50 hover:text-berry-700"
+                  aria-label={`Add a ${noun} (${formatMoney(unit, currency)})`}
+                >
+                  <span className="grid size-9 place-items-center rounded-full bg-surface shadow-soft ring-1 ring-line transition-transform duration-300 ease-out-soft group-hover:scale-110 group-hover:rotate-90">
+                    <Icon name="plus" className="size-4" strokeWidth={2.2} />
+                  </span>
+                  <span className="text-[0.74rem] leading-tight font-semibold">Add {noun}</span>
+                  <span className="numeral text-[0.72rem] opacity-80">+{formatMoney(unit, currency)}</span>
+                </button>
+              </li>
+            );
+          }
+          const colour = picks[i] ?? values[0]!;
+          const img = imageFor(colour);
+          return (
+            <li key={`cam-${i}`} className="animate-[pop_0.35s_var(--ease-spring)]">
+              <div
+                role="radiogroup"
+                aria-label={count === 1 ? "Colour" : `Colour for ${noun} ${i + 1}`}
+                className="relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl bg-surface shadow-soft ring-2 ring-berry-600/80"
+              >
+                <span className="relative block min-h-0 flex-1 bg-cream">
+                  {img && <Image key={img} src={img} alt="" fill sizes="120px" className="animate-[fade_0.35s_ease-out] object-cover" />}
+                  <span aria-hidden="true" className="numeral absolute top-1.5 left-1.5 grid size-5 place-items-center rounded-full bg-ink/80 text-[0.66rem] text-snow backdrop-blur">
+                    {i + 1}
+                  </span>
+                  {count > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => onRemove(i)}
+                      className="absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-full bg-surface/90 text-ink shadow-soft backdrop-blur transition-colors hover:bg-berry-600 hover:text-snow"
+                      aria-label={`Remove ${noun} ${i + 1}`}
+                    >
+                      <Icon name="close" className="size-3.5" strokeWidth={2.2} />
+                    </button>
+                  )}
+                </span>
+                <span className="flex items-center justify-center gap-1.5 px-1 pt-2">
+                  {values.map((value) => {
+                    const on = colour === value;
+                    const ok = isAvailable(value);
+                    return (
+                      <label
+                        key={value}
+                        title={shortName(value)}
+                        className={cn(
+                          "grid cursor-pointer place-items-center rounded-full p-0.5 ring-2 transition-[box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-gold-500",
+                          on ? "ring-berry-600" : "ring-transparent hover:ring-line",
+                          !ok && "cursor-not-allowed opacity-35",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name={`bundle-colour-${i}`}
+                          value={value}
+                          checked={on}
+                          disabled={!ok}
+                          onChange={() => onPick(i, value)}
+                          className="sr-only"
+                        />
+                        <span className="sr-only">{shortName(value)}</span>
+                        <Lens value={value} active={on} className="size-5" />
+                      </label>
+                    );
+                  })}
+                </span>
+                <span className="truncate px-1 pt-1 pb-2 text-center text-[0.7rem] font-semibold text-ink-soft">{shortName(colour)}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      {count < max && (
+        <p className="mt-2 text-center text-[0.74rem] text-ink-faint">Tap + to add a {noun} — mix any colours.</p>
+      )}
+    </fieldset>
+  );
+}
+
 /* ── Panel ───────────────────────────────────────────────────────────── */
 
-export function PurchasePanel({ view }: { view: ProductView }) {
+export function PurchasePanel({ view, payments = [] }: { view: ProductView; payments?: PaymentMethod[] }) {
   const { add, open } = useCart();
   const initial = view.variants.find((v) => v.id === view.defaultVariantId) ?? view.variants[0]!;
   const [selection, setSelection] = useState<Record<string, string>>(initial.options);
@@ -289,8 +526,110 @@ export function PurchasePanel({ view }: { view: ProductView }) {
   const [showSticky, setShowSticky] = useState(false);
 
   const variant = findVariant(view, selection);
-  const canBuy = Boolean(variant?.availableForSale);
   const hasPack = view.packOptionName !== null;
+
+  // Bundle mode: "how many, and which colour for each" (configured by the product's story).
+  const cfg = view.story?.bundle ?? null;
+  const bundleOption = cfg ? view.options.find((o) => o.name === cfg.option) : undefined;
+  const bundle = cfg && bundleOption ? { ...cfg, label: bundleOption.label, values: bundleOption.values } : null;
+  const packOption = bundle?.secondary ? view.options.find((o) => o.name === bundle.secondary) : undefined;
+  const [count, setCount] = useState(1);
+  const [extraPicks, setExtraPicks] = useState<string[]>([]);
+  /** Colour of each camera; camera 1 is always the main selection (it drives the gallery and the URL). */
+  const picks = bundle ? [selection[bundle.option]!, ...extraPicks] : [];
+
+  /** One entry per distinct bag line (the same colour twice becomes quantity 2). */
+  const bundleLines = useMemo(() => {
+    if (!bundle) return [];
+    const byId = new Map<string, { variant: ViewVariant; quantity: number }>();
+    for (const colour of picks.slice(0, count)) {
+      const v = findVariant(view, { ...selection, [bundle.option]: colour });
+      if (!v) continue;
+      const line = byId.get(v.id) ?? { variant: v, quantity: 0 };
+      line.quantity += 1;
+      byId.set(v.id, line);
+    }
+    return [...byId.values()];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bundle?.option, count, selection, extraPicks, view]);
+
+  const bundleQty = bundleLines.reduce((n, l) => n + l.quantity, 0);
+  const bundleTotal = Math.round(bundleLines.reduce((s, l) => s + l.variant.price * l.quantity, 0) * 100) / 100;
+  const bundleComplete = bundle ? bundleQty === count : true;
+  const canBuy = bundle
+    ? bundleComplete && bundleLines.every((l) => l.variant.availableForSale)
+    : Boolean(variant?.availableForSale);
+  /** What the order costs right now (all cameras), for the shipping strip, the button and the sticky bar. */
+  const orderTotal = bundle ? bundleTotal : variant ? variant.price * (hasPack ? 1 : qty) : 0;
+
+  /** The scarcest variant in the order, when it is genuinely low (real Shopify stock only). */
+  const lowStock = (() => {
+    const lines = bundle ? bundleLines : variant ? [{ variant, quantity: hasPack ? 1 : qty }] : [];
+    let worst: { left: number; wanted: number } | null = null;
+    for (const { variant: v, quantity } of lines) {
+      if (v.stock == null || v.stock > site.lowStockAt) continue;
+      if (!worst || v.stock < worst.left) worst = { left: v.stock, wanted: quantity };
+    }
+    return worst && worst.left > 0 ? worst : null;
+  })();
+
+  const colourAvailable = (colour: string) => {
+    const v = bundle ? findVariant(view, { ...selection, [bundle.option]: colour }) : undefined;
+    return Boolean(v?.availableForSale);
+  };
+
+  /** The template-pack choices (e.g. 4 or 12), each with its per-camera price for the current colour. */
+  const packChoices: PackChoice[] =
+    bundle && packOption
+      ? packOption.values.map((value) => ({
+          value,
+          label: view.story?.valueLabels[value] ?? value,
+          selected: selection[packOption.name] === value,
+          price: findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0,
+        }))
+      : [];
+  const colourImage = (colour: string) =>
+    (bundle && findVariant(view, { ...selection, [bundle.option]: colour })?.image) || view.cardImage?.url || null;
+
+  const setBundleCount = (n: number) => {
+    if (!bundle) return;
+    setCount(n);
+    setAdded(false);
+    // New cameras start in the next free colours, so a pair or trio is varied by default.
+    setExtraPicks((prev) => {
+      const next = prev.slice(0, n - 1);
+      const used = [selection[bundle.option]!, ...next];
+      while (next.length < n - 1) {
+        const pick = bundle.values.find((v) => !used.includes(v) && colourAvailable(v)) ?? bundle.values.find(colourAvailable) ?? bundle.values[0]!;
+        next.push(pick);
+        used.push(pick);
+      }
+      return next;
+    });
+  };
+
+  /** Removes one camera; the ones after it move up (camera 1 stays the main selection). */
+  const removeBundleCamera = (index: number) => {
+    if (!bundle || count <= 1) return;
+    const list = picks.slice(0, count);
+    list.splice(index, 1);
+    if (index === 0) choose(bundle.option, list[0]!);
+    setExtraPicks(list.slice(1));
+    setCount(count - 1);
+    setAdded(false);
+  };
+
+  const setBundlePick = (index: number, colour: string) => {
+    if (!bundle) return;
+    setAdded(false);
+    if (index === 0) {
+      choose(bundle.option, colour);
+    } else {
+      setExtraPicks((prev) => prev.map((c, i) => (i === index - 1 ? colour : c)));
+      const v = findVariant(view, { ...selection, [bundle.option]: colour });
+      if (v) window.dispatchEvent(new CustomEvent("ne:variant", { detail: { variantId: v.id } }));
+    }
+  };
 
   // Restore a shared ?variant= link, and record the product view.
   const viewed = useRef(false);
@@ -354,6 +693,25 @@ export function PurchasePanel({ view }: { view: ProductView }) {
   };
 
   const onAdd = () => {
+    if (bundle) {
+      if (!canBuy) return;
+      for (const { variant: v, quantity } of bundleLines) {
+        add(v.id, quantity, {
+          productName: view.name,
+          variantLabel: v.label,
+          price: v.price,
+          compareAtPrice: v.compareAtPrice,
+          image: v.image ?? view.cardImage?.url ?? null,
+          href: `${view.href}?variant=${numericId(v.id)}`,
+          available: true,
+          productId: view.productId,
+          category: view.category.title,
+        });
+      }
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 2200);
+      return;
+    }
     if (!variant || !canBuy) return;
     add(variant.id, hasPack ? 1 : qty, {
       productName: view.name,
@@ -407,10 +765,32 @@ export function PurchasePanel({ view }: { view: ProductView }) {
               />
             );
           }
+          if (bundle && option.name === bundle.secondary) return null;
+          if (bundle && option.name === bundle.option) {
+            return (
+              <BundlePicker
+                key={option.name}
+                noun={bundle.noun}
+                max={bundle.max}
+                values={option.values}
+                count={count}
+                picks={picks}
+                unit={variant?.price ?? 0}
+                currency={view.currency}
+                packs={packChoices}
+                imageFor={colourImage}
+                isAvailable={colourAvailable}
+                onCount={setBundleCount}
+                onRemove={removeBundleCamera}
+                onPack={(value) => packOption && choose(packOption.name, value)}
+                onPick={setBundlePick}
+              />
+            );
+          }
           return (
             <fieldset key={option.name} className="min-w-0">
               <legend className="mb-3 flex w-full items-baseline justify-between text-[0.95rem] font-semibold">
-                {option.name}
+                {option.label}
                 <span className="font-normal text-ink-soft">{selection[option.name]}</span>
               </legend>
               <div className="flex flex-wrap gap-2.5">
@@ -424,7 +804,7 @@ export function PurchasePanel({ view }: { view: ProductView }) {
                       className={cn(
                         "relative flex min-h-12 cursor-pointer items-center gap-2.5 rounded-full border-2 py-2 pr-5 pl-2.5 text-[0.9rem] font-medium transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
                         !swatch && "pl-5",
-                        checked ? "border-gold-500 bg-pine-900" : "border-line bg-surface hover:border-pine-300",
+                        checked ? "border-berry-600 bg-berry-50 text-berry-700 shadow-ribbon" : "border-line bg-surface hover:border-berry-500",
                         !available && "text-ink-faint",
                       )}
                     >
@@ -460,17 +840,11 @@ export function PurchasePanel({ view }: { view: ProductView }) {
       </div>
 
       <div className="mt-8 space-y-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <GiftWrapUnlocked />
-          <div className="flex items-center gap-2 text-[0.72rem] font-bold tracking-[0.12em] text-berry-600 uppercase">
-            <Icon name="clock" className="size-4" />
-            <span>Sale ends in</span>
-            <Countdown endsAt={view.saleEndsAt} tone="dark" size="sm" className="normal-case" />
-          </div>
-        </div>
+        <FreeShippingStrip total={orderTotal} currency={view.currency} />
+        {lowStock && <LowStockAlert left={lowStock.left} wanted={lowStock.wanted} />}
 
         <div className="flex gap-3">
-          {!hasPack && (
+          {!hasPack && !bundle && (
             <div className="flex shrink-0 items-center rounded-full border border-line bg-surface">
               <button
                 type="button"
@@ -500,7 +874,7 @@ export function PurchasePanel({ view }: { view: ProductView }) {
             onClick={onAdd}
             disabled={!canBuy}
           >
-            {!variant ? (
+            {!variant || (bundle && !bundleComplete) ? (
               "Choose your options"
             ) : !canBuy ? (
               "Sold out"
@@ -511,16 +885,18 @@ export function PurchasePanel({ view }: { view: ProductView }) {
             ) : (
               <>
                 <Icon name="bag" className="size-4.5" /> Add to bag
-                {variant && (
-                  <span className="numeral ml-1 opacity-85">· {formatMoney(variant.price * (hasPack ? 1 : qty), view.currency)}</span>
-                )}
+                {variant && <span className="numeral ml-1 opacity-85">· {formatMoney(orderTotal, view.currency)}</span>}
               </>
             )}
           </button>
         </div>
-        <p className="flex items-center justify-center gap-1.5 text-[0.75rem] text-ink-soft">
-          <Icon name="lock" className="size-3.5" /> Secure checkout by Shopify · Pay with card or express wallets
-        </p>
+        {payments.length > 0 ? (
+          <PaymentIcons methods={payments} />
+        ) : (
+          <p className="flex items-center justify-center gap-1.5 text-[0.75rem] text-ink-soft">
+            <Icon name="lock" className="size-3.5" /> Secure checkout by Shopify
+          </p>
+        )}
       </div>
 
       {/* Sticky mobile bar */}
@@ -534,11 +910,13 @@ export function PurchasePanel({ view }: { view: ProductView }) {
       >
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[0.88rem] font-semibold">{variant?.label || view.name}</p>
+            <p className="truncate text-[0.88rem] font-semibold">
+              {bundle ? `${count} ${bundle.noun}${count === 1 ? "" : "s"}` : variant?.label || view.name}
+            </p>
             {variant && (
               <p className="numeral flex gap-1.5 text-[0.9rem]">
-                <span className="text-berry-600">{formatMoney(variant.price, view.currency)}</span>
-                {variant.compareAtPrice && <s className="text-ink-faint">{formatMoney(variant.compareAtPrice, view.currency)}</s>}
+                <span className="text-berry-600">{formatMoney(bundle ? orderTotal : variant.price, view.currency)}</span>
+                {!bundle && variant.compareAtPrice && <s className="text-ink-faint">{formatMoney(variant.compareAtPrice, view.currency)}</s>}
               </p>
             )}
           </div>

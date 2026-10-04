@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import type { BagCatalog, BagVariant } from "@/lib/commerce/views";
+import type { PaymentMethod } from "@/lib/shopify/payments";
 import {
   trackAddToCart,
   trackBeginCheckout,
@@ -48,6 +49,7 @@ type CartContextValue = {
   hydrated: boolean;
   loading: boolean;
   demo: boolean;
+  payments: PaymentMethod[];
   gift: GiftOptions;
   setGift: (next: Partial<GiftOptions>) => void;
   open: () => void;
@@ -266,6 +268,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       hydrated,
       loading,
       demo: Boolean(catalog?.demo),
+      payments: catalog?.payments ?? [],
       gift,
       setGift,
       open,

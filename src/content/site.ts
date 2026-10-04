@@ -8,9 +8,9 @@ const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://thenoeledit.com").
 export const site = {
   name: "The Noel Edit",
   shortName: "Noel Edit",
-  tagline: "The Christmas gift sale, beautifully wrapped.",
+  tagline: "The Christmas gift sale, beautifully curated.",
   description:
-    "The Noel Edit is a curated Christmas gift sale — up to 40% off jewellery, tech, toys, home and festive treats, with free gift wrapping and tracked delivery before Christmas.",
+    "The Noel Edit is a curated Christmas gift sale — up to 40% off jewellery, tech, toys, home and festive treats, with free shipping over $50 and tracked delivery before Christmas.",
   url: siteUrl,
   locale: "en_US",
   email: "hello@thenoeledit.com",
@@ -40,10 +40,13 @@ export const site = {
 
   delivery: { minDays: 2, maxDays: 6, freeOver: 50 },
 
+  /** Product pages show a "Low stock" alert when a chosen variant has this many units (or fewer) left. */
+  lowStockAt: 10,
+
   promises: [
-    { icon: "gift", title: "Free gift wrapping", text: "Hand-tied ribbon and a handwritten card, on every order." },
+    { icon: "gift", title: "Gift messages", text: "Add a personal note to any order in your bag." },
     { icon: "truck", title: "Early for Christmas", text: "Order early — tracked shipping, no last-minute rush." },
-    { icon: "refresh", title: "Returns until January 31", text: "Gift receipts included — easy exchanges after the holidays." },
+    { icon: "refresh", title: "Returns until January 31", text: "Easy exchanges after the holidays — just email us your order number." },
     { icon: "shield", title: "Secure checkout", text: "Paid safely through Shopify Checkout." },
   ],
 

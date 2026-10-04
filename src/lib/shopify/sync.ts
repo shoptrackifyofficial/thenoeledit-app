@@ -1,3 +1,4 @@
+import { parseStory } from "@/lib/catalog/story";
 import { adminRequest } from "@/lib/shopify/admin";
 import { shopifyConfig } from "@/lib/shopify/config";
 import { CATALOG_PATH, acquireLock, writeJsonFileAtomic } from "@/lib/catalog/storage";
@@ -26,6 +27,9 @@ type AdminVariantNode = {
   price: string | null;
   compareAtPrice: string | null;
   availableForSale: boolean;
+  inventoryQuantity: number | null;
+  inventoryPolicy: string | null;
+  inventoryItem: { tracked: boolean } | null;
   selectedOptions: { name: string; value: string }[];
   image: { url: string } | null;
 };
@@ -58,6 +62,7 @@ type ProductNode = {
   perks: { value: string } | null;
   saleEndsAt: { value: string } | null;
   giftFor: { value: string } | null;
+  noelStory: { value: string } | null;
 };
 
 const SHOP_QUERY = `query { shop { name currencyCode } }`;
@@ -73,6 +78,7 @@ query Products($query: String!, $after: String) {
       variants(first: 100) {
         nodes {
           id title sku price compareAtPrice availableForSale
+          inventoryQuantity inventoryPolicy inventoryItem { tracked }
           selectedOptions { name value }
           image { url }
         }
@@ -91,6 +97,7 @@ query Products($query: String!, $after: String) {
       perks: metafield(namespace: "custom", key: "perks") { value }
       saleEndsAt: metafield(namespace: "custom", key: "sale_ends_at") { value }
       giftFor: metafield(namespace: "custom", key: "gift_for") { value }
+      noelStory: metafield(namespace: "custom", key: "noel_story") { value }
     }
   }
 }`;
@@ -110,6 +117,8 @@ function normalizeVariants(nodes: AdminVariantNode[]): VariantRecord[] {
         price,
         compareAtPrice: compare != null && compare > price ? compare : null,
         availableForSale: v.availableForSale,
+        // Only real, enforced stock counts: tracked, and not allowed to oversell.
+        stock: v.inventoryItem?.tracked && v.inventoryPolicy === "DENY" && v.inventoryQuantity != null ? Math.max(0, v.inventoryQuantity) : null,
         options: Object.fromEntries(v.selectedOptions.map((o) => [o.name, o.value])),
         image: v.image?.url ?? null,
       };
@@ -189,6 +198,7 @@ function toRecord(p: ProductNode): ProductRecord {
     perks: normalizePerks(p.perks),
     saleEndsAt: futureIso(p.saleEndsAt),
     giftFor: p.giftFor?.value?.trim() || null,
+    story: parseStory(p.noelStory?.value),
   };
 }
 

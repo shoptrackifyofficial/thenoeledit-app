@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function CartPage() {
   return (
     <div className="container-page py-8 lg:py-12">
-      <p className="kicker mb-3">Nearly wrapped</p>
+      <p className="kicker mb-3">Nearly there</p>
       <h1 className="display-lg">
         Your <span className="accent text-berry-600">bag</span>
       </h1>

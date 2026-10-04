@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     shipping: num(order.total_shipping_price_set?.shop_money?.amount),
     discount: num(order.total_discounts),
     coupon: order.discount_codes?.[0]?.code || undefined,
-    gift_wrap: attrs.get("Gift wrap") === "Yes",
+    gift_message: Boolean(attrs.get("Gift message")),
     categories: cats,
   };
 

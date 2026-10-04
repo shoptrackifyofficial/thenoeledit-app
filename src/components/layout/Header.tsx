@@ -14,7 +14,7 @@ function Announcement() {
         <Icon name="sparkle" className="size-3.5 shrink-0 animate-twinkle text-gold-300" />
         <span>
           <strong className="font-bold">{site.sale.headline}</strong>
-          <span className="opacity-60"> · </span>Free gift wrap
+          <span className="opacity-60"> · </span>Free shipping over $50
           <span className="hidden sm:inline">
             <span className="opacity-60"> · </span>Shop early for a stress-free Christmas
           </span>

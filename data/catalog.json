@@ -1,0 +1,416 @@
+{
+  "version": 1,
+  "syncedAt": "2026-10-04T13:16:16.414Z",
+  "shop": {
+    "domain": "trackify-com.myshopify.com",
+    "name": "Trackify",
+    "currencyCode": "USD"
+  },
+  "products": {
+    "one-touch-3d-printed-latte-art-cameras-coffee-stencil-printers-handheld-tools-templates-cappuccino-interchangeable-mold-christmas-gift": {
+      "id": "gid://shopify/Product/15405838401763",
+      "handle": "one-touch-3d-printed-latte-art-cameras-coffee-stencil-printers-handheld-tools-templates-cappuccino-interchangeable-mold-christmas-gift",
+      "title": "One-Touch 3D Printed Latte Art Cameras Coffee Stencil Printers Handheld Tools Templates Cappuccino Interchangeable Mold Christmas Gift",
+      "vendor": "TheNoelEdit",
+      "productType": "Bags",
+      "tags": [
+        "category:cosy-home",
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-04T12:05:31Z",
+      "updatedAt": "2026-10-04T13:16:08Z",
+      "descriptionHtml": "<p>\n <b>Product information:</b>\n <br>\n Color: 12 random templates (with camera), 4 random templates (with camera), DIY template image (without camera), camera only, 30 templates (without camera), filter screen only\n <br>\n Manufacturing process: 3D printing\n <br>\n Occasion for gifting: Wedding, birthday, travel souvenir, graduation, housewarming, party\n <br>\n Material: 3D-printed PLA\n <br>\n Size: White camera, dark green camera, black camera, custom-color camera\n <br>\n Recipient relationship: Younger generation, couple, spouse, colleague, friend, elder, child, classmate, mentor\n <br>\n Applicable holidays: Christmas, Valentine’s Day, Spring Festival, Father’s Day, Mother’s Day, Teacher’s Day, New Year’s Day, Qixi Festival, Halloween, Easter, National Day, Children’s Day, Women’s Day\n <br>\n Style: American\n <br>\n Display method: Decoration\n <br>\n Technology: 3D printing\n <br>\n Imported: No\n <br>\n Category: Other plastic products\n <br>\n</p>\n<br>\n<b>Packing list: </b>\n<br>\nCamera*1pcs\n<br>\n<b>Product Image:</b>\n<br>\n<img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/03/01/c9d0ca8b-d314-4514-8311-846c9ac725c5_fine.jpeg\">\n<img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/03/01/bf56a884-344f-446d-9fb7-46d10c20bc40_fine.jpeg\">\n<img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/03/01/57a6c3b8-5422-40c3-9f49-edd515e4e9c9_fine.jpeg\">\n<img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/03/01/1d3a8e24-7d6e-4753-b5fb-675b995912c1_fine.jpeg\">\n<img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/03/01/18953ff4-cd3d-4350-ad15-a1ea8f74805d_fine.jpeg\">",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Color",
+          "values": [
+            "4 Stencils",
+            "12 Stencils"
+          ]
+        },
+        {
+          "name": "Size",
+          "values": [
+            "Black",
+            "Dark Green",
+            "White"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/67622330269923",
+          "title": "4 Stencils / Black",
+          "sku": "CJYD321719606FU",
+          "price": 59.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": 6829,
+          "options": {
+            "Color": "4 Stencils",
+            "Size": "Black"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/e5794072-c9ea-4fbf-9a69-9b0d4a55a752_fine.jpg?v=1791115533"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67622330302691",
+          "title": "4 Stencils / Dark Green",
+          "sku": "CJYD321719605EV",
+          "price": 59.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": 9525,
+          "options": {
+            "Color": "4 Stencils",
+            "Size": "Dark Green"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/b4ca1d2f-c5c2-4911-9954-8750a6f32947_fine.jpg?v=1791115533"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67622330335459",
+          "title": "4 Stencils / White",
+          "sku": "CJYD321719604DW",
+          "price": 59.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": 7793,
+          "options": {
+            "Color": "4 Stencils",
+            "Size": "White"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/4bf13d99-de63-40cf-bc63-b6a155775853_fine.jpg?v=1791115533"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67622330171619",
+          "title": "12 Stencils / Black",
+          "sku": "CJYD321719603CX",
+          "price": 79.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": 7004,
+          "options": {
+            "Color": "12 Stencils",
+            "Size": "Black"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/e5794072-c9ea-4fbf-9a69-9b0d4a55a752_fine.jpg?v=1791115533"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67622330204387",
+          "title": "12 Stencils / Dark Green",
+          "sku": "CJYD321719602BY",
+          "price": 79.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": 7164,
+          "options": {
+            "Color": "12 Stencils",
+            "Size": "Dark Green"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/b4ca1d2f-c5c2-4911-9954-8750a6f32947_fine.jpg?v=1791115533"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67622330237155",
+          "title": "12 Stencils / White",
+          "sku": "CJYD321719601AZ",
+          "price": 79.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": 7028,
+          "options": {
+            "Color": "12 Stencils",
+            "Size": "White"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/4bf13d99-de63-40cf-bc63-b6a155775853_fine.jpg?v=1791115533"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/e5794072-c9ea-4fbf-9a69-9b0d4a55a752_fine.jpg?v=1791115533",
+          "width": 1920,
+          "height": 1920,
+          "alt": "d61e023c62fb8e3c403c3f48fb6b1727",
+          "variantId": "gid://shopify/ProductVariant/67622330171619"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S7fb9c95e734a4516a756425a2e4f383d3.jpg?v=1791117638",
+          "width": 1000,
+          "height": 1000,
+          "alt": "A retro-style instant coffee art printer in sage green and gold sits on a marble countertop next to a cup of cappuccino with a frosted latte art design. The product features a vintage camera design with a pull-out tray displaying 'Cupcake' and is shown with promotional text on the left.",
+          "variantId": null
+        },
+        {
+          "type": "video",
+          "alt": null,
+          "poster": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/preview_images/16f20286e43d43b7ab1d34ecc8c50590.thumbnail.0000000000.jpg?v=1791117625",
+          "width": 576,
+          "height": 1024,
+          "sources": [
+            {
+              "src": "https://cdn.shopify.com/videos/c/vp/16f20286e43d43b7ab1d34ecc8c50590/16f20286e43d43b7ab1d34ecc8c50590.SD-480p-0.9Mbps-96367077.mp4",
+              "type": "video/mp4",
+              "width": 270
+            },
+            {
+              "src": "https://cdn.shopify.com/videos/c/vp/16f20286e43d43b7ab1d34ecc8c50590/16f20286e43d43b7ab1d34ecc8c50590.HD-720p-1.6Mbps-96367077.mp4",
+              "type": "video/mp4",
+              "width": 404
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Technical_Camera_Diagram_with_Novel_Edit_Emblem.png?v=1791118674",
+          "width": 1384,
+          "height": 1136,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/4bf13d99-de63-40cf-bc63-b6a155775853_fine.jpg?v=1791115533",
+          "width": 1920,
+          "height": 1920,
+          "alt": "f92a8b4faa809a81f288b1820613e17d",
+          "variantId": "gid://shopify/ProductVariant/67622330237155"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/bdd0f447-c2b1-46c6-be12-8f4fced63fd6_fine.jpg?v=1791115534",
+          "width": 1920,
+          "height": 1920,
+          "alt": "515cb71c449a7ec3fb0a5adf5f92f100",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/b4ca1d2f-c5c2-4911-9954-8750a6f32947_fine.jpg?v=1791115533",
+          "width": 1920,
+          "height": 1920,
+          "alt": "6c696e1cb30ae1747a956a2fd64fb0b8",
+          "variantId": "gid://shopify/ProductVariant/67622330204387"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/4d3048fb-8634-40f8-b6ad-fe4e02cf29f4_fine.jpg?v=1791115533",
+          "width": 1920,
+          "height": 1920,
+          "alt": "ca7068145b9ebbc5de3230f32b8958af",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/e2dbccbf-a672-476c-9858-b30bb09de7ae_fine.jpg?v=1791115537",
+          "width": 1920,
+          "height": 1920,
+          "alt": "fe04f7813f65082caef3396ff96f9bc7",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S54dd7c76611f43608e37ff78a06baaa6w.jpg?v=1791117637",
+          "width": 1000,
+          "height": 1000,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/eaad2a0a-e6ad-43df-a392-d24343f49c7d_trans.jpg?v=1791115533",
+          "width": 1920,
+          "height": 1920,
+          "alt": "36b634f156644bf3493608c0032c495b",
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S95938fb6068b48498bf0e57ea68ee344l.jpg?v=1791117638",
+          "width": 1000,
+          "height": 1000,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S9f2a2c6419d64e6ab732343fc0d78ea38.jpg?v=1791117637",
+          "width": 1000,
+          "height": 1000,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sef81d5983c9049b2a0013a45b579e683g.jpg?v=1791117638",
+          "width": 1000,
+          "height": 1000,
+          "alt": null,
+          "variantId": null
+        }
+      ],
+      "perks": [
+        "3D-printed in durable PLA",
+        "Interchangeable stencil cards",
+        "Handheld — no machine or skills needed",
+        "Choose white, dark green or black"
+      ],
+      "saleEndsAt": null,
+      "giftFor": "Coffee lovers, couples, friends, colleagues and anyone who likes a little café magic at home",
+      "story": {
+        "optionLabels": {
+          "Color": "Stencil pack",
+          "Size": "Camera colour"
+        },
+        "valueLabels": {
+          "4 Templates": "4 Stencils",
+          "12 Templates": "12 Stencils"
+        },
+        "videos": [
+          {
+            "src": "https://cdn.shopify.com/videos/c/vp/266ba16012c945a39ae6cef6600ce0a4/266ba16012c945a39ae6cef6600ce0a4.HD-1080p-2.5Mbps-96369167.mp4",
+            "poster": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/preview_images/266ba16012c945a39ae6cef6600ce0a4.thumbnail.0000000000.jpg?v=1791119520",
+            "alt": "Coffee art in one click: the latte art camera printing a design onto a cappuccino"
+          },
+          {
+            "src": "https://cdn.shopify.com/videos/c/vp/f7dd70afd4e941f9b2cfde742dc93481/f7dd70afd4e941f9b2cfde742dc93481.HD-720p-1.6Mbps-96369200.mp4",
+            "poster": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/preview_images/f7dd70afd4e941f9b2cfde742dc93481.thumbnail.0000000000.jpg?v=1791119556",
+            "alt": "Loading a stencil card into the white latte art camera"
+          }
+        ],
+        "bundle": {
+          "option": "Size",
+          "secondary": "Color",
+          "max": 3,
+          "noun": "camera",
+          "popular": 2,
+          "tags": [
+            "",
+            "One to gift",
+            "Share the joy"
+          ]
+        },
+        "how": {
+          "eyebrow": "How it works",
+          "title": "Latte art in four easy steps",
+          "accent": "four easy steps",
+          "intro": "No barista skills needed. Load a stencil, press, and your design appears in the foam.",
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/e2dbccbf-a672-476c-9858-b30bb09de7ae_fine.jpg",
+          "imageAlt": "The cream latte art camera on a table with a stencil card loaded",
+          "steps": [
+            {
+              "title": "Fill the tray",
+              "text": "Spoon cocoa, cinnamon or fine coffee powder into the holder."
+            },
+            {
+              "title": "Load a stencil",
+              "text": "Slide a stencil card into the camera, like loading film."
+            },
+            {
+              "title": "Press over the cup",
+              "text": "Hold the camera above your drink and press the button."
+            },
+            {
+              "title": "Sip and share",
+              "text": "A name, a pattern or a greeting appears in the foam."
+            }
+          ]
+        },
+        "designs": null,
+        "features": [
+          {
+            "eyebrow": "Step by step",
+            "title": "From powder to pattern in four moves",
+            "text": "Spoon cocoa or fine coffee powder into the holder, slide a stencil card into the camera, press it over your cup, and lift. Your design is left in the foam.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/c9d0ca8b-d314-4514-8311-846c9ac725c5_fine.jpg",
+            "imageAlt": "Four numbered photos: filling the powder tray, loading a stencil, pressing the camera over a cup, and a finished SUMMER latte"
+          },
+          {
+            "eyebrow": "Beyond words",
+            "title": "Even QR-style patterns",
+            "text": "Stencils go well past lettering: shapes, patterns and QR-style designs dust onto the foam just as easily.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/1d3a8e24-7d6e-4753-b5fb-675b995912c1_fine.jpg",
+            "imageAlt": "A latte with a QR-style pattern in cocoa powder beside stencil cards and the camera"
+          },
+          {
+            "eyebrow": "Endless moods",
+            "title": "Short phrases for every moment",
+            "text": "Chill, But first coffee, You got this, Pretty. Swap the card to match the mood, the guest or the occasion.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/18953ff4-cd3d-4350-ad15-a1ea8f74805d_fine.jpg",
+            "imageAlt": "A sheet of stencil cards reading Chill, But first coffee, You got this and Pretty"
+          }
+        ],
+        "info": [
+          {
+            "label": "Color",
+            "value": "12 random stencils (with camera), 4 random stencils (with camera), DIY stencil image (without camera), camera only, 30 stencils (without camera), filter screen only"
+          },
+          {
+            "label": "Manufacturing process",
+            "value": "3D printing"
+          },
+          {
+            "label": "Occasion for gifting",
+            "value": "Wedding, birthday, travel souvenir, graduation, housewarming, party"
+          },
+          {
+            "label": "Material",
+            "value": "3D-printed PLA"
+          },
+          {
+            "label": "Size",
+            "value": "White camera, dark green camera, black camera, custom-color camera"
+          },
+          {
+            "label": "Recipient relationship",
+            "value": "Younger generation, couple, spouse, colleague, friend, elder, child, classmate, mentor"
+          },
+          {
+            "label": "Applicable holidays",
+            "value": "Christmas, Valentine’s Day, Father’s Day, Mother’s Day, Teacher’s Day, New Year’s Day, Halloween, Easter, Children’s Day, Women’s Day"
+          },
+          {
+            "label": "Display method",
+            "value": "Decoration"
+          }
+        ],
+        "details": {
+          "eyebrow": "At a glance",
+          "title": "Made to be gifted",
+          "accent": "gifted",
+          "occasions": [
+            "Birthday",
+            "Wedding",
+            "Housewarming",
+            "Graduation",
+            "Party",
+            "Travel souvenir"
+          ],
+          "recipients": [
+            "Couples",
+            "Friends",
+            "Colleagues",
+            "Parents & grandparents",
+            "Kids",
+            "Teachers & mentors"
+          ],
+          "holidays": [
+            "Christmas",
+            "Valentine's Day",
+            "Mother's Day",
+            "Father's Day",
+            "Teacher's Day",
+            "New Year's Day",
+            "Halloween",
+            "Easter"
+          ]
+        }
+      }
+    }
+  }
+}

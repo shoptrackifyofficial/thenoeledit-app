@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "gifts for her",
     "gifts for him",
     "stocking fillers",
-    "free gift wrapping",
+    "free shipping",
   ],
   openGraph: {
     type: "website",

@@ -3,7 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { DeliveryTimeline, FaqList, ProductGridSection } from "@/components/home/Sections";
+import { DeliveryTimeline, FaqList, ProductGridSection, SectionHeading } from "@/components/home/Sections";
+import { getPaymentMethods } from "@/lib/shopify/payments";
+import { ProductVideoShowcase } from "@/components/product/ProductVideoShowcase";
+import { ProductStory, StoryInfo } from "@/components/product/ProductStory";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { PurchasePanel } from "@/components/product/PurchasePanel";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -37,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { view, record } = data;
   const price = formatMoney(view.fromPrice, view.currency);
   const title = record.seo.title || `${view.name} — ${price} in the Christmas Sale`;
-  const description = record.seo.description || `${view.summary} Free gift wrapping and delivery before Christmas.`.slice(0, 300);
+  const description = record.seo.description || `${view.summary} Free shipping over $50 and tracked delivery before Christmas.`.slice(0, 300);
   return {
     title,
     description,
@@ -67,6 +70,7 @@ export default async function ProductPage({ params }: Props) {
   const data = await getProductView(handle);
   if (!data) notFound();
   const { view } = data;
+  const payments = await getPaymentMethods();
 
   const allCards = await getCardViews((r) => r.handle !== view.handle && r.availableForSale);
   const related = allCards.filter((c) => c.category.slug === view.category.slug).slice(0, 4);
@@ -85,8 +89,8 @@ export default async function ProductPage({ params }: Props) {
     {
       q: `Who is the ${view.name} a good gift for?`,
       a: view.giftFor
-        ? `${view.giftFor}. It arrives gift-wrapped for free with a handwritten card if you tick gift wrapping in your bag.`
-        : `It's a thoughtful ${view.category.title.toLowerCase()} gift, and it arrives gift-wrapped for free with a handwritten card.`,
+        ? `${view.giftFor}. Add a gift message in your bag, or send it straight to them by entering their address at checkout.`
+        : `It's a thoughtful ${view.category.title.toLowerCase()} gift, and you can add a gift message in your bag before checkout.`,
     },
     {
       q: `How much is the ${view.name} in the Christmas sale?`,
@@ -102,7 +106,7 @@ export default async function ProductPage({ params }: Props) {
   ];
 
   const trust: { icon: IconName; text: string }[] = [
-    { icon: "gift", text: "Free gift wrap" },
+    { icon: "gift", text: "Gift message option" },
     { icon: "truck", text: "Early for Christmas" },
     { icon: "refresh", text: "Returns till Jan 31" },
   ];
@@ -163,25 +167,27 @@ export default async function ProductPage({ params }: Props) {
             )}
 
             <div className="mt-8">
-              <PurchasePanel view={view} />
+              <PurchasePanel view={view} payments={payments} />
             </div>
 
             <div className="mt-7 divide-y divide-line border-y border-line">
               {[
                 {
                   title: "Details",
-                  body: view.descriptionHtml ? (
+                  body: view.story?.info.length ? (
+                    <StoryInfo info={view.story.info} />
+                  ) : view.descriptionHtml ? (
                     <div className="prose-gift text-[0.92rem]" dangerouslySetInnerHTML={{ __html: view.descriptionHtml }} />
                   ) : (
                     <p>{view.summary}</p>
                   ),
                 },
                 {
-                  title: "Gift wrapping & cards",
+                  title: "Sending it as a gift?",
                   body: (
                     <p>
-                      Tick “Free gift wrapping” in your bag and we wrap it in matte paper with a satin ribbon, plus a card
-                      printed with your own message. Gift receipts are included.
+                      Enter their address at checkout and add a gift message in your bag — it is saved with your order.
+                      Need a gift receipt? Email us your order number.
                     </p>
                   ),
                 },
@@ -211,7 +217,7 @@ export default async function ProductPage({ params }: Props) {
             <aside className="mt-4 flex gap-3 rounded-2xl bg-berry-50 p-4 text-[0.86rem] ring-1 ring-berry-100" aria-label="Christmas delivery">
               <Icon name="snowflake" className="mt-0.5 size-5 shrink-0 text-berry-600" />
               <p>
-                <strong className="font-semibold">Beat the Christmas rush.</strong> Order now and it&apos;s wrapped, tracked
+                <strong className="font-semibold">Beat the Christmas rush.</strong> Order now and it&apos;s packed, tracked
                 and with you well before the big day.{" "}
                 <Link href="/pages/shipping" className="link-underline">
                   Delivery details
@@ -225,7 +231,7 @@ export default async function ProductPage({ params }: Props) {
                 ["Price", `${formatMoney(view.fromPrice, view.currency)}${lead?.compareAtPercent ? ` (−${lead.compareAtPercent}%)` : ""}`],
                 ["Sale ends", saleEnds],
                 ["Category", view.category.title],
-                ["Gift wrap", "Free, with card"],
+                ["Shipping", `Tracked · free over ${formatMoney(site.delivery.freeOver, view.currency)}`],
               ].map(([k, v]) => (
                 <div key={k} className="bg-surface p-3.5">
                   <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">{k}</dt>
@@ -237,7 +243,32 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── The gift story ────────────────────────────────────────────── */}
+      {/* ── See it in action: demo clips (story videos), right after section 1 ── */}
+      {view.story && view.story.videos.length > 0 && (
+        <section className="py-10 lg:py-14" aria-labelledby="videos-title">
+          <div className="container-page">
+            <SectionHeading
+              id="videos-title"
+              kicker="Real use"
+              title={
+                <>
+                  See it <span className="accent text-berry-600">in action.</span>
+                </>
+              }
+              intro="Real clips of the camera at work — press, lift, and the design is in the foam."
+              align="center"
+            />
+          </div>
+          {/* Full-bleed: the row runs edge to edge so it has room to drift. */}
+          <ProductVideoShowcase videos={view.story.videos} className="mt-7 px-2 sm:px-3" />
+        </section>
+      )}
+
+      {/* ── Rich story (How it works / designs / details) when the product has one ── */}
+      {view.story && <ProductStory story={view.story} />}
+
+      {/* ── The gift story — fallback for products without a rich story ── */}
+      {!view.story && (
       <section aria-labelledby="story-title" className="px-2 sm:px-4">
         <div className="grain relative mx-auto max-w-[1600px] overflow-hidden rounded-[1.75rem] bg-pine-900 py-12 text-snow sm:rounded-[2.25rem] lg:py-16">
         <div className="container-page grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
@@ -269,6 +300,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
         </div>
       </section>
+      )}
 
       <ProductGridSection
         id="related-title"

@@ -6,20 +6,30 @@ import { useState } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
 import { Icon } from "@/components/ui/Icon";
+import { PaymentIcons } from "@/components/ui/PaymentIcons";
 import { site } from "@/content/site";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
-/** Lines, gift options, totals and checkout — shared by the drawer and /cart. */
+/**
+ * Bag body shared by the drawer and /cart (layout follows the reference
+ * store): item cards with photo, variant, price, a "Saved x%" badge from
+ * Shopify's real compare-at price, a quantity stepper and a bin button; then a
+ * floating summary card with free-shipping progress, an optional gift message,
+ * subtotal / sale savings / total, the checkout button and the payment logos
+ * Shopify accepts. `onNavigate` closes the drawer when a link is followed.
+ */
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
-  const { lines, subtotal, savings, currency, setQuantity, remove, checkout, hydrated, loading, demo, gift, setGift } =
+  const { lines, subtotal, savings, currency, setQuantity, remove, checkout, hydrated, loading, demo, gift, setGift, payments } =
     useCart();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [noteOpen, setNoteOpen] = useState(Boolean(gift.message));
 
   const freeOver = site.delivery.freeOver;
   const remaining = Math.max(0, freeOver - subtotal);
   const progress = Math.min(1, subtotal / freeOver);
+  const original = Math.round((subtotal + savings) * 100) / 100;
 
   const onCheckout = async () => {
     setError(null);
@@ -42,88 +52,99 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
   if (lines.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-16 text-center">
-        <span className="grid size-20 place-items-center rounded-full bg-berry-50 text-berry-600">
-          <Icon name="gift" className="size-9" strokeWidth={1.3} />
+        <span className="grid size-20 place-items-center rounded-full bg-berry-50 text-berry-600 ring-1 ring-berry-100">
+          <Icon name="bag" className="size-9" strokeWidth={1.3} />
         </span>
         <div>
           <p className="display-md">Your bag is empty</p>
-          <p className="mt-2 text-ink-soft">The best gifts are still waiting under the tree.</p>
+          <p className="mt-2 text-[0.92rem] text-ink-soft">The best gifts are still waiting under the tree.</p>
         </div>
-        <Link href="/shop" onClick={onNavigate} className="btn btn-primary shine">
-          Shop the sale
-        </Link>
+        <div className="flex flex-wrap justify-center gap-2.5">
+          <Link href="/shop" onClick={onNavigate} className="btn btn-primary shine">
+            Shop the sale <Icon name="arrow-right" className="size-4" />
+          </Link>
+          <Link href="/shop?budget=50" onClick={onNavigate} className="btn btn-outline">
+            Gifts under {formatMoney(50, currency)}
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col", variant === "page" && "lg:grid lg:grid-cols-[1fr_400px] lg:items-start lg:gap-12")}>
-      <div className={cn("min-h-0", variant === "drawer" && "flex-1 overflow-y-auto overscroll-contain px-5")}>
-        {/* Free delivery progress */}
-        <div className="mt-1 rounded-2xl bg-cream p-3.5">
-          <p className="flex items-center gap-2 text-[0.82rem] font-semibold text-ink">
-            <Icon name={remaining === 0 ? "sparkle" : "truck"} className="size-4.5 shrink-0" />
-            {remaining === 0
-              ? "You've unlocked free tracked delivery"
-              : `Add ${formatMoney(remaining, currency)} for free delivery`}
-          </p>
-          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-surface" aria-hidden="true">
-            <div
-              className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
-        </div>
-
-        <ul className="mt-2 divide-y divide-line">
-          {lines.map((line) => (
-            <li key={line.variantId} className="flex gap-3.5 py-4">
+    <div className={cn("flex min-h-0 flex-1 flex-col", variant === "page" && "lg:grid lg:grid-cols-[1fr_420px] lg:items-start lg:gap-10")}>
+      {/* ── Items ─────────────────────────────────────────────────────── */}
+      <ul
+        aria-label="Items in your bag"
+        className={cn("flex flex-col gap-2.5", variant === "drawer" && "min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2")}
+      >
+        {lines.map((line) => {
+          const savedPct =
+            line.compareAtPrice && line.compareAtPrice > line.price
+              ? Math.round(((line.compareAtPrice - line.price) / line.compareAtPrice) * 100)
+              : null;
+          const compareTotal = line.compareAtPrice ? Math.round(line.compareAtPrice * line.quantity * 100) / 100 : null;
+          return (
+            <li key={line.variantId} className="flex gap-3 rounded-[1.1rem] bg-surface p-2.5 shadow-soft ring-1 ring-line/70">
               <Link
                 href={line.href}
                 onClick={onNavigate}
-                className="relative block size-20 shrink-0 overflow-hidden rounded-2xl bg-cream ring-1 ring-line"
+                tabIndex={-1}
+                aria-hidden="true"
+                className="relative size-[4.5rem] shrink-0 overflow-hidden rounded-xl bg-cream"
               >
-                {line.image && (
-                  <Image src={line.image} alt="" fill sizes="96px" className="object-cover" />
-                )}
+                {line.image && <Image src={line.image} alt="" fill sizes="72px" className="object-cover" />}
               </Link>
+
               <div className="flex min-w-0 flex-1 flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <Link href={line.href} onClick={onNavigate} className="line-clamp-2 font-semibold leading-snug hover:underline">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={line.href}
+                      onClick={onNavigate}
+                      title={line.productName}
+                      className="block truncate text-[0.84rem] leading-snug font-semibold hover:underline"
+                    >
                       {line.productName}
                     </Link>
-                    {line.variantLabel && <p className="mt-0.5 text-[0.8rem] text-ink-soft">{line.variantLabel}</p>}
+                    {line.variantLabel && <p className="truncate text-[0.74rem] text-ink-soft">{line.variantLabel}</p>}
                   </div>
-                  <div className="shrink-0 text-right">
-                    <p className="numeral font-semibold">{formatMoney(line.lineTotal, currency)}</p>
-                    {line.compareAtPrice && (
-                      <s className="numeral text-[0.78rem] text-ink-faint">
-                        {formatMoney(line.compareAtPrice * line.quantity, currency)}
-                      </s>
+                  <p className="flex shrink-0 flex-col items-end tabular-nums">
+                    <span className="text-[0.86rem] font-bold">{formatMoney(line.lineTotal, currency)}</span>
+                    {compareTotal && compareTotal > line.lineTotal && (
+                      <s className="text-[0.72rem] text-ink-faint">{formatMoney(compareTotal, currency)}</s>
                     )}
-                  </div>
+                  </p>
                 </div>
-                {!line.available && <p className="mt-1 text-[0.78rem] font-semibold text-berry-600">Sold out — remove to continue</p>}
-                <div className="mt-auto flex items-center justify-between pt-3">
-                  <div className="flex items-center rounded-full border border-line">
+
+                {savedPct != null && (
+                  <p className="mt-1 flex items-center gap-1 text-[0.7rem]">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
+                      <Icon name="tag" className="size-3" /> Saved {savedPct}%
+                    </span>
+                  </p>
+                )}
+                {!line.available && <p className="mt-1 text-[0.74rem] font-semibold text-berry-600">Sold out — remove to continue</p>}
+
+                <div className="mt-auto flex items-center justify-between pt-2">
+                  <div className="flex items-center rounded-lg bg-cream ring-1 ring-line" role="group" aria-label={`Quantity for ${line.productName}`}>
                     <button
                       type="button"
                       onClick={() => setQuantity(line.variantId, line.quantity - 1)}
-                      className="grid size-9 place-items-center rounded-full hover:bg-cream"
-                      aria-label={`Decrease quantity of ${line.productName}`}
+                      className="grid size-8 place-items-center rounded-lg hover:bg-linen"
+                      aria-label="Decrease quantity"
                     >
                       <Icon name="minus" className="size-3.5" />
                     </button>
-                    <span className="numeral w-7 text-center text-[0.95rem]" aria-live="polite">
+                    <span className="w-6 text-center text-[0.84rem] font-semibold tabular-nums" aria-live="polite">
                       {line.quantity}
                     </span>
                     <button
                       type="button"
                       onClick={() => setQuantity(line.variantId, line.quantity + 1)}
                       disabled={line.quantity >= 10}
-                      className="grid size-9 place-items-center rounded-full hover:bg-cream"
-                      aria-label={`Increase quantity of ${line.productName}`}
+                      className="grid size-8 place-items-center rounded-lg hover:bg-linen disabled:opacity-40"
+                      aria-label="Increase quantity"
                     >
                       <Icon name="plus" className="size-3.5" />
                     </button>
@@ -131,87 +152,136 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                   <button
                     type="button"
                     onClick={() => remove(line.variantId)}
-                    className="text-[0.78rem] text-ink-soft underline-offset-4 hover:text-berry-600 hover:underline"
+                    className="grid size-8 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-berry-50 hover:text-berry-600"
                   >
-                    Remove
+                    <Icon name="trash" className="size-4" />
+                    <span className="sr-only">Remove {line.productName}</span>
                   </button>
                 </div>
               </div>
             </li>
-          ))}
-        </ul>
+          );
+        })}
+      </ul>
 
-        {/* Gift options — sent to Shopify as cart attributes + order note */}
-        <fieldset className="mb-4 rounded-2xl bg-berry-50/60 p-4 ring-1 ring-berry-100">
-          <legend className="px-1 text-[0.8rem] font-bold tracking-[0.12em] uppercase">Make it a gift</legend>
-          <label className="flex cursor-pointer items-center justify-between gap-3 py-1">
-            <span className="flex items-center gap-2.5 text-[0.9rem]">
-              <Icon name="gift" className="size-5 text-berry-600" />
-              Free gift wrapping
-            </span>
-            <input
-              type="checkbox"
-              checked={gift.wrap}
-              onChange={(e) => setGift({ wrap: e.target.checked })}
-              className="size-5 accent-berry-600"
-            />
-          </label>
-          <label className="mt-3 block">
-            <span className="text-[0.8rem] text-ink-soft">Gift message (printed on a card)</span>
-            <textarea
-              value={gift.message}
-              onChange={(e) => setGift({ message: e.target.value })}
-              maxLength={240}
-              rows={2}
-              placeholder="Merry Christmas! Love, …"
-              className="mt-1.5 w-full resize-none rounded-xl border border-line bg-surface px-3 py-2.5 text-[0.9rem] outline-none focus:border-berry-500"
-            />
-          </label>
-        </fieldset>
-      </div>
-
+      {/* ── Summary card ──────────────────────────────────────────────── */}
       <div
         className={cn(
-          variant === "drawer"
-            ? "border-t border-line bg-paper px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
-            : "rounded-[1.75rem] bg-surface p-6 shadow-soft ring-1 ring-line lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]",
+          "rounded-[1.4rem] bg-surface px-4 pt-4 shadow-lift ring-1 ring-line",
+          variant === "drawer" ? "m-3 mt-2 pb-[max(1rem,env(safe-area-inset-bottom))]" : "mt-4 pb-4 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:mt-0",
         )}
       >
-        <dl className="space-y-1.5 text-[0.92rem]">
-          {savings > 0 && (
-            <div className="flex justify-between text-berry-600">
-              <dt>Christmas savings</dt>
-              <dd className="numeral font-semibold">−{formatMoney(savings, currency)}</dd>
+        {/* Free shipping — real threshold from site settings */}
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden="true"
+            className={cn(
+              "grid size-9 shrink-0 place-items-center rounded-xl",
+              remaining === 0 ? "bg-gold-100 text-gold-700" : "bg-cream text-ink-soft",
+            )}
+          >
+            <Icon name="truck" className="size-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.82rem] font-semibold">
+              {remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
+            </p>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
+              <div
+                className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
+                style={{ width: `${progress * 100}%` }}
+              />
             </div>
-          )}
-          <div className="flex justify-between">
-            <dt className="font-semibold">Subtotal</dt>
-            <dd className="numeral text-[1.35rem]">{formatMoney(subtotal, currency)}</dd>
           </div>
+          {remaining === 0 && (
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
+              <Icon name="check" className="size-3" strokeWidth={3} /> Free
+            </span>
+          )}
+        </div>
+
+        {/* Gift message — optional, saved on the Shopify order */}
+        <div className="mt-3 border-t border-line pt-3">
+          {noteOpen ? (
+            <label className="block">
+              <span className="flex items-center justify-between text-[0.8rem] font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <Icon name="gift" className="size-4 text-berry-600" /> Gift message
+                </span>
+                <span className="text-[0.7rem] font-normal text-ink-faint tabular-nums">{gift.message.length}/240</span>
+              </span>
+              <textarea
+                value={gift.message}
+                onChange={(e) => setGift({ message: e.target.value })}
+                maxLength={240}
+                rows={2}
+                placeholder="Merry Christmas! Love, …"
+                className="mt-1.5 w-full resize-none rounded-xl border border-line bg-cream/60 px-3 py-2 text-[0.86rem] outline-none focus:border-berry-500"
+              />
+              <span className="text-[0.7rem] text-ink-faint">Saved with your order.</span>
+            </label>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setNoteOpen(true)}
+              className="flex w-full items-center gap-1.5 text-[0.8rem] font-semibold text-ink-soft transition-colors hover:text-berry-700"
+            >
+              <Icon name="gift" className="size-4 text-berry-600" /> Add a gift message
+              <Icon name="plus" className="ml-auto size-3.5" />
+            </button>
+          )}
+        </div>
+
+        <dl className="mt-3 space-y-1.5 border-t border-line pt-3 text-[0.84rem]">
+          {savings > 0.009 && (
+            <>
+              <div className="flex items-center justify-between">
+                <dt className="text-ink-soft">Subtotal</dt>
+                <dd className="text-ink-soft tabular-nums">{formatMoney(original, currency)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="flex items-center gap-1.5 text-ink-soft">
+                  Sale savings
+                  <span className="rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.7rem] leading-none font-bold text-berry-700 tabular-nums">
+                    {Math.round((savings / original) * 100)}% off
+                  </span>
+                </dt>
+                <dd className="font-semibold text-berry-600 tabular-nums">−{formatMoney(savings, currency)}</dd>
+              </div>
+            </>
+          )}
+          <div className="flex items-center justify-between border-t border-dashed border-line pt-2 text-[1rem]">
+            <dt className="font-bold">Total</dt>
+            <dd className="numeral text-[1.25rem] font-semibold tabular-nums">{formatMoney(subtotal, currency)}</dd>
+          </div>
+          <p className="text-[0.7rem] text-ink-faint">Taxes calculated at checkout.</p>
         </dl>
-        <p className="mt-1 text-[0.75rem] text-ink-soft">Shipping and taxes calculated at checkout.</p>
-        <button
-          type="button"
-          onClick={onCheckout}
-          disabled={pending || lines.some((l) => !l.available)}
-          className="btn btn-primary shine mt-4 w-full"
-        >
-          {pending ? <Icon name="spinner" className="size-4 animate-spin" /> : <Icon name="lock" className="size-4" />}
-          {pending ? "Opening checkout…" : "Secure checkout"}
-        </button>
+
         {error && (
           <p role="alert" className="mt-3 text-[0.82rem] text-berry-600">
             {error}
           </p>
         )}
+        <button
+          type="button"
+          onClick={onCheckout}
+          disabled={pending || lines.some((l) => !l.available)}
+          className="btn btn-primary shine mt-3 w-full min-h-13"
+        >
+          {pending ? (
+            <>
+              <Icon name="spinner" className="size-4 animate-spin" /> Opening secure checkout…
+            </>
+          ) : (
+            <>
+              <Icon name="lock" className="size-4" /> Checkout · {formatMoney(subtotal, currency)}
+            </>
+          )}
+        </button>
         {demo && !error && (
-          <p className="mt-3 text-[0.75rem] text-ink-faint">
-            Demo catalog — checkout opens once your Shopify products are synced.
-          </p>
+          <p className="mt-2 text-center text-[0.72rem] text-ink-faint">Demo catalog — checkout opens once your Shopify products are synced.</p>
         )}
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-[0.75rem] text-ink-soft">
-          <Icon name="shield" className="size-3.5" /> Secure payment by Shopify
-        </p>
+        <PaymentIcons methods={payments} className="mt-3" />
       </div>
     </div>
   );
