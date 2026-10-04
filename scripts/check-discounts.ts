@@ -1,47 +1,62 @@
 /**
- * npm run shopify:check-discounts — builds a throw-away Shopify cart for 1, 2
- * and 3 cameras with the tier code and reports whether Shopify accepts the code
- * and what the cart would cost. Creating a cart places no order and is
- * harmless. Use it after creating XMAS50 / XMAS56 / XMAS65 in Shopify admin.
+ * npm run shopify:check-discounts — checks that the bundle discount codes exist
+ * and give the price the product page shows. For 1, 2 and 3 cameras it builds a
+ * throw-away Storefront cart (nothing is ordered) with the code checkout would
+ * send, and prints the code, whether Shopify accepts it, the total and the total
+ * the page shows. See src/lib/commerce/tiers.ts and the README.
  */
 import { readFileSync } from "node:fs";
 
+import { checkoutCode, round2, tierOff, tierPrice } from "../src/lib/commerce/tiers";
 import { graphqlRequest } from "../src/lib/shopify/client";
 import { shopifyConfig, storefrontEndpoint } from "../src/lib/shopify/config";
-import { tierCode } from "../src/lib/commerce/tiers";
 
-type Product = { title: string; variants: { id: string }[]; story?: { bundle?: { discounts: number[]; codePrefix: string } | null } | null };
-const catalog = JSON.parse(readFileSync(new URL("../data/catalog.json", import.meta.url), "utf8")) as { products: Record<string, Product> };
+const CART = `
+mutation C($input: CartInput!) {
+  cartCreate(input: $input) {
+    cart { cost { totalAmount { amount currencyCode } } discountCodes { code applicable } }
+    userErrors { message }
+  }
+}`;
 
-const CART = `mutation($input: CartInput!) { cartCreate(input: $input) { cart { discountCodes { code applicable } cost { subtotalAmount { amount currencyCode } totalAmount { amount } } } userErrors { message } } }`;
+async function main() {
+  const catalog = JSON.parse(readFileSync("data/catalog.json", "utf8")) as { products: Record<string, any> };
+  const product = Object.values(catalog.products).find((p) => p.story?.bundle?.discounts?.length);
+  if (!product) return console.log("No product has bundle discounts.");
+  const cfg = { discounts: product.story.bundle.discounts as number[], codePrefix: product.story.bundle.codePrefix as string };
+  const variant = product.variants[0];
+  console.log(`${product.title}\nvariant price ${variant.price}, tiers ${cfg.discounts.join("/")}%\n`);
 
-async function cartWith(variant: string, qty: number, code: string) {
-  const data = await graphqlRequest<{
-    cartCreate: { cart: { discountCodes: { code: string; applicable: boolean }[]; cost: { subtotalAmount: { amount: string; currencyCode: string }; totalAmount: { amount: string } } } | null; userErrors: { message: string }[] };
-  }>({
-    endpoint: storefrontEndpoint(),
-    query: CART,
-    variables: { input: { lines: [{ merchandiseId: variant, quantity: qty }], discountCodes: [code], buyerIdentity: { countryCode: "US" } } },
-    storefrontToken: shopifyConfig().storefrontToken,
-  });
-  if (!data.cartCreate.cart) throw new Error(data.cartCreate.userErrors[0]?.message ?? "cartCreate failed");
-  return data.cartCreate.cart;
+  let bad = 0;
+  for (let n = 1; n <= cfg.discounts.length; n++) {
+    const code = checkoutCode(cfg, n);
+    const expected = tierPrice(round2(variant.price * n), cfg, n);
+    const data = await graphqlRequest<any>({
+      endpoint: storefrontEndpoint(),
+      query: CART,
+      variables: {
+        input: {
+          lines: [{ merchandiseId: variant.id, quantity: n }],
+          buyerIdentity: { countryCode: "US" },
+          ...(code ? { discountCodes: [code] } : {}),
+        },
+      },
+      storefrontToken: shopifyConfig().storefrontToken,
+    });
+    const cart = data.cartCreate?.cart;
+    const applicable = code ? Boolean(cart?.discountCodes?.some((d: any) => d.applicable)) : true;
+    const total = Number(cart?.cost?.totalAmount?.amount);
+    const ok = applicable && Math.abs(total - expected) < 0.02;
+    if (!ok) bad++;
+    console.log(
+      `${ok ? "✔" : "✖"} ${n} camera${n > 1 ? "s" : ""}: code ${code ?? "(none needed)"}${code ? ` (must be ${tierOff(cfg, n)}% off)` : ""} ` +
+        `→ ${applicable ? "accepted" : "NOT accepted"}, Shopify total ${total} ${cart?.cost?.totalAmount?.currencyCode ?? ""}, page shows ${expected}`,
+    );
+  }
+  console.log(bad ? "\nCreate or fix the codes marked ✖ (README → Bundle offers)." : "\nAll bundle prices match.");
 }
 
-(async () => {
-  const product = Object.values(catalog.products).find((p) => p.story?.bundle?.discounts.length);
-  if (!product) return console.log("No product with bundle discounts in data/catalog.json (run npm run shopify:sync).");
-  const cfg = product.story!.bundle!;
-  const variant = product.variants[0]!.id;
-  console.log(`${product.title.slice(0, 60)}…\n`);
-  for (let qty = 1; qty <= cfg.discounts.length; qty++) {
-    const code = tierCode(cfg, qty)!;
-    const cart = await cartWith(variant, qty, code);
-    const found = cart.discountCodes.find((d) => d.code.toUpperCase() === code.toUpperCase());
-    const money = `${cart.cost.subtotalAmount.currencyCode} subtotal ${cart.cost.subtotalAmount.amount} → total ${cart.cost.totalAmount.amount}`;
-    console.log(`  ${qty} × → ${code.padEnd(8)} ${found?.applicable ? "✔ applies" : "✖ NOT applicable (create it in Shopify)"}   ${money}`);
-  }
-})().catch((e) => {
-  console.error("✖", e instanceof Error ? e.message : e);
+main().catch((e) => {
+  console.error(e);
   process.exit(1);
 });

@@ -20,16 +20,17 @@ import { cn } from "@/lib/utils";
  * Shopify accepts. `onNavigate` closes the drawer when a link is followed.
  */
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
-  const { lines, subtotal, savings, currency, setQuantity, remove, checkout, hydrated, loading, demo, payments } =
+  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, checkout, hydrated, loading, demo, payments } =
     useCart();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const freeOver = site.delivery.freeOver;
-  const remaining = Math.max(0, freeOver - subtotal);
-  const progress = Math.min(1, subtotal / freeOver);
-  const original = Math.round((subtotal + savings) * 100) / 100;
+  /** Free shipping on every order (site.delivery.freeOver = 0): no threshold, no progress bar. */
+  const noMinimum = site.delivery.freeOver <= 0;
+  const remaining = freeShipping.unlocked ? 0 : Math.max(0.01, freeShipping.remaining);
+  const progress = freeShipping.unlocked ? 1 : Math.min(1, subtotal / Math.max(1, freeShipping.threshold));
   const codes = [...new Set(lines.map((l) => l.couponCode).filter((c): c is string => c !== null))];
+  const original = Math.round((subtotal + savings) * 100) / 100;
 
   const onCheckout = async () => {
     setError(null);
@@ -186,9 +187,10 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[0.82rem] font-semibold">
-              {remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
+              {noMinimum ? "Free shipping on every order" : remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
             </p>
-            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
+            {noMinimum && <p className="text-[0.72rem] text-ink-soft">Christmas offer — no minimum spend</p>}
+            <div hidden={noMinimum} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
               <div
                 className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
                 style={{ width: `${progress * 100}%` }}

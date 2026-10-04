@@ -46,14 +46,10 @@ const INFO: { label: string; value: string }[] = [
 ];
 
 /**
- * Demo clips for the "See it in action" row, uploaded from assets-src/videos.
- * Left out on purpose (celebrity portraits / a trademarked character):
- * latte-art-camera-portrait-NOT-USED.mp4 and latte-art-camera-cup-NOT-USED.mp4.
+ * Product videos are served locally from public/videos/product (see
+ * src/content/product-videos.ts), not uploaded to Shopify, so this stays empty.
  */
-const VIDEOS = [
-  { file: "latte-art-camera-demo.mp4", alt: "Coffee art in one click: the latte art camera printing a design onto a cappuccino" },
-  { file: "latte-art-camera-demo-2.mp4", alt: "Loading a stencil card into the white latte art camera" },
-] as const;
+const VIDEOS: { file: string; alt: string }[] = [];
 
 type HostedVideo = { src: string; poster: string | null; alt: string };
 
@@ -181,7 +177,8 @@ async function main() {
     valueLabels: { "4 Templates": "4 Stencils", "12 Templates": "12 Stencils" },
     // Camera colour becomes a "how many cameras, and which colours" picker (1–3).
     bundle: { option: "Size", secondary: "Color", max: 3, noun: "camera", popular: 2, tags: ["", "", "Best value"],
-      // Buy 1 / 2 / 3 → 50% / 56% / 65% off, applied at checkout by the Shopify codes XMAS50 / XMAS56 / XMAS65.
+      // Buy 1 / 2 / 3 → shown as 50% / 56% / 65% off (coupon labels XMAS50 / XMAS56 / XMAS65);
+      // the strike-through original is worked back from the real price.
       discounts: [50, 56, 65], codePrefix: "XMAS" },
     how: {
       eyebrow: "How it works",

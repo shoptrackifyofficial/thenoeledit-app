@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getProducts, isDemoCatalog, variantIndex } from "@/lib/catalog";
 import { site } from "@/content/site";
-import { tierCode } from "@/lib/commerce/tiers";
+import { checkoutCode } from "@/lib/commerce/tiers";
+import { resolveEffectiveCountry } from "@/lib/localization/country";
 import { gaClientIdFromCookie, gaSessionIdFromCookie } from "@/lib/ga/mp";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { isStorefrontConfigured } from "@/lib/shopify/config";
@@ -82,27 +83,34 @@ export async function POST(request: NextRequest) {
     attributes.push({ key: "_eid", value: body.externalId });
   }
 
-  // Quantity-tier discount: the code is chosen here from the validated
-  // quantities (never from the browser), and Shopify applies the real discount.
+  // Bundle step: shoppers pay Shopify's price less the step's share (see lib/commerce/tiers.ts), which
+  // Shopify applies through a discount code. The code is chosen here from the validated quantities —
+  // never from the browser.
   const products = await getProducts();
   let tier: { code: string } | null = null;
   for (const p of products) {
     const cfg = p.story?.bundle;
     if (!cfg || !cfg.discounts.length || !cfg.codePrefix) continue;
     const units = p.variants.reduce((n, v) => n + (merged.get(v.id) ?? 0), 0);
-    const code = units > 0 ? tierCode(cfg, units) : null;
+    const code = units > 0 ? checkoutCode(cfg, units) : null;
     if (code) {
       tier = { code };
       break;
     }
   }
 
+  // The same country the on-page prices were fetched for (the visitor's own choice, else the
+  // edge-detected one), so Shopify prices the cart in the market and currency the bag showed.
+  // With no country (e.g. localhost) the cart is pinned to the shop's own market.
+  const detected = await resolveEffectiveCountry();
+  const country = detected && /^[A-Z]{2}$/.test(detected) ? detected : site.market;
+
   try {
     const cart = await createCheckout(
       [...merged].map(([merchandiseId, quantity]) => ({ merchandiseId, quantity })),
-      { attributes, discountCodes: tier ? [tier.code] : undefined, country: site.market },
+      { attributes, country, discountCodes: tier ? [tier.code] : undefined },
     );
-    // The page shows the discounted price, so never send the shopper to a checkout that would charge more.
+    // The page shows the bundle price, so never send the shopper to a checkout that would charge more.
     if (tier && !cart.discountCodes.some((d) => d.code.toUpperCase() === tier.code.toUpperCase() && d.applicable)) {
       console.error(`[cart/checkout] discount code ${tier.code} is not applicable — create it in Shopify (see README).`);
       return json({ error: "This offer is being set up. Please try again shortly." }, 409);

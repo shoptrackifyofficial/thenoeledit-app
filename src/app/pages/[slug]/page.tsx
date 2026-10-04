@@ -22,7 +22,7 @@ const pages: Record<string, Page> = {
   shipping: {
     title: "Delivery",
     script: "a calm, early Christmas",
-    description: `Delivery from ${site.name}: tracked shipping, free over ${formatMoney(site.delivery.freeOver)}, and why ordering early means a stress-free Christmas.`,
+    description: `Delivery from ${site.name}: tracked, free shipping on every order, and why ordering early means a stress-free Christmas.`,
     body: (
       <>
         <p>
@@ -30,8 +30,8 @@ const pages: Record<string, Page> = {
           on their way and waiting long before the big day.
         </p>
         <p>
-          Standard delivery takes {site.delivery.minDays}–{site.delivery.maxDays} working days and is free on orders over{" "}
-          {formatMoney(site.delivery.freeOver)}. Faster options, if available, are shown at checkout.
+          Standard delivery takes {site.delivery.minDays}–{site.delivery.maxDays} working days and is free on every order
+          this Christmas, with no minimum spend. Faster options, if available, are shown at checkout.
         </p>
         <p>You will get a tracking link by email as soon as your parcel leaves us.</p>
       </>

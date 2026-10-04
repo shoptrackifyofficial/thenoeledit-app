@@ -6,6 +6,7 @@ import seed from "../../../data/demo-catalog.json";
 import { CATALOG_PATH, readJsonFile } from "@/lib/catalog/storage";
 import type { CatalogDocument, ProductRecord } from "@/lib/catalog/types";
 import { categories, FALLBACK_CATEGORY, type CategoryContent } from "@/content/categories";
+import { originalPrice } from "@/lib/commerce/tiers";
 import { slugify } from "@/lib/utils";
 
 /**
@@ -38,8 +39,35 @@ const readCatalog = unstable_cache(
   { tags: [CATALOG_TAG], revalidate: 3600 },
 );
 
+/**
+ * Products with a bundle offer (story.bundle.discounts) show their strike-through
+ * "original" worked back from the real price (price ÷ (1 − pct)), using the
+ * percentage for one unit. A compare-at price set in Shopify is kept as is.
+ */
+const priced = new WeakMap<CatalogDocument, CatalogDocument>();
+function withOfferPrices(doc: CatalogDocument): CatalogDocument {
+  const cached = priced.get(doc);
+  if (cached) return cached;
+  const products: CatalogDocument["products"] = {};
+  for (const [handle, p] of Object.entries(doc.products)) {
+    const pct = p.story?.bundle?.discounts[0] ?? 0;
+    products[handle] =
+      pct > 0
+        ? {
+            ...p,
+            variants: p.variants.map((v) =>
+              v.compareAtPrice != null && v.compareAtPrice > v.price ? v : { ...v, compareAtPrice: originalPrice(v.price, pct) },
+            ),
+          }
+        : p;
+  }
+  const out = { ...doc, products };
+  priced.set(doc, out);
+  return out;
+}
+
 export async function getCatalog(): Promise<CatalogDocument> {
-  return readCatalog();
+  return withOfferPrices(await readCatalog());
 }
 
 export async function isDemoCatalog(): Promise<boolean> {
@@ -111,7 +139,7 @@ export async function getCategories(): Promise<CategoryInfo[]> {
       slug,
       title: titleCase(slug),
       kicker: `${count} gift${count === 1 ? "" : "s"}`,
-      blurb: `Christmas gifts in ${titleCase(slug)} — on sale now, with free shipping over $50.`,
+      blurb: `Christmas gifts in ${titleCase(slug)} — on sale now, with free shipping on every order.`,
       image: image ?? categories[0]!.image,
       order: 100 + i,
       count,

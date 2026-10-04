@@ -27,7 +27,7 @@ function addWorkingDays(from: Date, days: number): Date {
  * Dates are worked out in the browser, so they are always "from today" for the
  * visitor; until then the plain "3–7 working days" is shown.
  */
-export function DeliveryEstimate({ minDays, maxDays, freeOver }: { minDays: number; maxDays: number; freeOver: string }) {
+export function DeliveryEstimate({ minDays, maxDays }: { minDays: number; maxDays: number }) {
   const [range, setRange] = useState<{ today: string; from: string; to: string } | null>(null);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export function DeliveryEstimate({ minDays, maxDays, freeOver }: { minDays: numb
           <Icon name="check" className="size-3.5 text-pine-600" strokeWidth={2.5} /> Tracked parcel
         </li>
         <li className="inline-flex items-center gap-1.5 rounded-full bg-cream px-3 py-1.5 text-[0.74rem] leading-none font-semibold">
-          <Icon name="tag" className="size-3.5 text-berry-600" /> Free shipping over {freeOver}
+          <Icon name="tag" className="size-3.5 text-berry-600" /> Free shipping, no minimum
         </li>
       </ul>
 

@@ -123,7 +123,7 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         available: v.availableForSale,
         productId: p.id,
         category: catOf(p).title,
-        ...(p.story?.bundle?.discounts.length && p.story.bundle.codePrefix
+        ...(p.story?.bundle?.discounts.length
           ? { tiers: { discounts: p.story.bundle.discounts, codePrefix: p.story.bundle.codePrefix } }
           : {}),
       };

@@ -72,7 +72,15 @@ export function ProductCard({
             {card.name}
           </Link>
         </h3>
-        <Price price={card.price} compareAtPrice={card.compareAtPrice} currency={card.currency} size="sm" className="mt-1" />
+        <Price
+          price={card.price}
+          compareAtPrice={card.compareAtPrice}
+          currency={card.currency}
+          variantId={card.leadVariantId}
+          percentOff={card.percentOff}
+          size="sm"
+          className="mt-1"
+        />
       </div>
 
       {card.available && card.quickAddVariantId && (

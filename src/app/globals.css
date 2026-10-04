@@ -1086,3 +1086,21 @@
     display: none !important;
   }
 }
+
+/* Set by <ContentGuard> on the live site: no text selection or image dragging (form fields excepted). */
+.no-copy body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.no-copy input,
+.no-copy textarea,
+.no-copy select,
+.no-copy [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+.no-copy img,
+.no-copy video {
+  -webkit-user-drag: none;
+}

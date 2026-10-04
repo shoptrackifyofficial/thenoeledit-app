@@ -11,7 +11,8 @@ import { ProductGallery } from "@/components/product/ProductGallery";
 import { PurchasePanel } from "@/components/product/PurchasePanel";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { applyPercent } from "@/lib/commerce/tiers";
+import { originalPrice } from "@/lib/commerce/tiers";
+import { productVideos, productVideosByHandle } from "@/content/product-videos";
 import { Accordion } from "@/components/ui/Accordion";
 import { DeliveryEstimate } from "@/components/product/DeliveryEstimate";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { view, record } = data;
   const price = formatMoney(view.fromPrice, view.currency);
   const title = record.seo.title || `${view.name} — ${price} in the Christmas Sale`;
-  const description = record.seo.description || `${view.summary} Free shipping over $50 and tracked delivery before Christmas.`.slice(0, 300);
+  const description = record.seo.description || `${view.summary} Free shipping on every order and tracked delivery before Christmas.`.slice(0, 300);
   return {
     title,
     description,
@@ -108,12 +109,14 @@ export default async function ProductPage({ params }: Props) {
     ...siteFaqs.slice(3, 5),
   ];
 
-  const bundleOff = view.story?.bundle?.discounts.length ? Math.max(...view.story.bundle.discounts) : 0;
+  const bundleOff = view.story?.bundle?.discounts[0] ?? 0;
+
+  const videos = productVideosByHandle[view.handle] ?? productVideos;
 
   const trust: { icon: IconName; text: string }[] = [
     { icon: "shield", text: "Secure checkout" },
     { icon: "truck", text: "Early for Christmas" },
-    { icon: "tag", text: "Free shipping over $50" },
+    { icon: "tag", text: "Free shipping on every order" },
   ];
 
   return (
@@ -197,7 +200,6 @@ export default async function ProductPage({ params }: Props) {
               <DeliveryEstimate
                 minDays={site.delivery.minDays}
                 maxDays={site.delivery.maxDays}
-                freeOver={formatMoney(site.delivery.freeOver, view.currency)}
               />
             </div>
 
@@ -207,12 +209,12 @@ export default async function ProductPage({ params }: Props) {
                 [
                   "Price",
                   bundleOff
-                    ? `From ${formatMoney(applyPercent(view.fromPrice, bundleOff), view.currency)} each (−${bundleOff}%)`
+                    ? `${formatMoney(view.fromPrice, view.currency)} (−${bundleOff}% off ${formatMoney(originalPrice(view.fromPrice, bundleOff), view.currency)})`
                     : `${formatMoney(view.fromPrice, view.currency)}${lead?.compareAtPercent ? ` (−${lead.compareAtPercent}%)` : ""}`,
                 ],
                 ["Sale ends", saleEnds],
                 ["Category", view.category.title],
-                ["Shipping", `Tracked · free over ${formatMoney(site.delivery.freeOver, view.currency)}`],
+                ["Shipping", "Tracked · free on every order"],
               ].map(([k, v]) => (
                 <div key={k} className="bg-surface p-3.5">
                   <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">{k}</dt>
@@ -225,7 +227,7 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       {/* ── Product videos (story videos), right after section 1 ── */}
-      {view.story && view.story.videos.length > 0 && (
+      {videos.length > 0 && (
         <section className="py-10 lg:py-14" aria-labelledby="videos-title">
           <div className="container-page">
             <SectionHeading
@@ -240,7 +242,7 @@ export default async function ProductPage({ params }: Props) {
             />
           </div>
           {/* Full-bleed: the row runs edge to edge so it has room to drift. */}
-          <ProductVideoShowcase videos={view.story.videos} className="mt-7 px-2 sm:px-3" />
+          <ProductVideoShowcase videos={videos} className="mt-7 px-2 sm:px-3" />
         </section>
       )}
 

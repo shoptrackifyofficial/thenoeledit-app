@@ -72,7 +72,7 @@ export function Accent({ children, light = false }: { children: React.ReactNode;
 
 const ribbon = [
   "Up to 40% off",
-  "Free shipping over $50",
+  "Free shipping on every order",
   "Tracked delivery",
   "Order early, stress-free",
   `Arrives in ${site.delivery.minDays}–${site.delivery.maxDays} working days`,
@@ -340,7 +340,7 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
               Find the gift <Accent>by price</Accent>
             </>
           }
-          intro="Every price is already discounted — and shipping is free over $50."
+          intro="Every price is already discounted — and shipping is free on every order."
           align="center"
         />
         <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 lg:grid-cols-4 lg:gap-5">
@@ -412,8 +412,8 @@ export function WrappedStory() {
             Every gift arrives <Accent>ready to give.</Accent>
           </h2>
           <p className="mt-4 max-w-lg text-[0.98rem] text-ink-soft">
-            Send it straight to them, or to you to tuck under the tree. Every order ships tracked, and shipping is free
-            over $50.
+            Send it straight to them, or to you to tuck under the tree. Every order ships tracked and ships free,
+            with no minimum spend.
           </p>
           <ul className="mt-7 grid w-full gap-2.5 text-left sm:grid-cols-2">
             {site.promises.map((p) => (

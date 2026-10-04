@@ -56,8 +56,9 @@ export type ProductStory = {
     noun: string;
     popular: number | null;
     tags: string[];
-    /** Percent off for 1, 2, 3… units (e.g. [50, 56, 65]); applied at checkout by the code `${codePrefix}${percent}`. */
+    /** Percent off shown for 1, 2, 3… units (e.g. [50, 56, 65]); the struck-through original is worked back from the real price. */
     discounts: number[];
+    /** Coupon label shown with the offer, e.g. "XMAS" → XMAS50 / XMAS56 / XMAS65 (a label only — not sent to Shopify). */
     codePrefix: string;
   } | null;
   how: {

@@ -1,11 +1,23 @@
+"use client";
+
+import { useEffect } from "react";
+
+import { useLocalization } from "@/components/localization/LocalizationProvider";
+import { originalPrice } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
-/** Sale price + Shopify compare-at price, struck through, with a screen-reader sentence. */
+/**
+ * Sale price + compare-at price, struck through, with a screen-reader sentence.
+ * Given a `variantId`, it swaps in Shopify's own price for the visitor's country
+ * (Markets) once that has loaded; until then it shows the shop-currency price.
+ */
 export function Price({
-  price,
-  compareAtPrice,
-  currency,
+  price: basePrice,
+  compareAtPrice: baseCompare,
+  currency: baseCurrency,
+  variantId,
+  percentOff,
   className,
   size = "md",
   from = false,
@@ -13,10 +25,34 @@ export function Price({
   price: number;
   compareAtPrice: number | null;
   currency: string;
+  /** The variant this price belongs to — enables the local-currency price. */
+  variantId?: string | null;
+  /** The offer percentage behind a worked-back compare-at price, so it can be re-worked in the local currency. */
+  percentOff?: number | null;
   className?: string;
   size?: "sm" | "md" | "lg";
   from?: boolean;
 }) {
+  const { localizedPriceFor, requestPrices } = useLocalization();
+  useEffect(() => {
+    if (variantId) requestPrices([variantId]);
+  }, [variantId, requestPrices]);
+
+  let price = basePrice;
+  let compareAtPrice = baseCompare;
+  let currency = baseCurrency;
+  const live = variantId ? localizedPriceFor(variantId) : null;
+  const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
+  if (live && Number.isFinite(liveAmount)) {
+    price = liveAmount;
+    currency = live.currencyCode;
+    const liveCompare = live.compareAtAmount != null ? Number.parseFloat(live.compareAtAmount) : NaN;
+    compareAtPrice = Number.isFinite(liveCompare) && liveCompare > liveAmount
+      ? liveCompare
+      : baseCompare != null && percentOff
+        ? originalPrice(liveAmount, percentOff)
+        : null;
+  }
   const onSale = compareAtPrice != null && compareAtPrice > price;
   return (
     <p className={cn("flex flex-wrap items-baseline gap-x-2 gap-y-0.5", className)}>

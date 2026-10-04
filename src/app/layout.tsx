@@ -6,6 +6,8 @@ import { display, sans } from "./fonts";
 import { Analytics } from "@/components/analytics/Analytics";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { CartProvider } from "@/components/cart/CartProvider";
+import { ContentGuard } from "@/components/layout/ContentGuard";
+import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
 import { FlyingSleigh, SnowSky } from "@/components/decor/NightScene";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -68,6 +70,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         <SnowSky />
         <FlyingSleigh />
+        <LocalizationProvider>
         <CartProvider>
           <Header />
           <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
@@ -77,6 +80,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <MobileTabBar />
           <CartDrawer />
         </CartProvider>
+        </LocalizationProvider>
+        <ContentGuard />
         <Analytics />
         <JsonLd data={graph(organizationSchema(), websiteSchema())} />
       </body>

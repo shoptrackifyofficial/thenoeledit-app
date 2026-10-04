@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
+import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { LowStockAlert } from "@/components/product/LowStockAlert";
 import { Icon } from "@/components/ui/Icon";
 import { PaymentIcons } from "@/components/ui/PaymentIcons";
@@ -11,7 +12,8 @@ import type { PaymentMethod } from "@/lib/shopify/payments";
 import { site } from "@/content/site";
 import { trackCustomizeProduct, trackViewItem } from "@/lib/analytics";
 import type { ProductView, ViewVariant } from "@/lib/commerce/product-view";
-import { applyPercent, round2, tierCode, tierPercent } from "@/lib/commerce/tiers";
+import { localizeProductView } from "@/lib/commerce/localize";
+import { originalPrice, round2, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -259,9 +261,12 @@ const CONFETTI = [
  * nudge towards it before that, so it never promises something checkout won't
  * honour. Set `site.delivery.freeOver` to 0 to make shipping always free.
  */
-function FreeShippingStrip({ total, currency }: { total: number; currency: string }) {
+function FreeShippingStrip({ total, currency, ratio = 1 }: { total: number; currency: string; ratio?: number }) {
+  // `total` is in the shop's currency (the threshold is too); `ratio` carries the visitor's currency
+  // (their price ÷ shop price) so the "add X more" hint is shown in the money they see.
   const threshold = site.delivery.freeOver;
   const unlocked = total >= threshold;
+  const shown = (amount: number) => formatMoney(round2(amount * ratio), currency);
   return (
     <div
       className={cn(
@@ -314,12 +319,12 @@ function FreeShippingStrip({ total, currency }: { total: number; currency: strin
           {unlocked ? (
             <>
               <span className="block text-[0.82rem] font-semibold">Free shipping unlocked</span>
-              <span className="block text-[0.7rem] text-ink-soft">Applied to this order</span>
+              <span className="block text-[0.7rem] text-ink-soft">{threshold <= 0 ? "On every order — Christmas offer" : "Applied to this order"}</span>
             </>
           ) : (
             <>
-              <span className="block text-[0.82rem] font-semibold">Add {formatMoney(threshold - total, currency)} for free shipping</span>
-              <span className="block text-[0.7rem] text-ink-soft">Free on orders over {formatMoney(threshold, currency)}</span>
+              <span className="block text-[0.82rem] font-semibold">Add {shown(threshold - total)} for free shipping</span>
+              <span className="block text-[0.7rem] text-ink-soft">Free on orders over {formatMoney(Math.ceil(threshold * ratio), currency)}</span>
             </>
           )}
         </p>
@@ -341,7 +346,8 @@ function Lens({ value, className }: { value: string; active?: boolean; className
   );
 }
 
-type PackChoice = { value: string; label: string; price: number; sale: number; selected: boolean };
+/** `price` is what is charged per camera; `original` the struck-through price it is shown against. */
+type PackChoice = { value: string; label: string; price: number; original: number | null; selected: boolean };
 
 type Offer = { n: number; total: number; unit: number; compare: number | null; pct: number | null; code: string | null };
 
@@ -472,38 +478,9 @@ function BundlePicker({
         <Icon name="sparkle" className="size-4" />
       </span>
       <p className="mb-2.5 text-[0.8rem] font-semibold">
-        Customise your {count === 1 ? noun : `${count} ${noun}s`}
+        Pick colours for your {count === 1 ? noun : `${count} ${noun}s`}
       </p>
 
-      {packs.length > 1 && (
-        <div className="mb-3">
-          <p className="mb-1.5 text-[0.7rem] font-semibold tracking-wide text-ink-soft uppercase">Stencils in each {noun}</p>
-          <div role="radiogroup" aria-label={`Stencils in each ${noun}`} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${packs.length}, minmax(0, 1fr))` }}>
-            {packs.map((pk) => (
-              <label
-                key={pk.value}
-                className={cn(
-                  "relative flex cursor-pointer flex-col rounded-xl border-2 px-3 py-2 transition-[border-color,background-color] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
-                  pk.selected ? "border-berry-600 bg-berry-50" : "border-line bg-surface hover:border-berry-500",
-                )}
-              >
-                <input type="radio" name={`bundle-pack-${id}`} value={pk.value} checked={pk.selected} onChange={() => onPack(pk.value)} className="sr-only" />
-                <span className="flex items-center justify-between gap-2">
-                  <span className="text-[0.84rem] font-bold">{pk.label}</span>
-                  {radioDot(pk.selected)}
-                </span>
-                <span className="mt-1 flex flex-wrap items-baseline gap-x-1.5 tabular-nums">
-                  <span className="numeral text-[1.05rem] leading-none font-semibold text-berry-600">{formatMoney(pk.sale, currency)}</span>
-                  {pk.sale < pk.price && <s className="text-[0.72rem] text-ink-faint">{formatMoney(pk.price, currency)}</s>}
-                  <span className="text-[0.68rem] text-ink-soft">each</span>
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {packs.length > 1 && <p className="mb-1.5 text-[0.7rem] font-semibold tracking-wide text-ink-soft uppercase">Colour</p>}
       <div className="grid gap-1.5">
         {Array.from({ length: count }, (_, i) => {
           const colour = picks[i] ?? values[0]!;
@@ -546,6 +523,7 @@ function BundlePicker({
   );
 
   return (
+    <div className="space-y-7">
     <fieldset className="min-w-0">
       <legend className="mb-3 flex w-full items-baseline justify-between text-[0.95rem] font-semibold">
         Choose your bundle
@@ -579,7 +557,7 @@ function BundlePicker({
               <span className="min-w-0 flex-1">
                 <span className="block text-[0.95rem] leading-tight font-bold">Buy {WORDS[o.n]}</span>
                 <span className="block text-[0.74rem] text-ink-soft">{plural(o.n)}</span>
-                {packLabel && <span className="block text-[0.7rem] text-ink-faint">{packLabel} each</span>}
+                {packLabel && <span className="block text-[0.7rem] text-ink-faint">{packLabel} per {noun}</span>}
               </span>
               {priceBlock(o, "end")}
             </label>
@@ -621,7 +599,7 @@ function BundlePicker({
               </span>
               <span className="mt-2 text-[0.92rem] font-bold">Buy {WORDS[o.n]}</span>
               <span className="text-[0.72rem] text-ink-soft">{plural(o.n)}</span>
-              <span className="mb-1 text-[0.66rem] text-ink-faint">{packLabel ? `${packLabel} each` : "\u00a0"}</span>
+              <span className="mb-1 text-[0.66rem] text-ink-faint">{packLabel ? `${packLabel} per ${noun}` : "\u00a0"}</span>
               {priceBlock(o, "center")}
             </label>
           );
@@ -640,13 +618,55 @@ function BundlePicker({
         {panel("d", null)}
       </div>
     </fieldset>
+
+      {/* ── Stencils per camera: its own step, after the bundle ─────────── */}
+      {packs.length > 1 && (
+        <fieldset className="min-w-0">
+          <legend className="mb-3 flex w-full items-baseline justify-between text-[0.95rem] font-semibold">
+            Stencils in each {noun}
+            <span className="text-[0.78rem] font-normal text-ink-soft">Pick 4 or 12</span>
+          </legend>
+          <div role="radiogroup" aria-label={`Stencils in each ${noun}`} className="grid gap-2.5" style={{ gridTemplateColumns: `repeat(${packs.length}, minmax(0, 1fr))` }}>
+            {packs.map((pk) => (
+              <label
+                key={pk.value}
+                className={cn(
+                  "relative flex cursor-pointer flex-col rounded-2xl border-2 px-3.5 py-2.5 transition-[border-color,background-color] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
+                  pk.selected ? "border-berry-600 bg-berry-50/60" : "border-line bg-surface hover:border-berry-500",
+                )}
+              >
+                <input type="radio" name="bundle-pack" value={pk.value} checked={pk.selected} onChange={() => onPack(pk.value)} className="sr-only" />
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-[0.9rem] font-bold">{pk.label}</span>
+                  {radioDot(pk.selected)}
+                </span>
+                <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 tabular-nums">
+                  <span className="numeral text-[1.1rem] leading-none font-semibold text-berry-600">{formatMoney(pk.price, currency)}</span>
+                  {pk.original != null && <s className="text-[0.74rem] text-ink-faint">{formatMoney(pk.original, currency)}</s>}
+                  <span className="text-[0.7rem] text-ink-soft">each</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
+    </div>
   );
 }
 
 /* ── Panel ───────────────────────────────────────────────────────────── */
 
-export function PurchasePanel({ view, payments = [] }: { view: ProductView; payments?: PaymentMethod[] }) {
+export function PurchasePanel({ view: baseView, payments = [] }: { view: ProductView; payments?: PaymentMethod[] }) {
   const { add, open } = useCart();
+  // Shopify's own prices for the visitor's country (Markets); the page shows the shop's currency until they land.
+  const { localizedPriceFor, requestPrices, isPriceLoading } = useLocalization();
+  useEffect(() => {
+    requestPrices(baseView.variants.map((v) => v.id));
+  }, [requestPrices, baseView.variants]);
+  const view = useMemo(() => localizeProductView(baseView, localizedPriceFor), [baseView, localizedPriceFor]);
+  const pricesLoading = view === baseView && baseView.variants.some((v) => isPriceLoading(v.id));
+  /** The shop-currency price of a variant (the bag always starts from this and re-prices itself). */
+  const baseVariant = (id: string) => baseView.variants.find((v) => v.id === id);
   const initial = view.variants.find((v) => v.id === view.defaultVariantId) ?? view.variants[0]!;
   const [selection, setSelection] = useState<Record<string, string>>(initial.options);
   const [qty, setQty] = useState(1);
@@ -659,8 +679,6 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
   const hasPack = view.packOptionName !== null;
 
   // Bundle mode: "how many, and which colour for each" (configured by the product's story).
-  const tiersEarly = (b: { discounts: number[]; codePrefix: string }) =>
-    b.discounts.length && b.codePrefix ? { discounts: b.discounts, codePrefix: b.codePrefix } : null;
   const cfg = view.story?.bundle ?? null;
   const bundleOption = cfg ? view.options.find((o) => o.name === cfg.option) : undefined;
   const bundle = cfg && bundleOption ? { ...cfg, label: bundleOption.label, values: bundleOption.values } : null;
@@ -685,9 +703,11 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bundle?.option, count, selection, extraPicks, view]);
 
+  const tiers = bundle && bundle.discounts.length ? { discounts: bundle.discounts, codePrefix: bundle.codePrefix } : null;
   const bundleQty = bundleLines.reduce((n, l) => n + l.quantity, 0);
   const bundleList = round2(bundleLines.reduce((s, l) => s + l.variant.price * l.quantity, 0));
-  const bundleTotal = bundle && bundleLines.length ? (tiersEarly(bundle) ? applyPercent(bundleList, tierPercent(tiersEarly(bundle)!, count)) : bundleList) : 0;
+  /** What the shopper pays: Shopify's price × quantity, less the bundle step (checkout applies the matching code). */
+  const bundleTotal = bundle && bundleLines.length ? (tiers ? tierPrice(bundleList, tiers, count) : bundleList) : 0;
   const bundleComplete = bundle ? bundleQty === count : true;
   const canBuy = bundle
     ? bundleComplete && bundleLines.every((l) => l.variant.availableForSale)
@@ -706,21 +726,26 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
     return worst && worst.left > 0 ? worst : null;
   })();
 
+  /** Visitor's price ÷ shop price (1 until Shopify's local prices have landed). */
+  const priceRatio = (() => {
+    const base = variant ? baseVariant(variant.id)?.price : undefined;
+    return variant && base ? variant.price / base : 1;
+  })();
+
   const colourAvailable = (colour: string) => {
     const v = bundle ? findVariant(view, { ...selection, [bundle.option]: colour }) : undefined;
     return Boolean(v?.availableForSale);
   };
-
-  const tiers = bundle && bundle.discounts.length && bundle.codePrefix ? { discounts: bundle.discounts, codePrefix: bundle.codePrefix } : null;
 
   /** What each offer card shows: Shopify's list prices for n cameras, less the tier discount (the checkout code gives the same). */
   const offerFor = (n: number, colours: string[]): Offer => {
     const vs = colours.map((c) => findVariant(view, { ...selection, [bundle!.option]: c }) ?? variant);
     const list = round2(vs.reduce((t, v) => t + (v?.price ?? 0), 0));
     if (tiers) {
+      // The original is n × (Shopify price ÷ (1 − first%)); each step's percentage is off that.
       const pct = tierPercent(tiers, n);
-      const total = applyPercent(list, pct);
-      return { n, total, unit: Math.floor((total / n) * 100 + 1e-6) / 100, compare: pct > 0 ? list : null, pct: pct > 0 ? pct : null, code: tierCode(tiers, n) };
+      const total = tierPrice(list, tiers, n);
+      return { n, total, unit: Math.floor((total / n) * 100 + 1e-6) / 100, compare: pct > 0 ? originalPrice(list, tiers.discounts[0]!) : null, pct: pct > 0 ? pct : null, code: tierCode(tiers, n) };
     }
     const compareRaw = vs.every((v) => v?.compareAtPrice) ? vs.reduce((t, v) => t + (v!.compareAtPrice ?? 0), 0) : null;
     const compare = compareRaw && compareRaw > list ? round2(compareRaw) : null;
@@ -741,15 +766,13 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
           value,
           label: view.story?.valueLabels[value] ?? value,
           selected: selection[packOption.name] === value,
-          price: findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0,
-          // Rounded down, like the "each" price on the bundle cards.
-          sale:
-            Math.floor(
-              (findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0) *
-                (1 - (tiers ? tierPercent(tiers, count) : 0) / 100) *
-                100 +
-                1e-6,
-            ) / 100,
+          // Per camera, at the bundle size chosen.
+          price: tiers
+            ? tierPrice(findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0, tiers, count)
+            : (findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0),
+          original: tiers
+            ? originalPrice(findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0, tiers.discounts[0]!)
+            : null,
         }))
       : [];
   const colourImage = (colour: string) =>
@@ -863,8 +886,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
         add(v.id, quantity, {
           productName: view.name,
           variantLabel: v.label,
-          price: v.price,
-          compareAtPrice: v.compareAtPrice,
+          price: baseVariant(v.id)?.price ?? v.price,
+          compareAtPrice: baseVariant(v.id)?.compareAtPrice ?? v.compareAtPrice,
           image: v.image ?? view.cardImage?.url ?? null,
           href: `${view.href}?variant=${numericId(v.id)}`,
           available: true,
@@ -880,8 +903,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
     add(variant.id, hasPack ? 1 : qty, {
       productName: view.name,
       variantLabel: variant.label,
-      price: variant.price,
-      compareAtPrice: variant.compareAtPrice,
+      price: baseVariant(variant.id)?.price ?? variant.price,
+      compareAtPrice: baseVariant(variant.id)?.compareAtPrice ?? variant.compareAtPrice,
       image: variant.image ?? view.cardImage?.url ?? null,
       href: `${view.href}?variant=${numericId(variant.id)}`,
       available: true,
@@ -914,7 +937,7 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
   }, [variant, hasPack, bundle?.option, view.currency]);
 
   return (
-    <div>
+    <div className={cn(pricesLoading && "[&_.numeral]:animate-pulse")}>
       {priceBlock && <div className="mb-7">{priceBlock}</div>}
 
       <div className="space-y-7">
@@ -1019,8 +1042,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
               </p>
               <p className="mt-1.5 text-[0.74rem] text-ink-soft">
                 {count > 1 ? `${formatMoney(currentOffer.unit, view.currency)} each · ${count} ${bundle.noun}s` : `1 ${bundle.noun}`}
-                {packChoices.find((p) => p.selected) && ` · ${packChoices.find((p) => p.selected)!.label.toLowerCase()} each`}
                 {currentOffer.code && <> · code <span className="numeral font-semibold tracking-wide text-berry-600">{currentOffer.code}</span> applied</>}
+                {packChoices.find((p) => p.selected) && ` · ${packChoices.find((p) => p.selected)!.label.toLowerCase()} per ${bundle.noun}`}
               </p>
             </div>
             {currentOffer.pct != null && currentOffer.compare != null && (
@@ -1033,7 +1056,7 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
             )}
           </div>
         )}
-        <FreeShippingStrip total={orderTotal} currency={view.currency} />
+        <FreeShippingStrip total={orderTotal / priceRatio} currency={view.currency} ratio={priceRatio} />
         {lowStock && <LowStockAlert left={lowStock.left} wanted={lowStock.wanted} />}
 
         <div className="flex gap-3">

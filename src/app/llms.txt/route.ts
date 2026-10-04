@@ -22,7 +22,7 @@ export async function GET() {
     "",
     "## Key facts",
     `- Sale: ${site.sale.headline} until ${new Date(site.sale.endsAt).toUTCString().slice(5, 16)}`,
-    `- Tracked delivery in ${site.delivery.minDays}-${site.delivery.maxDays} working days; free over ${formatMoney(site.delivery.freeOver)}`,
+    `- Tracked delivery in ${site.delivery.minDays}-${site.delivery.maxDays} working days; free shipping on every order`,
     "- Order early for a stress-free Christmas: gifts arrive packed and tracked well before the big day",
     "- Secure checkout by Shopify",
     "",

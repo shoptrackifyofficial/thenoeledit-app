@@ -12,14 +12,16 @@ import { playMuted } from "@/lib/media/autoplay";
 import { cn } from "@/lib/utils";
 
 /**
- * "See it in action" — ported from the reference store: a full-bleed, auto-drifting rail
+ * Product video row — ported from the reference store: a full-bleed, auto-drifting rail
  * of portrait tiles. A native `overflow-x-auto` list (not a CSS transform
  * marquee), so it can also be dragged or flicked by hand; a rAF loop nudges
  * `scrollLeft` while idle and turns around at either end rather than
  * wrapping, so nothing here needs a duplicated list of cards.
  *
- * Every tile autoplays muted + looped, but only while it is actually on
- * screen (each card's own IntersectionObserver) — the row renders every card
+ * The row costs nothing at page load: the clips (same-origin files in
+ * /public/videos/product) are not requested until the row is within a few
+ * screens of the viewport, so LCP/FCP never wait on them. Every tile then
+ * autoplays muted + looped, but only while it is actually on screen (each card's own IntersectionObserver) — the row renders every card
  * up front, so an unconditional autoplay would start all 8 clips' network
  * load and decode at once.
  */
@@ -31,12 +33,6 @@ export type ShowcaseVideo = {
   /** Leads the row below the `sm` breakpoint only (CSS order, DOM order unchanged). */
   mobileFirst?: boolean;
 };
-
-/** With only a few clips the row would not overflow a wide screen, so it could
-    neither drift nor be dragged. The clips repeat until the row has at least
-    this many tiles; repeats reuse the same cached file and still only play
-    while on screen. */
-const MIN_TILES = 8;
 
 /** Drift speed, px/second. Slow enough to read a card as it goes past. */
 const SPEED_PX_PER_S = 26;
@@ -53,6 +49,8 @@ export function ProductVideoShowcase({
 }) {
   const trackRef = useRef<HTMLUListElement>(null);
   const [dragging, setDragging] = useState(false);
+  /** True once the row is near the viewport; until then tiles are just their poster image. */
+  const [armed, setArmed] = useState(false);
 
   /** Held in refs, not state: pausing is per-frame input to the drift loop and
       must not re-render the row every time a cursor crosses it. */
@@ -93,6 +91,22 @@ export function ProductVideoShowcase({
     },
     [],
   );
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry!.isIntersecting) {
+          setArmed(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "900px 0px" },
+    );
+    io.observe(track);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -145,14 +159,6 @@ export function ProductVideoShowcase({
   }, [videos.length]);
 
   if (videos.length === 0) return null;
-
-  const tiles = Array.from({ length: Math.max(videos.length, Math.ceil(MIN_TILES / videos.length) * videos.length) }, (_, i) => ({
-    video: videos[i % videos.length]!,
-    repeat: i >= videos.length,
-    /** Repeats start part-way through the clip so neighbouring tiles never show the same frame. */
-    offset: ((Math.floor(i / videos.length) * 0.37) % 1),
-    key: `${i}`,
-  }));
 
   const onPointerDown = (e: ReactPointerEvent<HTMLUListElement>) => {
     const track = trackRef.current;
@@ -209,16 +215,18 @@ export function ProductVideoShowcase({
         onFocus={pause}
         onBlur={() => pauseThenResume(400)}
       >
-        {tiles.map(({ video, repeat, offset, key }) => (
+        {videos.map((video, i) => (
           <li
-            key={key}
-            aria-hidden={repeat || undefined}
+            key={video.src}
+            // Auto margins centre a short row on wide screens, yet let a long one scroll from its start.
             className={cn(
               "h-88 w-64 shrink-0 sm:h-96 sm:w-72",
+              i === 0 && "ml-auto",
+              i === videos.length - 1 && "mr-auto",
               video.mobileFirst && "-order-1 sm:order-none",
             )}
           >
-            <VideoCard video={video} offset={offset} />
+            <VideoCard video={video} armed={armed} />
           </li>
         ))}
       </ul>
@@ -236,27 +244,15 @@ export function ProductVideoShowcase({
   );
 }
 
-function VideoCard({ video, offset = 0 }: { video: ShowcaseVideo; offset?: number }) {
+function VideoCard({ video, armed }: { video: ShowcaseVideo; armed: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
-
-  // Start a repeated clip part-way through (see `offset` in the row).
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || offset <= 0) return;
-    const seek = () => {
-      if (Number.isFinite(el.duration) && el.duration > 0) el.currentTime = el.duration * offset;
-    };
-    if (el.readyState >= 1) seek();
-    else el.addEventListener("loadedmetadata", seek, { once: true });
-    return () => el.removeEventListener("loadedmetadata", seek);
-  }, [offset]);
 
   // Play only while the card is actually visible — the row renders every
   // card up front (no virtualization), so an unconditional autoplay would
   // start every clip's decode/network load at once.
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !armed) return;
     let visible = false;
     let stop: (() => void) | null = null;
     const observer = new IntersectionObserver(
@@ -275,10 +271,14 @@ function VideoCard({ video, offset = 0 }: { video: ShowcaseVideo; offset?: numbe
       stop?.();
       observer.disconnect();
     };
-  }, []);
+  }, [armed]);
 
   return (
-    <div className="img-skeleton-dark relative size-full overflow-hidden rounded-[1.4rem] shadow-lift ring-1 ring-line">
+    <div className="relative size-full overflow-hidden rounded-[1.4rem] bg-cream">
+      {!armed ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={video.poster ?? undefined} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
+      ) : (
       <video
         ref={ref}
         className="size-full object-cover"
@@ -294,6 +294,7 @@ function VideoCard({ video, offset = 0 }: { video: ShowcaseVideo; offset?: numbe
             just the black `bg-ink` backdrop. */}
         <source src={`${video.src}#t=0.001`} type="video/mp4" />
       </video>
+      )}
     </div>
   );
 }

@@ -11,8 +11,10 @@ import {
   type ReactNode,
 } from "react";
 
+import { useLocalization } from "@/components/localization/LocalizationProvider";
 import type { BagCatalog, BagVariant } from "@/lib/commerce/views";
-import { applyPercent, round2, tierCode, tierPercent } from "@/lib/commerce/tiers";
+import { originalPrice, round2, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
+import { site } from "@/content/site";
 import type { PaymentMethod } from "@/lib/shopify/payments";
 import {
   trackAddToCart,
@@ -39,7 +41,7 @@ export type ResolvedLine = BagLine &
     listTotal: number;
     /** Percent saved on this line, or null. */
     savedPercent: number | null;
-    /** Shopify discount code that gives the tier discount, e.g. XMAS56. */
+    /** Coupon label for the offer on this line, e.g. XMAS56. */
     couponCode: string | null;
   };
 
@@ -54,6 +56,8 @@ type CartContextValue = {
   subtotal: number;
   savings: number;
   currency: string;
+  /** Free-shipping progress in the money the shopper sees (the threshold is set in the shop currency). */
+  freeShipping: { unlocked: boolean; threshold: number; remaining: number };
   isOpen: boolean;
   hydrated: boolean;
   loading: boolean;
@@ -107,6 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const fetching = useRef<Promise<void> | null>(null);
+  const { localizedPriceFor, requestPrices } = useLocalization();
 
   const loadCatalog = useCallback(() => {
     if (catalog || fetching.current) return fetching.current;
@@ -144,47 +149,79 @@ export function CartProvider({ children }: { children: ReactNode }) {
     writeJson(STORAGE_KEY, next);
   }, []);
 
-  const lines = useMemo<ResolvedLine[]>(() => {
+  // Shopify's own prices for the visitor's country. Every line must have one, in one currency,
+  // before any is used — otherwise the bag stays entirely in the shop's currency.
+  useEffect(() => {
+    requestPrices(stored.map((l) => l.variantId));
+  }, [stored, requestPrices]);
+
+  const { lines, currency, baseSubtotal } = useMemo(() => {
     const resolved: { line: BagLine; data: BagVariant }[] = [];
     for (const line of stored) {
       const data = catalog?.variants[line.variantId] ?? (catalog ? undefined : snapshots[line.variantId]);
       if (data) resolved.push({ line, data });
     }
+    const livePrices = resolved.map(({ line }) => localizedPriceFor(line.variantId));
+    const liveCurrency = livePrices[0]?.currencyCode;
+    const localized =
+      resolved.length > 0 && Boolean(liveCurrency) && livePrices.every((p) => p != null && p.currencyCode === liveCurrency);
+
     // A tier depends on how many units of the product are in the bag in total.
     const unitsOf = new Map<string, number>();
     for (const { line, data } of resolved) {
       if (data.tiers && data.productId) unitsOf.set(data.productId, (unitsOf.get(data.productId) ?? 0) + line.quantity);
     }
-    return resolved.map(({ line, data }) => {
-      const list = round2(data.price * line.quantity);
+    const out = resolved.map(({ line, data }, i): ResolvedLine => {
+      const live = localized ? livePrices[i]! : null;
+      const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
+      const price = Number.isFinite(liveAmount) ? liveAmount : data.price;
+      const liveCompare = live?.compareAtAmount != null ? Number.parseFloat(live.compareAtAmount) : NaN;
+      // A compare-at price is only ever Shopify's own, in the visitor's currency.
+      const compareAtPrice = live ? (Number.isFinite(liveCompare) ? liveCompare : null) : data.compareAtPrice;
+      const list = round2(price * line.quantity);
       if (data.tiers && data.productId) {
         const qty = unitsOf.get(data.productId) ?? line.quantity;
         const pct = tierPercent(data.tiers, qty);
+        // The "original" is worked back from the first step's percentage; the shopper pays the
+        // bundle step's share of Shopify's price (checkout applies the matching code).
         return {
           ...line,
           ...data,
-          lineTotal: applyPercent(list, pct),
-          listTotal: list,
+          price,
+          lineTotal: tierPrice(list, data.tiers, qty),
+          listTotal: originalPrice(list, data.tiers.discounts[0] ?? 0),
           savedPercent: pct > 0 ? pct : null,
           couponCode: tierCode(data.tiers, qty),
         };
       }
-      const onSale = data.compareAtPrice != null && data.compareAtPrice > data.price;
+      const onSale = compareAtPrice != null && compareAtPrice > price;
       return {
         ...line,
         ...data,
+        price,
+        compareAtPrice,
         lineTotal: list,
-        listTotal: onSale ? round2(data.compareAtPrice! * line.quantity) : list,
-        savedPercent: onSale ? Math.round(((data.compareAtPrice! - data.price) / data.compareAtPrice!) * 100) : null,
+        listTotal: onSale ? round2(compareAtPrice! * line.quantity) : list,
+        savedPercent: onSale ? Math.round(((compareAtPrice! - price) / compareAtPrice!) * 100) : null,
         couponCode: null,
       };
     });
-  }, [stored, catalog, snapshots]);
+    return {
+      lines: out,
+      currency: localized && liveCurrency ? liveCurrency : (catalog?.currency ?? "USD"),
+      baseSubtotal: round2(resolved.reduce((sum, { line, data }) => sum + data.price * line.quantity, 0)),
+    };
+  }, [stored, catalog, snapshots, localizedPriceFor]);
 
-  const currency = catalog?.currency ?? "USD";
   const count = lines.reduce((n, l) => n + l.quantity, 0);
   const subtotal = Math.round(lines.reduce((s, l) => s + l.lineTotal, 0) * 100) / 100;
   const savings = round2(lines.reduce((s, l) => s + (l.listTotal - l.lineTotal), 0));
+
+  const freeShipping = useMemo(() => {
+    const ratio = baseSubtotal > 0 ? subtotal / baseSubtotal : 1;
+    const threshold = Math.ceil(site.delivery.freeOver * ratio);
+    return { unlocked: baseSubtotal >= site.delivery.freeOver, threshold, remaining: Math.max(0, round2(threshold - subtotal)) };
+  }, [baseSubtotal, subtotal]);
 
   const toItem = (l: ResolvedLine | (BagVariant & { variantId: string }), quantity: number): AnalyticsItem => ({
     id: l.variantId,
@@ -213,11 +250,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const data = snapshot ?? catalog?.variants[variantId];
       if (data) {
         setAnnouncement(`${data.productName} added to your bag.`);
-        trackAddToCart(toItem({ ...data, variantId }, quantity), catalog?.currency ?? "USD");
+        // Analytics carry the price the shopper saw, in the currency they saw it.
+        const live = localizedPriceFor(variantId);
+        const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
+        trackAddToCart(
+          toItem({ ...data, variantId, ...(Number.isFinite(liveAmount) ? { price: liveAmount } : {}) }, quantity),
+          (Number.isFinite(liveAmount) && live?.currencyCode) || catalog?.currency || "USD",
+        );
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [persist, loadCatalog, catalog],
+    [persist, loadCatalog, catalog, localizedPriceFor],
   );
 
   const setQuantity = useCallback(
@@ -286,6 +329,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       subtotal,
       savings,
       currency,
+      freeShipping,
       isOpen,
       hydrated,
       loading,
@@ -299,7 +343,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       checkout,
       announcement,
     }),
-    [lines, count, subtotal, savings, currency, isOpen, hydrated, loading, catalog, open, close, add, setQuantity, remove, checkout, announcement],
+    [lines, count, subtotal, savings, currency, freeShipping, isOpen, hydrated, loading, catalog, open, close, add, setQuantity, remove, checkout, announcement],
   );
 
   return (

@@ -56,17 +56,17 @@ src/app/             routes: /, /shop, /shop/[category], /products/[handle], /ca
 - Newsletter → Shopify `customerCreate` with email-marketing consent (needs `write_customers` scope).
 - Webhooks are not wired yet. When ready, have `products/*` webhooks call `syncCatalog()` + `revalidateTag("catalog")` (see `src/app/api/admin/sync/route.ts`).
 
-## Bundle discounts (Buy 1 / 2 / 3 → 50% / 56% / 65% off)
+## Bundle offers (Buy 1 / 2 / 3 → 50% / 56% / 65% off)
 
-The percentages live in the product's `custom.noel_story` metafield (`bundle.discounts: [50, 56, 65]`, `bundle.codePrefix: "XMAS"`; edit them in `scripts/enrich-latte-camera.ts`, then `--apply`). The discount itself is a **Shopify discount code per tier** that the checkout route applies for you. Create these three in Shopify admin → Discounts → Create discount → **Amount off products**:
+The percentages in `custom.noel_story` (`bundle.discounts: [50, 56, 65]`, `bundle.codePrefix: "XMAS"`) are off an **original** price worked back from your Shopify price: `original = price ÷ (1 − 50%)`. With a $49.99 price the original is $99.98 and:
 
-| Code | Value | Applies to | Minimum requirement |
+| Bundle | Shows | Shopper pays | Code needed |
 |---|---|---|---|
-| `XMAS50` | 50% | Specific products → the camera | Quantity ≥ 1 |
-| `XMAS56` | 56% | Specific products → the camera | Quantity ≥ 2 |
-| `XMAS65` | 65% | Specific products → the camera | Quantity ≥ 3 |
+| Buy 1 | ~~$99.98~~ 50% off | $49.99 | none — your Shopify price already is the offer |
+| Buy 2 | ~~$199.96~~ 56% off | $87.98 ($43.99 each) | `XMAS56` = **12% off** your price |
+| Buy 3 | ~~$299.94~~ 65% off | $104.98 ($34.99 each) | `XMAS65` = **30% off** your price |
 
-Leave "Combinations" off and the usage limits empty. Then run `npm run shopify:check-discounts` — it must print ✔ for all three. Until it does, checkout refuses with "This offer is being set up" rather than charge more than the page shows. Set each variant's **price** to the list (undiscounted) price and leave **compare-at empty**: the site derives the struck-through price and "Save %" from the tiers.
+Shopify charges its own price per camera, so the extra reduction for Buy 2 / Buy 3 is a Shopify discount code. The code *names* are the ones shoppers see (XMAS56, XMAS65); the *values* are the ratio `(1 − tier%) ÷ (1 − first%)`, computed in `src/lib/commerce/tiers.ts` and printed by the check below. Create them in Shopify admin → Discounts → **Amount off products** → *Percentage*, applies to the camera, minimum quantity 2 (XMAS56) and 3 (XMAS65), combinations off. Then run `npm run shopify:check-discounts` — it must print ✔ for every row. Until then checkout refuses with "This offer is being set up" rather than charge more than the page shows. The code values are ratios, so they stay right when you change the Shopify price; if you change the percentages, re-run the check and update the codes.
 
 ## Before launch
 
