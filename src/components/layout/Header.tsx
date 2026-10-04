@@ -8,11 +8,6 @@ import { getMenuData } from "@/lib/commerce/views";
 import { customerAccountUrl } from "@/lib/shopify/config";
 
 function Announcement() {
-  const cutoff = new Date(`${site.deliveryCutoffs[0]!.date}T12:00:00Z`).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  });
   return (
     <div className="bg-berry-600 text-snow">
       <p className="container-page flex h-(--announce-h) items-center justify-center gap-2.5 text-center text-[0.74rem] font-medium">
@@ -21,7 +16,7 @@ function Announcement() {
           <strong className="font-bold">{site.sale.headline}</strong>
           <span className="opacity-60"> · </span>Free gift wrap
           <span className="hidden sm:inline">
-            <span className="opacity-60"> · </span>Order by {cutoff} for Christmas delivery
+            <span className="opacity-60"> · </span>Shop early for a stress-free Christmas
           </span>
         </span>
         <Icon name="sparkle" className="size-3.5 shrink-0 animate-twinkle text-gold-300 [animation-delay:1.6s]" />

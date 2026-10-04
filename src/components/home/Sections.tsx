@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { DragScroll } from "@/components/ui/DragScroll";
-import { Icon } from "@/components/ui/Icon";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import { ProductCard } from "@/components/product/ProductCard";
 import { site } from "@/content/site";
 import type { CategoryInfo } from "@/lib/catalog";
@@ -74,7 +74,7 @@ const ribbon = [
   "Up to 40% off",
   "Free gift wrapping",
   "Handwritten gift cards",
-  "Delivered before Christmas",
+  "Order early, stress-free",
   "Returns until January 31",
   "Secure Shopify checkout",
 ];
@@ -437,20 +437,14 @@ export function WrappedStory() {
   );
 }
 
-/* ── Christmas delivery timeline ──────────────────────────────────────── */
+/* ── Stress-free Christmas steps ──────────────────────────────────────── */
 
 export function DeliveryTimeline() {
-  const fmt = (iso: string) => {
-    const d = new Date(`${iso}T12:00:00Z`);
-    return {
-      day: d.toLocaleDateString("en-US", { day: "numeric", timeZone: "UTC" }),
-      month: d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }),
-      weekday: d.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }),
-    };
-  };
-  const steps = [
-    ...site.deliveryCutoffs.map((c) => ({ ...fmt(c.date), title: c.service, note: c.note, final: false })),
-    { day: "25", month: "Dec", weekday: "Christmas Day", title: "Unwrap", note: "Merry Christmas!", final: true },
+  const steps: { icon: IconName; title: string; note: string; final?: boolean }[] = [
+    { icon: "bag", title: "Order now", note: "Pick gifts at sale prices while stock is full." },
+    { icon: "gift", title: "We wrap it", note: "Ribbon, tag and your handwritten message." },
+    { icon: "truck", title: "Tracked delivery", note: `Arrives in ${site.delivery.minDays}–${site.delivery.maxDays} working days.` },
+    { icon: "sparkle", title: "Relax & unwrap", note: "Christmas morning, no last-minute rush.", final: true },
   ];
 
   return (
@@ -458,43 +452,37 @@ export function DeliveryTimeline() {
       <div className="container-page">
         <SectionHeading
           id="delivery-title"
-          kicker="Don't miss it"
+          kicker="Beat the rush"
           title={
             <>
-              Order-by dates <Accent>for Christmas</Accent>
+              A calm Christmas, <Accent>sorted early</Accent>
             </>
           }
-          intro="Order before these dates and your gifts arrive in time for the tree."
+          intro="Buy now and your gifts are wrapped, tracked and waiting well before the big day — no stress, no scramble."
           action={{ href: "/pages/shipping", label: "Delivery details" }}
+          align="center"
         />
         <ol className="dots relative mt-8 grid gap-3 rounded-[1.75rem] bg-white p-4 shadow-soft ring-1 ring-line sm:p-6 md:grid-cols-4 md:gap-4 md:p-8">
           <span
             className="absolute top-[3.75rem] right-[14%] left-[14%] hidden border-t-2 border-dashed border-berry-200 md:block"
             aria-hidden="true"
           />
-          {steps.map((s) => (
+          {steps.map((s, i) => (
             <li key={s.title} className="relative flex items-center gap-4 rounded-2xl p-2 md:flex-col md:gap-3 md:text-center">
               <span
                 className={cn(
                   "relative grid size-[3.75rem] shrink-0 place-items-center rounded-full",
-                  s.final
-                    ? "bg-berry-600 text-snow shadow-ribbon"
-                    : "bg-white text-ink ring-1 ring-line shadow-soft",
+                  s.final ? "bg-berry-600 text-snow shadow-ribbon" : "bg-white text-berry-600 shadow-soft ring-1 ring-line",
                 )}
               >
-                <span className="text-center leading-none">
-                  <span className="numeral block text-[1.35rem]">{s.day}</span>
-                  <span className="block text-[0.52rem] font-bold tracking-[0.2em] uppercase opacity-70">{s.month}</span>
+                <Icon name={s.icon} className="size-6" strokeWidth={1.5} />
+                <span className="absolute -top-1 -left-1 grid size-5 place-items-center rounded-full bg-ink text-[0.62rem] font-bold text-snow tabular-nums">
+                  {i + 1}
                 </span>
-                {s.final && (
-                  <Icon name="sparkle" className="absolute -top-1 -right-1 size-4 animate-twinkle text-gold-400" />
-                )}
               </span>
               <span>
                 <span className="block font-display text-[1.2rem] leading-tight">{s.title}</span>
-                <span className="block text-[0.8rem] text-ink-soft">
-                  {s.final ? s.note : `Order by ${s.weekday} · ${s.note}`}
-                </span>
+                <span className="block text-[0.8rem] text-ink-soft">{s.note}</span>
               </span>
             </li>
           ))}

@@ -38,18 +38,11 @@ export const site = {
   },
 
 
-  /** Order-by dates for Christmas delivery. Update to match your carriers. */
-  deliveryCutoffs: [
-    { service: "Standard", date: "2026-12-16", note: "Tracked, 4–6 working days" },
-    { service: "Express", date: "2026-12-20", note: "Tracked, 2–3 working days" },
-    { service: "Next day", date: "2026-12-22", note: "Order by 2pm" },
-  ],
-
   delivery: { minDays: 2, maxDays: 6, freeOver: 50 },
 
   promises: [
     { icon: "gift", title: "Free gift wrapping", text: "Hand-tied ribbon and a handwritten card, on every order." },
-    { icon: "truck", title: "Delivered for Christmas", text: "Tracked shipping with clear order-by dates." },
+    { icon: "truck", title: "Early for Christmas", text: "Order early — tracked shipping, no last-minute rush." },
     { icon: "refresh", title: "Returns until January 31", text: "Gift receipts included — easy exchanges after the holidays." },
     { icon: "shield", title: "Secure checkout", text: "Paid safely through Shopify Checkout." },
   ],

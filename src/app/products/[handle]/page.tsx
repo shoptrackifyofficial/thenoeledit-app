@@ -62,16 +62,6 @@ const PERK_ICONS: [RegExp, IconName][] = [
 ];
 const perkIcon = (perk: string): IconName => PERK_ICONS.find(([re]) => re.test(perk))?.[1] ?? "check";
 
-function nextCutoff() {
-  const today = new Date().toISOString().slice(0, 10);
-  const c = site.deliveryCutoffs.find((x) => x.date >= today);
-  if (!c) return null;
-  return {
-    ...c,
-    label: new Date(`${c.date}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }),
-  };
-}
-
 export default async function ProductPage({ params }: Props) {
   const { handle } = await params;
   const data = await getProductView(handle);
@@ -82,7 +72,6 @@ export default async function ProductPage({ params }: Props) {
   const related = allCards.filter((c) => c.category.slug === view.category.slug).slice(0, 4);
   const more = byDiscount(allCards.filter((c) => c.category.slug !== view.category.slug)).slice(0, 4);
 
-  const cutoff = nextCutoff();
   const saleEnds = new Date(view.saleEndsAt).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
   const lead = view.variants.find((v) => v.id === view.defaultVariantId) ?? view.variants[0];
   const crumbs = [
@@ -105,20 +94,16 @@ export default async function ProductPage({ params }: Props) {
         lead?.compareAtPrice ? `, down from ${formatMoney(lead.compareAtPrice, view.currency)} (${lead.compareAtPercent}% off)` : ""
       }. Sale prices run until ${saleEnds} or while stock lasts.`,
     },
-    ...(cutoff
-      ? [
-          {
-            q: `Will the ${view.name} arrive before Christmas?`,
-            a: `Yes — order by ${cutoff.label} for ${cutoff.service.toLowerCase()} delivery (${cutoff.note.toLowerCase()}). Every order is tracked.`,
-          },
-        ]
-      : []),
+    {
+      q: `Will the ${view.name} arrive before Christmas?`,
+      a: `Yes. Order now and it ships tracked in ${site.delivery.minDays}–${site.delivery.maxDays} working days — well before Christmas. Ordering early means no last-minute rush.`,
+    },
     ...siteFaqs.slice(4, 6),
   ];
 
   const trust: { icon: IconName; text: string }[] = [
     { icon: "gift", text: "Free gift wrap" },
-    { icon: "truck", text: "Delivered for Christmas" },
+    { icon: "truck", text: "Early for Christmas" },
     { icon: "refresh", text: "Returns till Jan 31" },
   ];
 
@@ -223,18 +208,16 @@ export default async function ProductPage({ params }: Props) {
               ))}
             </div>
 
-            {cutoff && (
-              <aside className="mt-4 flex gap-3 rounded-2xl bg-berry-50 p-4 text-[0.86rem] ring-1 ring-berry-100" aria-label="Christmas delivery">
-                <Icon name="snowflake" className="mt-0.5 size-5 shrink-0 text-berry-600" />
-                <p>
-                  <strong className="font-semibold">Want it by Christmas?</strong> Order by {cutoff.label} for{" "}
-                  {cutoff.service.toLowerCase()} delivery.{" "}
-                  <Link href="/pages/shipping" className="link-underline">
-                    All dates
-                  </Link>
-                </p>
-              </aside>
-            )}
+            <aside className="mt-4 flex gap-3 rounded-2xl bg-berry-50 p-4 text-[0.86rem] ring-1 ring-berry-100" aria-label="Christmas delivery">
+              <Icon name="snowflake" className="mt-0.5 size-5 shrink-0 text-berry-600" />
+              <p>
+                <strong className="font-semibold">Beat the Christmas rush.</strong> Order now and it&apos;s wrapped, tracked
+                and with you well before the big day.{" "}
+                <Link href="/pages/shipping" className="link-underline">
+                  Delivery details
+                </Link>
+              </p>
+            </aside>
 
             {/* At a glance — a compact, quotable fact sheet (AEO/GEO) */}
             <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line text-[0.85rem] ring-1 ring-line">

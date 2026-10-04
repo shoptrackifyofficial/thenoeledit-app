@@ -382,7 +382,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
               </li>
             </ul>
             <ul className="mt-6 space-y-3 text-[0.9rem] text-ink-soft">
-              <li><Link href="/pages/shipping">Christmas delivery dates</Link></li>
+              <li><Link href="/pages/shipping">Delivery</Link></li>
               <li><Link href="/pages/returns">Returns & exchanges</Link></li>
               <li><Link href="/pages/faq">Help & FAQ</Link></li>
             </ul>

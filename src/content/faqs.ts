@@ -3,18 +3,13 @@ import { site } from "@/content/site";
 /**
  * Plain, direct answers — written so a shopper, a search snippet or an AI
  * answer engine can lift any one of them on its own. Keep them factual and
- * update the delivery dates in content/site.ts.
+ * update delivery times in content/site.ts.
  */
-
-const fmt = (iso: string) =>
-  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
-
-const [standard, express, nextDay] = site.deliveryCutoffs;
 
 export const faqs: { q: string; a: string }[] = [
   {
-    q: "When do I need to order for delivery before Christmas?",
-    a: `Order by ${fmt(standard!.date)} for standard tracked delivery, by ${fmt(express!.date)} for express, or by ${fmt(nextDay!.date)} (before 2pm) for next-day delivery.`,
+    q: "Should I order now or wait?",
+    a: `Order now. Sale prices and stock are at their best, and tracked delivery takes ${site.delivery.minDays}–${site.delivery.maxDays} working days — so your gifts arrive wrapped and ready well before Christmas, with no last-minute rush.`,
   },
   {
     q: "Is gift wrapping really free?",

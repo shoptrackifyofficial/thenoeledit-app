@@ -18,27 +18,20 @@ import { breadcrumbSchema, faqSchema, graph } from "@/lib/seo/schema";
 
 type Page = { title: string; script: string; description: string; body: ReactNode; extra?: ReactNode; faq?: boolean };
 
-const fmt = (iso: string) =>
-  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
-
 const pages: Record<string, Page> = {
   shipping: {
-    title: "Christmas delivery dates",
-    script: "in time for the tree",
-    description: `Order-by dates for Christmas delivery from ${site.name}: standard, express and next-day cut-offs, costs and tracking.`,
+    title: "Delivery",
+    script: "a calm, early Christmas",
+    description: `Delivery from ${site.name}: tracked shipping, free over ${formatMoney(site.delivery.freeOver)}, and why ordering early means a stress-free Christmas.`,
     body: (
       <>
-        <p>Every order ships tracked. Order before the dates below for delivery before Christmas Day.</p>
-        <ul>
-          {site.deliveryCutoffs.map((c) => (
-            <li key={c.service}>
-              <strong>{c.service}:</strong> order by {fmt(c.date)} — {c.note}.
-            </li>
-          ))}
-        </ul>
+        <p>
+          Every order ships tracked. The easiest way to a stress-free Christmas is to order now — your gifts are wrapped,
+          on their way and waiting long before the big day.
+        </p>
         <p>
           Standard delivery takes {site.delivery.minDays}–{site.delivery.maxDays} working days and is free on orders over{" "}
-          {formatMoney(site.delivery.freeOver)}. Express and next-day rates are shown at checkout.
+          {formatMoney(site.delivery.freeOver)}. Faster options, if available, are shown at checkout.
         </p>
         <p>You will get a tracking link by email as soon as your parcel leaves us.</p>
       </>
@@ -69,7 +62,7 @@ const pages: Record<string, Page> = {
   faq: {
     title: "Help & FAQ",
     script: "good to know",
-    description: `Answers about Christmas delivery dates, free gift wrapping, sale prices and returns at ${site.name}.`,
+    description: `Answers about delivery, free gift wrapping, sale prices and returns at ${site.name}.`,
     body: <p>Quick answers to the questions we hear most in the run-up to Christmas.</p>,
     faq: true,
   },

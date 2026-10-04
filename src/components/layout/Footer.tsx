@@ -74,7 +74,7 @@ export async function Footer() {
           <nav aria-label="Help">
             <p className="eyebrow text-gold-300">Help</p>
             <ul className="mt-4 space-y-2 text-[0.88rem]">
-              <li><Link href="/pages/shipping" className="transition-colors hover:text-snow">Christmas delivery dates</Link></li>
+              <li><Link href="/pages/shipping" className="transition-colors hover:text-snow">Delivery</Link></li>
               <li><Link href="/pages/returns" className="transition-colors hover:text-snow">Returns & exchanges</Link></li>
               <li><Link href="/pages/faq" className="transition-colors hover:text-snow">FAQ</Link></li>
               <li><Link href="/pages/contact" className="transition-colors hover:text-snow">Contact us</Link></li>
