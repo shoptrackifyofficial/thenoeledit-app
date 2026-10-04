@@ -59,7 +59,7 @@ function returnPolicy(): Node {
   };
 }
 
-function shippingDetails(currency: string): Node {
+function shippingDetails(currency: string, delivery: { minDays: number; maxDays: number }): Node {
   return {
     "@type": "OfferShippingDetails",
     shippingRate: { "@type": "MonetaryAmount", value: 0, currency },
@@ -69,15 +69,16 @@ function shippingDetails(currency: string): Node {
       handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
       transitTime: {
         "@type": "QuantitativeValue",
-        minValue: site.delivery.minDays,
-        maxValue: site.delivery.maxDays,
+        minValue: delivery.minDays,
+        maxValue: delivery.maxDays,
         unitCode: "DAY",
       },
     },
   };
 }
 
-export function productSchema(view: ProductView): Node {
+/** `rating`: only reviews written on this store by verified buyers may be passed (never imported ones). */
+export function productSchema(view: ProductView, rating: { average: number; count: number } | null = null): Node {
   const url = abs(view.href);
   const images = view.gallery
     .filter((m) => m.type === "image")
@@ -94,7 +95,7 @@ export function productSchema(view: ProductView): Node {
     availability: v.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
     itemCondition: "https://schema.org/NewCondition",
     seller: { "@id": ORG_ID },
-    shippingDetails: shippingDetails(view.currency),
+    shippingDetails: shippingDetails(view.currency, view.delivery),
     hasMerchantReturnPolicy: returnPolicy(),
     ...(v.compareAtPrice
       ? {
@@ -115,6 +116,9 @@ export function productSchema(view: ProductView): Node {
     brand: { "@type": "Brand", name: view.vendor || site.name },
     category: view.category.title,
     url,
+    ...(rating && rating.count > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: rating.average, reviewCount: rating.count, bestRating: 5, worstRating: 1 } }
+      : {}),
   };
 
   if (view.variants.length > 1) {

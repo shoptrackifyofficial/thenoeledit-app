@@ -50,9 +50,9 @@ export function ProductCard({
         )}
 
         {card.percentOff != null && card.percentOff > 0 && (
-          <span className="absolute top-2.5 left-2.5 inline-flex -rotate-3 items-center gap-1.5 rounded-[0.35rem_999px_999px_0.35rem] bg-berry-600 py-1 pr-2.5 pl-1.5 text-[0.7rem] leading-none font-bold text-snow shadow-ribbon">
+          <span className="absolute top-2.5 left-2.5 inline-flex -rotate-3 items-center gap-1.5 rounded-[0.35rem_999px_999px_0.35rem] bg-berry-600 py-1.5 pr-3 pl-2 text-[0.74rem] leading-none font-bold text-snow shadow-ribbon">
             {/* gift-tag hole */}
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-surface/85" />−{card.percentOff}%
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-surface/85" />Save {card.percentOff}%
           </span>
         )}
         {!card.available && (
@@ -79,6 +79,7 @@ export function ProductCard({
           variantId={card.leadVariantId}
           percentOff={card.percentOff}
           size="sm"
+          showSave
           className="mt-1"
         />
       </div>

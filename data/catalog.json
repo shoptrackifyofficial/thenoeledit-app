@@ -1,12 +1,760 @@
 {
   "version": 1,
-  "syncedAt": "2026-10-04T18:57:53.746Z",
+  "syncedAt": "2026-10-04T19:53:49.371Z",
   "shop": {
     "domain": "trackify-com.myshopify.com",
     "name": "Trackify",
     "currencyCode": "USD"
   },
   "products": {
+    "2026-highland-cow-magic-advent-calendar-xmas-24-day-countdown-box-for-home-desk-decor-party-holiday-gift": {
+      "id": "gid://shopify/Product/15406274805987",
+      "handle": "2026-highland-cow-magic-advent-calendar-xmas-24-day-countdown-box-for-home-desk-decor-party-holiday-gift",
+      "title": "2026 Highland Cow Magic Advent Calendar Xmas 24‑day Countdown Box For Home Desk Decor Party Holiday Gift",
+      "vendor": "Trackify",
+      "productType": null,
+      "tags": [
+        "category:cosy-home",
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-04T19:33:18Z",
+      "updatedAt": "2026-10-04T19:53:37Z",
+      "descriptionHtml": "<h1>SPECIFICATIONS</h1><p><span>Brand Name</span>: <span style=\"color:#333\">eelhoe</span></p><p><span>CN</span>: <span style=\"color:#333\">Guangdong</span></p><p><span>Foldable</span>: <span style=\"color:#333\">Yes</span></p><p><span>High-concerned chemical</span>: <span style=\"color:#333\">none</span></p><p><span>Material</span>: <span style=\"color:#333\">Plastic</span></p><p><span>Occasion</span>: <span style=\"color:#333\">Birthday Party</span></p><p><span>Origin</span>: <span style=\"color:#333\">Mainland China</span></p><p><span>is_customized</span>: <span style=\"color:#333\">No</span></p><div class=\"detailmodule_image\"></div>\r\n<div class=\"detailmodule_html\"><div class=\"detail-desc-decorate-richtext\">\n<p><span style=\"font-size: 16px; font-family: Verdana;\">1. Unique Design: With 2026 as the theme, this Christmas countdown gift box combines the interesting elements of Highland cattle. The design is unique and adds a different style to Christmas.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">2. Exquisite craftsmanship: Each Highland cow theme gift box has been carefully handmade and carefully decorated, reflecting high quality and unique charm from the details.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">3. Show the fun of Countdown: Open a small box every day, which is full of surprise and expectation, and has the fun of Countdown, making the whole December full of festive atmosphere.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">4. Multi-functional use: It is not only a countdown gift box, but also a beautiful decoration of the home desktop. It is also the highlight of your holiday party, or as a gift to your relatives and friends, let them feel your unique heart.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">5. Enhance emotional communication: By opening a new small box every day, it can not only increase the sense of Christmas expectation, but also enhance the interaction and emotional communication between family members, making the festive atmosphere stronger.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Specifications:</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">New and high quality!</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Material: Plastic</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Color: As the pictures show</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Size:As the pictures show</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Package quantity:1Pc</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Note:</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">Please allow 2%-3% differences due to manual measurement. The above dimensions are for reference only.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">As different computers display different colors, thank you for your understanding, the actual product color may be slightly different from the image.</span></p>\n</div></div>\r\n<div class=\"detailmodule_image\">\n<img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S74582e98989f41b38447528d00f0f059g.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S790e579d81e845e78684ae531faf505ai.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Se2c3180547014852ae0974732545ea4c9.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S549a83d23c154a4cb1c83ba23d26ec0e7.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sb0794b0414834e67b0b7e9fd0ba4594bn.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S6d5c5d0125c5407a9bb6ba93370376d9N.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S3c4c4199001042358b0b224cf8f93cfap.jpg\" class=\"detail-desc-decorate-image\">\n</div>\r\n",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Color",
+          "values": [
+            "24-day"
+          ]
+        },
+        {
+          "name": "Gift Box Size",
+          "values": [
+            "18 x 26CM"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/67623331856611",
+          "title": "24-day / 18 x 26CM",
+          "sku": "14:202422806#24-day;200323261:202638846#18 x 26CM",
+          "price": 19.99,
+          "compareAtPrice": 29.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "24-day",
+            "Gift Box Size": "18 x 26CM"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S6d5c5d0125c5407a9bb6ba93370376d9N_09fbaef0-97cc-41af-8e17-3c5674c66aa8.webp?v=1791142402"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S9699838733a64813a8dd6a7fe9bca2b3Q.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S15833d3cc66e4df9a22dc7fe48ded6fdV.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S2ca35d669dca40f6b68e613cdf058257v.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S0f7afc83cba243809b16631875da7dfce.webp?v=1791142403",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sbf4db4e2d635494290ca377811c6821c6.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S3d4d7fc004734d99b306009dd737a812U.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S74582e98989f41b38447528d00f0f059g.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S790e579d81e845e78684ae531faf505ai.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se2c3180547014852ae0974732545ea4c9.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S549a83d23c154a4cb1c83ba23d26ec0e7.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sb0794b0414834e67b0b7e9fd0ba4594bn.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S6d5c5d0125c5407a9bb6ba93370376d9N.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S3c4c4199001042358b0b224cf8f93cfap.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S6d5c5d0125c5407a9bb6ba93370376d9N_09fbaef0-97cc-41af-8e17-3c5674c66aa8.webp?v=1791142402",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623331856611"
+        }
+      ],
+      "perks": [
+        "24 doors, 24 Highland cow figures",
+        "A countdown from 1 December to Christmas Eve",
+        "Foldable, so it stores flat",
+        "Doubles as a desk or shelf display"
+      ],
+      "offerEndsAt": "2026-10-08T23:59:00.000Z",
+      "giftFor": "Highland cow fans, families, kids and anyone who loves a festive countdown",
+      "story": {
+        "box": null,
+        "delivery": null,
+        "shortName": "Highland Cow Advent Calendar",
+        "addon": null,
+        "multi": null,
+        "optionLabels": {},
+        "valueLabels": {},
+        "videos": [],
+        "bundle": null,
+        "how": {
+          "eyebrow": "How it works",
+          "title": "One little cow a day",
+          "accent": "One little cow",
+          "intro": "A countdown that starts on 1 December and ends on Christmas Eve, with a surprise every morning.",
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S549a83d23c154a4cb1c83ba23d26ec0e7.webp",
+          "imageAlt": "The Highland Cow Magic advent calendar box on a snowy shelf in front of a row of cow figures",
+          "steps": [
+            {
+              "title": "Set it out",
+              "text": "Pop the calendar on a shelf, desk or mantel. It is foldable, so it also stores flat."
+            },
+            {
+              "title": "Open a door",
+              "text": "Each of the 24 numbered doors hides one Highland cow figure. Open today's number."
+            },
+            {
+              "title": "Collect the herd",
+              "text": "Stand the cow on the display steps and watch the row grow day by day."
+            },
+            {
+              "title": "Celebrate",
+              "text": "Reach number 24 on Christmas Eve and the whole herd is on show."
+            }
+          ]
+        },
+        "designs": null,
+        "features": [
+          {
+            "eyebrow": "24 days, 24 cows, 24 surprises",
+            "title": "A fresh little character every day",
+            "text": "Each door opens on a different Highland cow in its own outfit and pose. From readers to rocking guitarists, there is a new one to meet every day.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S6d5c5d0125c5407a9bb6ba93370376d9N.webp",
+            "imageAlt": "The advent calendar box with its 24 doors and 24 Highland cow figures lined up on steps"
+          },
+          {
+            "eyebrow": "Family countdown",
+            "title": "Make December feel like Christmas",
+            "text": "Opening one small door a day builds the excitement and gives the whole family a moment to share each morning.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sb0794b0414834e67b0b7e9fd0ba4594bn.webp",
+            "imageAlt": "The advent calendar on a coffee table beside a lit Christmas tree with a few cow figures on display"
+          },
+          {
+            "eyebrow": "Collect and display",
+            "title": "Decor you keep after Christmas",
+            "text": "The finished set is a cheerful desk or shelf display. Take the figures out and arrange them any way you like.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S74582e98989f41b38447528d00f0f059g.webp",
+            "imageAlt": "All 24 Highland cow figures laid out beside the advent calendar box"
+          }
+        ],
+        "info": [
+          {
+            "label": "Contents",
+            "value": "1 advent calendar box with 24 numbered doors, one Highland cow figure behind each"
+          },
+          {
+            "label": "Dimensions",
+            "value": "Box about 26 cm x 18 cm x 3 cm (10.2 x 7.1 x 1.2 in). Allow 2-3% for manual measuring"
+          },
+          {
+            "label": "Material",
+            "value": "Plastic"
+          },
+          {
+            "label": "Foldable",
+            "value": "Yes"
+          },
+          {
+            "label": "Colour",
+            "value": "As shown in the pictures; screens may differ slightly"
+          },
+          {
+            "label": "Occasion",
+            "value": "Christmas countdown, birthday parties, holiday gifting, home and desk decor"
+          }
+        ],
+        "details": {
+          "eyebrow": "At a glance",
+          "title": "Made to be gifted",
+          "accent": "gifted",
+          "occasions": [
+            "Christmas countdown",
+            "Stocking filler",
+            "Secret Santa",
+            "Birthday party",
+            "Home & desk decor"
+          ],
+          "recipients": [
+            "Highland cow fans",
+            "Kids and teens",
+            "Families",
+            "Collectors",
+            "Colleagues and friends"
+          ],
+          "holidays": [
+            "Christmas",
+            "New Year's Day"
+          ]
+        }
+      }
+    },
+    "christmas-mini-nfc-music-box-refrigerator-magnet-cute-record-player-style-ambient-night-light-for-teen-gifts": {
+      "id": "gid://shopify/Product/15406270939363",
+      "handle": "christmas-mini-nfc-music-box-refrigerator-magnet-cute-record-player-style-ambient-night-light-for-teen-gifts",
+      "title": "Christmas Mini NFC Music Box Refrigerator Magnet Cute Record Player Style Ambient Night Light for Teen Gifts",
+      "vendor": "Trackify",
+      "productType": null,
+      "tags": [
+        "category:cosy-home",
+        "noel-edit"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-10-04T19:12:50Z",
+      "updatedAt": "2026-10-04T19:53:37Z",
+      "descriptionHtml": "<h1>SPECIFICATIONS</h1><p><span>Brand Name</span>: <span style=\"color:#333\">JETTING</span></p><p><span>High-concerned chemical</span>: <span style=\"color:#333\">none</span></p><p><span>Origin</span>: <span style=\"color:#333\">Mainland China</span></p><div class=\"detailmodule_html\"><div class=\"detail-desc-decorate-richtext\">\n<p><span style=\"font-size: 16px; font-family: Verdana;\">1. Unique NFC luminous rotation design: This refrigerator sticker music box adopts NFC luminous rotation design, which can be used as a decoration for refrigerators and provide soft lighting effects in dark environments.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">2. High quality music playback: The music box is equipped with high-quality audio devices and professional sound processing technology, providing pure music playback effects, allowing you to feel the joy brought by high-quality music even in the kitchen.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">3. Powerful NFC function: By connecting to a smartphone, you can quickly pair and control your music box with NFC function, play your favorite songs or listen to radio, which is very convenient.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">4. Innovative rotation control method: By rotating the music box to control playback and stop, it is simple, easy to use, and innovative, providing a unique operating experience that is different from  music boxes.</span></p>\n<p><span style=\"font-size: 16px; font-family: Verdana;\">5. Beautiful and practical: This refrigerator sticker music box has a delicate exterior design that can be integrated into any kitchen decoration style, while also being easy to install and move, making it a special gift for friends or family.</span></p>\n</div></div>\r\n<div class=\"detailmodule_image\">\n<img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sb98576755ec94dc789bae2768016e6fce.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S31827fa5a3b045fcaf148e9f1be13dfaX.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S5c0a823ace794d5c901ea8c018f0d3b4Q.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sc2fa2d1b3fd24613af117f3f2bd16a56n.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sc6309f8540a8485a98d6294cfcc534b7G.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S3a7347ac5ff04e138dea8d77bc3a1627F.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S795415dd862645deac0a83eee6f8495bV.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S5c077fec832849f29bb7b1880fdc759f6.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sd0209907b9fe43d8afdc3631fefdb02aq.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sbe859b5378f5487986977500341a12b7e.jpg\" class=\"detail-desc-decorate-image\"><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S0af8e7b29df94696812f3be816e7cae2w.jpg\" class=\"detail-desc-decorate-image\">\n</div>\r\n",
+      "seo": {
+        "title": null,
+        "description": null
+      },
+      "options": [
+        {
+          "name": "Color",
+          "values": [
+            "A2",
+            "A3",
+            "A7",
+            "A1",
+            "A6",
+            "A4",
+            "A5"
+          ]
+        }
+      ],
+      "availableForSale": true,
+      "variants": [
+        {
+          "id": "gid://shopify/ProductVariant/67623257768163",
+          "title": "A2",
+          "sku": "14:200002984#A2",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A2"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sa0f267aa63fd467c9af919b740710cf4a.webp?v=1791141175"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67623257800931",
+          "title": "A3",
+          "sku": "14:496#A3",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A3"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc2f17b812aa041d893b237ddc7cd91b12.webp?v=1791141175"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67623257833699",
+          "title": "A7",
+          "sku": "14:366#A7",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A7"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S1e032109754244989da70fd1115c2852q.webp?v=1791141175"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67623257866467",
+          "title": "A1",
+          "sku": "14:10#A1",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A1"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sfb49c07bb9ac4638a50d8aa379ebc035Z.webp?v=1791141175"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67623257899235",
+          "title": "A6",
+          "sku": "14:29#A6",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A6"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se9730d7db352424e9c91dab4b596b8e1y.webp?v=1791141175"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67623257932003",
+          "title": "A4",
+          "sku": "14:200006151#A4",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A4"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S339028140afd476f9db2a62317c16c5et.webp?v=1791141175"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/67623257964771",
+          "title": "A5",
+          "sku": "14:175#A5",
+          "price": 49.99,
+          "compareAtPrice": 89.99,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "A5"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S768073d2bda84ae799802639ec90cd2eZ.webp?v=1791141175"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S31827fa5a3b045fcaf148e9f1be13dfaX_cfb94284-24c2-49d5-b523-9efb9524cade.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sb98576755ec94dc789bae2768016e6fce_1e82858c-d1c5-4df8-820d-6715f5075658.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc550c60f908d45269a6073d36233f2c4k.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S0af8e7b29df94696812f3be816e7cae2w.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc6309f8540a8485a98d6294cfcc534b7G_68721248-1264-4353-b5e1-cc55bf751b68.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S5c0a823ace794d5c901ea8c018f0d3b4Q_4c3e48d3-e2d2-40e9-b91b-670a1373d7f2.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sb98576755ec94dc789bae2768016e6fce.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S31827fa5a3b045fcaf148e9f1be13dfaX.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S5c0a823ace794d5c901ea8c018f0d3b4Q.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc2fa2d1b3fd24613af117f3f2bd16a56n.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc6309f8540a8485a98d6294cfcc534b7G.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S3a7347ac5ff04e138dea8d77bc3a1627F.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S795415dd862645deac0a83eee6f8495bV.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S5c077fec832849f29bb7b1880fdc759f6.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sd0209907b9fe43d8afdc3631fefdb02aq.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sbe859b5378f5487986977500341a12b7e.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S0af8e7b29df94696812f3be816e7cae2w_40430587-bb24-4211-8cd0-e84efa31baac.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": null
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sa0f267aa63fd467c9af919b740710cf4a.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257768163"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc2f17b812aa041d893b237ddc7cd91b12.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257800931"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S1e032109754244989da70fd1115c2852q.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257833699"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sfb49c07bb9ac4638a50d8aa379ebc035Z.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257866467"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se9730d7db352424e9c91dab4b596b8e1y.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257899235"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S339028140afd476f9db2a62317c16c5et.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257932003"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S768073d2bda84ae799802639ec90cd2eZ.webp?v=1791141175",
+          "width": 800,
+          "height": 800,
+          "alt": null,
+          "variantId": "gid://shopify/ProductVariant/67623257964771"
+        }
+      ],
+      "perks": [
+        "Best gift for women who live in the kitchen",
+        "9 Christmas songs built in, tap to play",
+        "Soft glowing night light",
+        "Magnet back, sticks to your fridge"
+      ],
+      "offerEndsAt": "2026-10-08T23:59:00.000Z",
+      "giftFor": "The best gift for the woman who spends most of her time in the kitchen: carols at the fridge, a glow after dark",
+      "story": {
+        "box": null,
+        "delivery": {
+          "minDays": 7,
+          "maxDays": 15,
+          "note": "Longer than usual due to high demand"
+        },
+        "shortName": "NFC music box magnet",
+        "addon": null,
+        "multi": null,
+        "optionLabels": {
+          "Color": "Design"
+        },
+        "valueLabels": {
+          "A1": "Jingle Vinyl",
+          "A2": "Merry Christmas",
+          "A3": "Christmas Classics",
+          "A4": "Fridge Glow",
+          "A5": "Look a Lot Like Christmas",
+          "A6": "Winter Village",
+          "A7": "Boo Box (Halloween)"
+        },
+        "videos": [],
+        "bundle": null,
+        "how": {
+          "eyebrow": "How it works",
+          "title": "Place a disc, hear the music",
+          "accent": "hear the music",
+          "intro": "A tiny record player for your fridge. Tap a disc on the player and the carol starts.",
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S5c077fec832849f29bb7b1880fdc759f6.webp",
+          "imageAlt": "Tap to play with NFC: place a disc, tap the sensor, play music",
+          "steps": [
+            {
+              "title": "Stick it on",
+              "text": "The magnet back holds the player on your fridge or any metal surface."
+            },
+            {
+              "title": "Place a disc",
+              "text": "Choose one of the little record discs and place it on the player."
+            },
+            {
+              "title": "Tap to play",
+              "text": "The NFC sensor reads the disc and the music starts. Nine Christmas songs are built in."
+            },
+            {
+              "title": "Add your own",
+              "text": "A 256 MB memory card holds more songs, so you can add your own music any time."
+            }
+          ]
+        },
+        "designs": null,
+        "features": [
+          {
+            "eyebrow": "Ready out of the box",
+            "title": "9 classic songs built in",
+            "text": "Every tap plays a joyful holiday tune. Music is already installed, so there is nothing to set up.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sc6309f8540a8485a98d6294cfcc534b7G_68721248-1264-4353-b5e1-cc55bf751b68.webp",
+            "imageAlt": "The music box player beside nine record discs, with the words 9 Classic Songs Built In"
+          },
+          {
+            "eyebrow": "Make it yours",
+            "title": "Add your own music",
+            "text": "A 256 MB memory card stores more songs. Easy to start, simple to use, and no phone scrolling needed.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S795415dd862645deac0a83eee6f8495bV.webp",
+            "imageAlt": "Highlights: music already installed, easy start, 256 MB memory card, add your own music"
+          },
+          {
+            "eyebrow": "For the one who lives in the kitchen",
+            "title": "A soft glow and a carol at the fridge",
+            "text": "She is at the stove and the sink more than anywhere. Give her a little music to cook to and a warm night light for late evenings in the kitchen.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S339028140afd476f9db2a62317c16c5et.webp",
+            "imageAlt": "The glowing music player on a fridge in a decorated kitchen"
+          },
+          {
+            "eyebrow": "Family time",
+            "title": "Joy at the fridge door",
+            "text": "A small gift that gets everyone dancing and singing in the kitchen, from kids to grandparents.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S3a7347ac5ff04e138dea8d77bc3a1627F.webp",
+            "imageAlt": "A family dancing by the fridge while the music box plays"
+          }
+        ],
+        "info": [
+          {
+            "label": "Playback",
+            "value": "NFC tap-to-play: place a record disc on the player and tap the sensor to play"
+          },
+          {
+            "label": "Songs",
+            "value": "9 classic Christmas songs built in"
+          },
+          {
+            "label": "Memory",
+            "value": "256 MB memory card stores more songs, so you can add your own music any time"
+          },
+          {
+            "label": "Light",
+            "value": "Soft glowing ambient night light, lovely in a dark kitchen or hallway"
+          },
+          {
+            "label": "Dimensions",
+            "value": "Player 11 cm x 12.8 cm; record discs 5 cm"
+          },
+          {
+            "label": "Mounting",
+            "value": "Magnet back: sticks to the fridge, easy to move"
+          },
+          {
+            "label": "Designs",
+            "value": "7 designs, including Merry Christmas, Christmas Classics, Winter Village and a Halloween Boo Box"
+          }
+        ],
+        "details": {
+          "eyebrow": "At a glance",
+          "title": "Made to be gifted",
+          "accent": "gifted",
+          "occasions": [
+            "Christmas",
+            "Stocking filler",
+            "Secret Santa",
+            "Housewarming",
+            "Kitchen decor",
+            "Thank-you gift"
+          ],
+          "recipients": [
+            "Mum or grandma who loves to cook",
+            "Home cooks and bakers",
+            "Teens",
+            "Music lovers",
+            "Families"
+          ],
+          "holidays": [
+            "Christmas",
+            "New Year's Day",
+            "Halloween (Boo Box design)"
+          ]
+        }
+      }
+    },
     "phomemo-p15-label-printer-gift-label-printer-ribbon-label-printer-bluetooth-enabled-printing-rechargeable-for-name-tag": {
       "id": "gid://shopify/Product/15406039531747",
       "handle": "phomemo-p15-label-printer-gift-label-printer-ribbon-label-printer-bluetooth-enabled-printing-rechargeable-for-name-tag",
@@ -211,6 +959,7 @@
             "Satin ribbon cartridges"
           ]
         },
+        "delivery": null,
         "shortName": "P15 label printer",
         "addon": {
           "handle": "phomemo-p15-a30-satin-ribbon-label-tape-12mm-x5m-thermal-transfer-fabric-ribbon-cartridge-for-gift-wrapping-wedding-bouquet-diy",
@@ -357,7 +1106,7 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-10-04T15:57:58Z",
-      "updatedAt": "2026-10-04T18:25:51Z",
+      "updatedAt": "2026-10-04T19:41:11Z",
       "descriptionHtml": "<h1>SPECIFICATIONS</h1><p><span>Applicable Equipment</span>: <span style=\"color:#333\">Label Printer</span></p><p><span>Brand Name</span>: <span style=\"color:#333\">phomemo</span></p><p><span>Choice</span>: <span style=\"color:#333\">yes</span></p><p><span>Feature</span>: <span style=\"color:#333\">Original</span></p><p><span>High-concerned chemical</span>: <span style=\"color:#333\">none</span></p><p><span>Model Number</span>: <span style=\"color:#333\">Phomemo A30</span></p><p><span>Origin</span>: <span style=\"color:#333\">Mainland China</span></p><p><span>Type</span>: <span style=\"color:#333\">Printer Ribbon</span></p><p><span>semi_Choice</span>: <span style=\"color:#333\">yes</span></p><h4>\n<span style=\"font-family:tahoma, geneva, sans-serif\">✅</span><span style=\"font-family:tahoma, geneva, sans-serif\"><code>Perfect Compatibility: This satin ribbon cartridge is compatible with Phomemo P15 / A30 thermal transfer label maker. Strictly calibrated size 12mm width 5m length, smooth feeding without jamming. NOTE: It is third‑party compatible ribbon, NOT original OEM product.</code></span>\n</h4><h4>\n<span style=\"font-family:tahoma, geneva, sans-serif\">✅</span><span style=\"font-family:tahoma, geneva, sans-serif\"><code>Premium Satin Fabric Ribbon: High‑quality soft satin material, smooth fabric surface, anti‑fray edge treatment. Clear thermal transfer printing, text patterns show vividly, not easy to fade. Delicate silky texture brings high‑end decorative effect for your crafts.</code></span>\n</h4><h4>\n<span style=\"font-family:tahoma, geneva, sans-serif\">✅</span><span style=\"font-family:tahoma, geneva, sans-serif\"><code>Wide DIY Application: Ideal for gift wrapping, wedding bouquet decoration, holiday party, flower packaging, handmade craft, bakery gift tags, anniversary favors. Multiple colors available to match different festive and daily‑use scenarios.</code></span>\n</h4><h4>\n<span style=\"font-family:tahoma, geneva, sans-serif\">✅</span><span style=\"font-family:tahoma, geneva, sans-serif\"><code>Easy To Install &amp; Use: Plug‑and‑play ribbon cartridge design, quick replacement in seconds. Works well with PrintMaster App, you can freely edit texts, symbols and patterns. Clean cutting without messy fabric burrs after printing.</code></span>\n</h4><h4>\n<span style=\"font-family:tahoma, geneva, sans-serif\">✅</span><span style=\"font-family:tahoma, geneva, sans-serif\"><code>Important Tips &amp; Reliable Service: This is NON‑ADHESIVE satin ribbon for decoration only, not self‑adhesive sticker label. If you receive defective items, please contact us directly for replacement or refund, we provide friendly after‑sales support.</code></span>\n</h4><br><p><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sceade7e2cae94efe8fb3742adc361ce6Z.jpg\" slate-data-type=\"image\"><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Sdb63aebf56db4b84956a815a444f5d8eD.jpg\" slate-data-type=\"image\"><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/Se8b16d4dc9f34e0a943ff254e784ff91x.jpg\" slate-data-type=\"image\"><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S99a17ce34fb04ab8a220b7b560e40a88g.jpg\" slate-data-type=\"image\"><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S1c0991c100df45d99e0fe1281c5af994s.jpg\" slate-data-type=\"image\"><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span><img src=\"https://ae-pic-a1.aliexpress-media.com/kf/S4a670df78a0f4f548a76f46495c63a7aZ.jpg\" slate-data-type=\"image\"><span style=\"font-family:tahoma, geneva, sans-serif\"><code></code></span></p><br>",
       "seo": {
         "title": null,
@@ -811,6 +1560,7 @@
       "giftFor": "Gift-wrappers, wedding planners, crafters and anyone who loves a personal finishing touch",
       "story": {
         "box": null,
+        "delivery": null,
         "shortName": "Satin ribbon",
         "addon": null,
         "multi": {
@@ -903,10 +1653,6 @@
           {
             "label": "Colours",
             "value": "15 colour and ink combinations, including gold and black prints"
-          },
-          {
-            "label": "Origin",
-            "value": "Mainland China"
           }
         ],
         "details": {
@@ -1196,6 +1942,7 @@
       "giftFor": "Coffee lovers, couples, friends, colleagues and anyone who likes a little café magic at home",
       "story": {
         "box": null,
+        "delivery": null,
         "shortName": "",
         "addon": null,
         "multi": null,

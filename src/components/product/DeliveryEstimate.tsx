@@ -8,7 +8,7 @@ import { Icon, type IconName } from "@/components/ui/Icon";
  * nudge to order early so Christmas week isn't a rush. Set the range in
  * content/site.ts (`delivery.minDays` / `maxDays`).
  */
-export function DeliveryEstimate({ minDays, maxDays }: { minDays: number; maxDays: number }) {
+export function DeliveryEstimate({ minDays, maxDays, note }: { minDays: number; maxDays: number; note?: string }) {
   const steps: { icon: IconName; title: string; note: string }[] = [
     { icon: "bag", title: "Order", note: "Place it today" },
     { icon: "gift", title: "Packed & shipped", note: "Tracking by email" },
@@ -25,7 +25,7 @@ export function DeliveryEstimate({ minDays, maxDays }: { minDays: number; maxDay
           <p className="numeral mt-1.5 text-[1.3rem] leading-tight font-semibold text-ink tabular-nums">
             {minDays}–{maxDays} working days
           </p>
-          <p className="mt-0.5 text-[0.76rem] text-ink-soft">Counted from the day you order</p>
+          <p className="mt-0.5 text-[0.76rem] text-ink-soft">{note || "Counted from the day you order"}</p>
         </div>
         <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-berry-50 text-berry-600 ring-1 ring-berry-100">
           <Icon name="truck" className="size-6" strokeWidth={1.5} />

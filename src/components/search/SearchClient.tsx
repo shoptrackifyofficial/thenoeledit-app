@@ -97,7 +97,7 @@ export function SearchClient({ cards, suggestions }: { cards: CardView[]; sugges
               </Link>
             </div>
           ) : (
-            <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 md:grid-cols-3 xl:grid-cols-4">
+            <ul className="mt-5 grid grid-cols-1 gap-x-3 gap-y-8 sm:grid-cols-2 sm:gap-x-4 md:grid-cols-3 xl:grid-cols-4">
               {results.map((c) => (
                 <li key={c.handle}>
                   <ProductCard card={c} />

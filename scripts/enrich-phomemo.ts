@@ -190,7 +190,6 @@ async function main() {
       { label: "Printing", value: "Thermal-transfer print in gold or black ink on satin; clear, long-lasting text" },
       { label: "Ribbon", value: "Non-adhesive decorative ribbon (not a sticker). Third-party compatible, not original Phomemo" },
       { label: "Colours", value: "15 colour and ink combinations, including gold and black prints" },
-      { label: "Origin", value: "Mainland China" },
     ],
   };
   const ribbonPerks = ["Fits the Phomemo P15 and A30", "12 mm satin, 5 m per cartridge", "15 colours, mix and match", "Anti-fray edges, clean cut"];

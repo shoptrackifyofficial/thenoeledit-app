@@ -1048,7 +1048,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
       total,
       compare: on ? compare : null,
       pct: on ? Math.round((1 - total / compare) * 100) : null,
-      line: `${q > 1 ? `${q} × ` : ""}${variant.label || view.name}${ribbonOffer.units ? ` + ${ribbonOffer.units} ribbon${ribbonOffer.units === 1 ? "" : "s"}` : ""}`,
+      line: `${q > 1 ? `${q} × ` : ""}${variant.label || view.story?.shortName || view.name}${ribbonOffer.units ? ` + ${ribbonOffer.units} ribbon${ribbonOffer.units === 1 ? "" : "s"}` : ""}`,
     };
   })();
 
@@ -1104,12 +1104,14 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
                   const checked = selection[option.name] === value;
                   const shown = view.story?.valueLabels[value] ?? value;
                   const swatch = swatchFor(shown) ?? swatchFor(value);
+                  // Options with no colour swatch (e.g. print designs) show the variant's own photo instead.
+                  const thumb = swatch ? null : (view.variants.find((v) => v.options[option.name] === value && v.image)?.image ?? null);
                   return (
                     <label
                       key={value}
                       className={cn(
                         "relative flex min-h-12 cursor-pointer items-center gap-2.5 rounded-full border-2 py-2 pr-5 pl-2.5 text-[0.9rem] font-medium transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
-                        !swatch && "pl-5",
+                        !swatch && !thumb && "pl-5",
                         checked ? "border-berry-600 bg-berry-50 text-berry-700 shadow-ribbon" : "border-line bg-surface hover:border-berry-500",
                         !available && "text-ink-faint",
                       )}
@@ -1129,6 +1131,11 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
                           className="size-7 rounded-full ring-1 ring-ink/15"
                           style={{ background: swatch }}
                         />
+                      )}
+                      {thumb && (
+                        <span className="img-skeleton relative size-9 shrink-0 overflow-hidden rounded-full ring-1 ring-ink/15">
+                          <Image src={thumb} alt="" fill sizes="36px" className="object-cover" />
+                        </span>
                       )}
                       <span className={cn(!available && "line-through decoration-1")}>{shown}</span>
                       {!available && (

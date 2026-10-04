@@ -112,6 +112,14 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
       }
     : null;
 
+  const dv = obj(j.delivery);
+  const dMin = Number(dv.minDays);
+  const dMax = Number(dv.maxDays);
+  const delivery =
+    Number.isInteger(dMin) && Number.isInteger(dMax) && dMin >= 1 && dMax >= dMin && dMax <= 60
+      ? { minDays: dMin, maxDays: dMax, note: text(dv.note, 140) }
+      : null;
+
   const bx = obj(j.box);
   const box =
     list(bx.included, 10, 80).length > 0
@@ -120,6 +128,7 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
 
   const story: ProductStory = {
     box,
+    delivery,
     shortName: text(j.shortName, 60),
     addon,
     multi,
@@ -164,5 +173,5 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
           }
         : null,
   };
-  return story.how || story.designs || story.details || story.addon || story.multi || story.box || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
+  return story.how || story.designs || story.details || story.addon || story.multi || story.box || story.delivery || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
 }

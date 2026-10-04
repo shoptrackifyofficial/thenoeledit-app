@@ -181,7 +181,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
           </button>
         </div>
       ) : (
-        <ul className="reveal-stagger mt-3 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-5 xl:gap-y-10">
+        <ul className="reveal-stagger mt-3 grid grid-cols-1 gap-x-3 gap-y-8 sm:grid-cols-2 sm:gap-x-4 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-5 xl:gap-y-10">
           {shown.map((c, i) => (
             <li key={c.handle}>
               <ProductCard card={c} priority={i < priorityCount} />

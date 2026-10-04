@@ -48,6 +48,8 @@ export type ProductStory = {
   valueLabels: Record<string, string>;
   /** Portrait demo clips for the "See it in action" row (Shopify-hosted mp4). */
   videos: { src: string; poster: string | null; alt: string }[];
+  /** Delivery time for this product when it differs from the site default (e.g. 7–15 days during high demand). */
+  delivery: { minDays: number; maxDays: number; note: string } | null;
   /** What is in the box, and what is sold separately, so nobody assumes an extra is included. */
   box: { included: string[]; separate: string[] } | null;
   /** Short name for the bag, the floating bar and analytics (the Shopify title can be a long SEO title). */

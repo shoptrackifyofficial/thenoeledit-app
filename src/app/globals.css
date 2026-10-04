@@ -1133,3 +1133,11 @@ html:not(.allow-inspect) video {
     box-shadow: 0 0 0 3px rgb(179 32 47 / 0.7);
   }
 }
+
+/* Bottom sheet / dialog entrance (review "Read more"). */
+@keyframes sheet-up {
+  from {
+    transform: translate3d(0, 40px, 0);
+    opacity: 0;
+  }
+}

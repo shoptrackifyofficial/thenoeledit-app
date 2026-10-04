@@ -1,5 +1,6 @@
 import type { ProductRecord, ProductStory } from "@/lib/catalog/types";
 import { buildAddonView, type ViewAddon } from "@/lib/commerce/addon";
+import { site } from "@/content/site";
 import { plainText, sanitizeHtml } from "@/lib/utils";
 
 /**
@@ -72,6 +73,8 @@ export type ProductView = {
   addon: ViewAddon | null;
   /** For a "pick any colours, any quantity" product (ribbons): its own variants as a picker; null otherwise. */
   multi: ViewAddon | null;
+  /** Delivery range in working days (this product's own, else the site default). */
+  delivery: { minDays: number; maxDays: number; note: string };
 };
 
 /** The light shape product cards, the menu and search need. */
@@ -206,6 +209,7 @@ export function buildProductView(
     summary: record.seo.description || plainText(record.descriptionHtml, 220),
     giftFor: record.giftFor,
     story: record.story ?? null,
+    delivery: record.story?.delivery ?? { minDays: site.delivery.minDays, maxDays: site.delivery.maxDays, note: "" },
     multi: record.story?.multi
       ? buildAddonView(record, {
           name: record.story.shortName || record.title,

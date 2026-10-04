@@ -19,6 +19,11 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 import { faqs as siteFaqs } from "@/content/faqs";
 import { site } from "@/content/site";
 import { getProducts } from "@/lib/catalog";
+import { PurchaseFeedback } from "@/components/product/PurchaseFeedback";
+import { ReviewRating } from "@/components/product/ReviewRating";
+import { ReviewsSection } from "@/components/product/ReviewsSection";
+import { feedPage, photoCount, reviewSetFor } from "@/lib/reviews/feed";
+import { verifiedOnly } from "@/lib/judgeme/reviews";
 import { byDiscount, getCardViews, getProductView } from "@/lib/commerce/views";
 import { formatMoney } from "@/lib/money";
 import { breadcrumbSchema, faqSchema, graph, productSchema } from "@/lib/seo/schema";
@@ -75,6 +80,10 @@ export default async function ProductPage({ params }: Props) {
   if (!data) notFound();
   const { view } = data;
   const payments = await getPaymentMethods();
+  // Judge.me reviews (null when there are none): the same set feeds the three places below.
+  const reviewSet = await reviewSetFor(view.handle);
+  const verified = verifiedOnly(reviewSet);
+  const fiveStar = reviewSet?.reviews.filter((r) => r.rating === 5) ?? [];
 
   const allCards = await getCardViews((r) => r.handle !== view.handle && r.availableForSale);
   const related = allCards.filter((c) => c.category.slug === view.category.slug).slice(0, 4);
@@ -106,7 +115,7 @@ export default async function ProductPage({ params }: Props) {
     },
     {
       q: `Will the ${view.name} arrive before Christmas?`,
-      a: `Yes. Order now and it ships tracked in ${site.delivery.minDays}–${site.delivery.maxDays} working days — well before Christmas. Ordering early means no last-minute rush.`,
+      a: `It ships tracked and arrives in ${view.delivery.minDays}–${view.delivery.maxDays} working days${view.delivery.note ? ` (${view.delivery.note.toLowerCase()})` : ""}. Order early so it is under the tree in time, with no last-minute rush.`,
     },
     ...siteFaqs.slice(3, 5),
   ];
@@ -125,7 +134,7 @@ export default async function ProductPage({ params }: Props) {
     <>
       <JsonLd
         data={graph(
-          productSchema(view),
+          productSchema(view, verified ? { average: verified.summary.average, count: verified.summary.count } : null),
           breadcrumbSchema(crumbs),
           faqSchema(productFaqs),
         )}
@@ -153,6 +162,7 @@ export default async function ProductPage({ params }: Props) {
             <Link href={`/shop/${view.category.slug}`} className="eyebrow text-gold-700 hover:text-berry-600">
               {view.category.title}
             </Link>
+            {reviewSet && <ReviewRating summary={reviewSet.summary} />}
             <h1 className="display-lg mt-2 text-wrap text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)]">
               {view.name}
             </h1>
@@ -200,10 +210,13 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="mt-5">
               <DeliveryEstimate
-                minDays={site.delivery.minDays}
-                maxDays={site.delivery.maxDays}
+                minDays={view.delivery.minDays}
+                maxDays={view.delivery.maxDays}
+                note={view.delivery.note}
               />
             </div>
+
+            {fiveStar.length > 0 && <PurchaseFeedback reviews={fiveStar} className="mt-5" />}
 
             {/* At a glance — a compact, quotable fact sheet (AEO/GEO) */}
             <dl className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line text-[0.85rem] ring-1 ring-line">
@@ -293,6 +306,11 @@ export default async function ProductPage({ params }: Props) {
         cards={related}
         action={{ href: `/shop/${view.category.slug}`, label: `All ${view.category.title}` }}
       />
+
+      {/* ── The full review system ── */}
+      {reviewSet && (
+        <ReviewsSection summary={reviewSet.summary} photoCount={photoCount(reviewSet)} initial={feedPage(reviewSet, "all", 1)} handle={view.handle} />
+      )}
 
       <DeliveryTimeline />
 

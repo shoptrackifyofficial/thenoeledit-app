@@ -21,6 +21,7 @@ export function Price({
   className,
   size = "md",
   from = false,
+  showSave = false,
 }: {
   price: number;
   compareAtPrice: number | null;
@@ -32,6 +33,8 @@ export function Price({
   className?: string;
   size?: "sm" | "md" | "lg";
   from?: boolean;
+  /** Adds a "Save 33%" chip after the prices (worked out from the price and compare-at, so it follows the visitor's currency). */
+  showSave?: boolean;
 }) {
   const { localizedPriceFor, requestPrices } = useLocalization();
   useEffect(() => {
@@ -84,6 +87,11 @@ export function Price({
         >
           {formatMoney(compareAtPrice!, currency)}
         </s>
+      )}
+      {showSave && onSale && (
+        <span className="rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.7rem] leading-none font-bold whitespace-nowrap text-berry-700 ring-1 ring-berry-100 tabular-nums">
+          Save {Math.round((1 - price / compareAtPrice!) * 100)}%
+        </span>
       )}
     </p>
   );

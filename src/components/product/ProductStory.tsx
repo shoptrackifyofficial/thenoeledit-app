@@ -217,6 +217,8 @@ export function ProductStory({ story }: { story: Story }) {
 const INFO_GROUPS: { title: string; labels: string[] }[] = [
   { title: "Packs & colours", labels: ["Color", "Size"] },
   { title: "Material & build", labels: ["Material", "Manufacturing process"] },
+  { title: "Music & NFC", labels: ["Playback", "Songs", "Memory"] },
+  { title: "Light & fit", labels: ["Light", "Dimensions", "Mounting"] },
   { title: "Connect & charge", labels: ["Connection", "Charging", "Resolution"] },
   { title: "Labels & library", labels: ["Labels", "Library", "Durability"] },
   { title: "Ribbon", labels: ["Ribbon"] },
