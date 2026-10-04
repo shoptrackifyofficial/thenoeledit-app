@@ -50,7 +50,7 @@ function withOfferPrices(doc: CatalogDocument): CatalogDocument {
   if (cached) return cached;
   const products: CatalogDocument["products"] = {};
   for (const [handle, p] of Object.entries(doc.products)) {
-    const pct = p.story?.bundle?.discounts[0] ?? 0;
+    const pct = p.story?.bundle?.discounts[0] ?? p.story?.multi?.discounts[0] ?? 0;
     products[handle] =
       pct > 0
         ? {
@@ -83,11 +83,15 @@ export async function getProducts(): Promise<ProductRecord[]> {
   const catalog = await getCatalog();
   return Object.values(catalog.products).filter((p) => p.status === "ACTIVE");
 }
+export { getProducts as getAllProducts };
 
 export async function getProductByHandle(handle: string): Promise<ProductRecord | null> {
   const record = (await getCatalog()).products[handle];
   return record && record.status === "ACTIVE" ? record : null;
 }
+
+/** The product an add-on points at (the same record that has its own page). */
+export const getAddonByHandle = getProductByHandle;
 
 /* ── Categories ─────────────────────────────────────────────────────────── */
 

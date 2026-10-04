@@ -48,6 +48,29 @@ export type ProductStory = {
   valueLabels: Record<string, string>;
   /** Portrait demo clips for the "See it in action" row (Shopify-hosted mp4). */
   videos: { src: string; poster: string | null; alt: string }[];
+  /** What is in the box, and what is sold separately, so nobody assumes an extra is included. */
+  box: { included: string[]; separate: string[] } | null;
+  /** Short name for the bag, the floating bar and analytics (the Shopify title can be a long SEO title). */
+  shortName: string;
+  /** A second product sold alongside this one as an optional extra (e.g. a ribbon for a label printer). */
+  addon: {
+    /** Handle of the add-on product (it is also a normal product, sold on its own page). */
+    handle: string;
+    /** "Satin ribbon" */
+    name: string;
+    /** One line under the heading. */
+    intro: string;
+  } | null;
+  /**
+   * Makes the product a "pick any colours, any quantity" product (ribbons): every variant of `option` gets a
+   * quantity, and the same bundle offer applies to the total units (see lib/commerce/tiers.ts).
+   */
+  multi: {
+    option: string;
+    noun: string;
+    discounts: number[];
+    codePrefix: string;
+  } | null;
   /** Turns one option (e.g. camera colour) into a "how many, and which colours" picker. */
   bundle: {
     option: string;

@@ -87,16 +87,13 @@ export async function POST(request: NextRequest) {
   // Shopify applies through a discount code. The code is chosen here from the validated quantities —
   // never from the browser.
   const products = await getProducts();
-  let tier: { code: string } | null = null;
+  const tierCodes: string[] = [];
   for (const p of products) {
-    const cfg = p.story?.bundle;
+    const cfg = p.story?.bundle ?? p.story?.multi;
     if (!cfg || !cfg.discounts.length || !cfg.codePrefix) continue;
     const units = p.variants.reduce((n, v) => n + (merged.get(v.id) ?? 0), 0);
     const code = units > 0 ? checkoutCode(cfg, units) : null;
-    if (code) {
-      tier = { code };
-      break;
-    }
+    if (code && !tierCodes.includes(code)) tierCodes.push(code);
   }
 
   // The same country the on-page prices were fetched for (the visitor's own choice, else the
@@ -108,11 +105,12 @@ export async function POST(request: NextRequest) {
   try {
     const cart = await createCheckout(
       [...merged].map(([merchandiseId, quantity]) => ({ merchandiseId, quantity })),
-      { attributes, country, discountCodes: tier ? [tier.code] : undefined },
+      { attributes, country, discountCodes: tierCodes.length ? tierCodes : undefined },
     );
     // The page shows the bundle price, so never send the shopper to a checkout that would charge more.
-    if (tier && !cart.discountCodes.some((d) => d.code.toUpperCase() === tier.code.toUpperCase() && d.applicable)) {
-      console.error(`[cart/checkout] discount code ${tier.code} is not applicable — create it in Shopify (see README).`);
+    const missing = tierCodes.filter((c) => !cart.discountCodes.some((d) => d.code.toUpperCase() === c.toUpperCase() && d.applicable));
+    if (missing.length) {
+      console.error(`[cart/checkout] discount code(s) ${missing.join(", ")} not applicable — create them in Shopify (see README).`);
       return json({ error: "This offer is being set up. Please try again shortly." }, 409);
     }
     const url = new URL(cart.checkoutUrl);

@@ -1,7 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { CATALOG_TAG, getProducts } from "@/lib/catalog";
+import { CATALOG_TAG, getAllProducts as getProducts } from "@/lib/catalog";
 import { isAdminConfigured } from "@/lib/shopify/config";
 import { syncCatalog } from "@/lib/shopify/sync";
 import { isDuplicateWebhook, verifyShopifyWebhook, wrongShop } from "@/lib/shopify/webhook";

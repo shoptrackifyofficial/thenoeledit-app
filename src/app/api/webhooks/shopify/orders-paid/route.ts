@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { site } from "@/content/site";
 import { categories } from "@/content/categories";
-import { categorySlugOf, getProducts } from "@/lib/catalog";
+import { categorySlugOf, getAllProducts as getProducts } from "@/lib/catalog";
 import { gaConfig, sendGaPurchase, type GaItem } from "@/lib/ga/mp";
 import { isDuplicateWebhook, verifyShopifyWebhook, wrongShop } from "@/lib/shopify/webhook";
 import { hashLocation, hashPhone, hashText, hashZip, sendServerEvent, sha256 } from "@/lib/meta/capi";

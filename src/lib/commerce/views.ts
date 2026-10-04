@@ -2,6 +2,8 @@ import "server-only";
 
 import {
   categorySlugOf,
+  getAddonByHandle,
+  getAllProducts,
   getCategories,
   getProductByHandle,
   getProducts,
@@ -37,7 +39,8 @@ export async function getProductView(handle: string): Promise<{ view: ProductVie
   const record = await getProductByHandle(handle);
   if (!record) return null;
   const [currency, catOf] = await Promise.all([storeCurrency(), categoryLookup()]);
-  return { record, view: buildProductView(record, currency, catOf(record)) };
+  const addonRecord = record.story?.addon ? await getAddonByHandle(record.story.addon.handle) : null;
+  return { record, view: buildProductView(record, currency, catOf(record), addonRecord) };
 }
 
 /** Biggest discounts first — used for "12 Days of Deals" and best-sellers fallbacks. */
@@ -110,9 +113,10 @@ export async function getOfferDeadline(): Promise<string | null> {
 }
 
 export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
-  const [products, currency, catOf, payments] = await Promise.all([getProducts(), storeCurrency(), categoryLookup(), getPaymentMethods()]);
+  const [products, currency, catOf, payments] = await Promise.all([getAllProducts(), storeCurrency(), categoryLookup(), getPaymentMethods()]);
   const variants: BagCatalog["variants"] = {};
   for (const p of products) {
+    const tiered = p.story?.bundle ?? p.story?.multi ?? null;
     const fallback = p.media.find((m) => m.type === "image")?.url ?? null;
     for (const v of p.variants) {
       const label = p.options
@@ -124,7 +128,7 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         .filter(Boolean)
         .join(" · ");
       variants[v.id] = {
-        productName: p.title,
+        productName: p.story?.shortName || p.title,
         variantLabel: label,
         price: v.price,
         compareAtPrice: v.compareAtPrice,
@@ -134,10 +138,8 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         productId: p.id,
         category: catOf(p).title,
         offerEndsAt: p.offerEndsAt,
-        ...(p.story?.bundle ? { bundleNoun: p.story.bundle.noun } : {}),
-        ...(p.story?.bundle?.discounts.length
-          ? { tiers: { discounts: p.story.bundle.discounts, codePrefix: p.story.bundle.codePrefix } }
-          : {}),
+        ...(tiered ? { bundleNoun: tiered.noun } : {}),
+        ...(tiered?.discounts.length ? { tiers: { discounts: tiered.discounts, codePrefix: tiered.codePrefix } } : {}),
       };
     }
   }

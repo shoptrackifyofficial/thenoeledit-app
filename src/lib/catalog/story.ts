@@ -93,7 +93,36 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
     .filter((v) => v.src && /\.mp4(\?|$)/i.test(v.src))
     .slice(0, 12);
 
+  const a = obj(j.addon);
+  const addon = /^[a-z0-9-]{3,200}$/.test(text(a.handle, 200))
+    ? {
+        handle: text(a.handle, 200),
+        name: text(a.name, 40) || "Add-on",
+        intro: text(a.intro, 200),
+      }
+    : null;
+
+  const m = obj(j.multi);
+  const multi = text(m.option, 60)
+    ? {
+        option: text(m.option, 60),
+        noun: text(m.noun, 30) || "item",
+        discounts: (Array.isArray(m.discounts) ? m.discounts : []).map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 90).slice(0, 6),
+        codePrefix: /^[A-Z0-9]{2,12}$/.test(text(m.codePrefix, 12)) ? text(m.codePrefix, 12) : "",
+      }
+    : null;
+
+  const bx = obj(j.box);
+  const box =
+    list(bx.included, 10, 80).length > 0
+      ? { included: list(bx.included, 10, 80), separate: list(bx.separate, 6, 80) }
+      : null;
+
   const story: ProductStory = {
+    box,
+    shortName: text(j.shortName, 60),
+    addon,
+    multi,
     optionLabels: labels,
     valueLabels,
     videos,
@@ -135,5 +164,5 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
           }
         : null,
   };
-  return story.how || story.designs || story.details || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
+  return story.how || story.designs || story.details || story.addon || story.multi || story.box || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
 }

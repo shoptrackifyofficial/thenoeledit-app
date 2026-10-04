@@ -1111,3 +1111,25 @@ html:not(.allow-inspect) img,
 html:not(.allow-inspect) video {
   -webkit-user-drag: none;
 }
+
+/* One attention blink on an element the shopper was just pointed at (e.g. "sold separately" → the ribbon picker). */
+.flash-ring {
+  animation: flash-ring 0.55s ease-in-out 3;
+}
+@keyframes flash-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(179 32 47 / 0);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgb(179 32 47 / 0.7),
+      0 0 24px 4px rgb(179 32 47 / 0.25);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flash-ring {
+    animation: none;
+    box-shadow: 0 0 0 3px rgb(179 32 47 / 0.7);
+  }
+}

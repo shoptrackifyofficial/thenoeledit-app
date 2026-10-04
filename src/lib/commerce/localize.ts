@@ -16,10 +16,14 @@ export type LivePrice = { amount: string; currencyCode: string; compareAtAmount:
  */
 export function localizeProductView(view: ProductView, live: (variantId: string) => LivePrice | null): ProductView {
   const prices = view.variants.map((v) => live(v.id));
+  const extra = (a: typeof view.addon) => (a?.variants ?? []).map((v) => live(v.id));
+  const addonPrices = extra(view.addon);
+  const multiPrices = extra(view.multi);
   const first = prices[0];
-  if (!first || prices.some((p) => !p || p.currencyCode !== first.currencyCode)) return view;
+  // One product never mixes currencies: wait until every variant (and every add-on variant) has its local price.
+  if (!first || [...prices, ...addonPrices, ...multiPrices].some((p) => !p || p.currencyCode !== first.currencyCode)) return view;
 
-  const pct = view.story?.bundle?.discounts[0] ?? 0;
+  const pct = view.story?.bundle?.discounts[0] ?? view.story?.multi?.discounts[0] ?? 0;
   const variants = view.variants.map((v, i) => {
     const amount = Number.parseFloat(prices[i]!.amount);
     if (!Number.isFinite(amount)) return v;
@@ -37,5 +41,19 @@ export function localizeProductView(view: ProductView, live: (variantId: string)
   });
   const pool = variants.filter((v) => v.availableForSale);
   const fromPrice = Math.min(...(pool.length ? pool : variants).map((v) => v.price));
-  return { ...view, currency: first.currencyCode, variants, fromPrice: Number.isFinite(fromPrice) ? fromPrice : view.fromPrice };
+  const reprice = (a: typeof view.addon, ps: typeof prices) =>
+    a
+      ? {
+          ...a,
+          variants: a.variants.map((v, i) => {
+            const amount = Number.parseFloat(ps[i]!.amount);
+            if (!Number.isFinite(amount)) return v;
+            const c = ps[i]!.compareAtAmount != null ? Number.parseFloat(ps[i]!.compareAtAmount!) : NaN;
+            return { ...v, price: amount, compareAt: Number.isFinite(c) && c > amount ? c : null };
+          }),
+        }
+      : null;
+  const addon = reprice(view.addon, addonPrices);
+  const multi = reprice(view.multi, multiPrices);
+  return { ...view, currency: first.currencyCode, variants, addon, multi, fromPrice: Number.isFinite(fromPrice) ? fromPrice : view.fromPrice };
 }

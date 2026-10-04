@@ -68,6 +68,10 @@ The percentages in `custom.noel_story` (`bundle.discounts: [50, 56, 65]`, `bundl
 
 Shopify charges its own price per camera, so the extra reduction for Buy 2 / Buy 3 is a Shopify discount code. The code *names* are the ones shoppers see (XMAS56, XMAS65); the *values* are the ratio `(1 − tier%) ÷ (1 − first%)`, computed in `src/lib/commerce/tiers.ts` and printed by the check below. Create them in Shopify admin → Discounts → **Amount off products** → *Percentage*, applies to the camera, minimum quantity 2 (XMAS56) and 3 (XMAS65), combinations off. Then run `npm run shopify:check-discounts` — it must print ✔ for every row. Until then checkout refuses with "This offer is being set up" rather than charge more than the page shows. The code values are ratios, so they stay right when you change the Shopify price; if you change the percentages, re-run the check and update the codes.
 
+## Ribbons (any colours, any quantity)
+
+The satin-ribbon product uses `multi` in its `custom.noel_story` (see `scripts/enrich-phomemo.ts`): every colour gets its own quantity, and the same 50 / 56 / 65% ladder applies to the **total ribbons** (1 / 2 / 3+). Same maths as the camera bundle, so create two more Shopify discount codes on the **ribbon product**: `RIBBON56` = **12% off**, minimum quantity 2, and `RIBBON65` = **30% off**, minimum quantity 3 (Amount off products, combinations on with other product discounts). Until they exist, checkout with 2+ ribbons answers "This offer is being set up". The printer's page offers the same ribbon picker as an optional extra (`story.addon`), and its ribbons share the same ladder in the bag.
+
 ## Before launch
 
 - Set `NEXT_PUBLIC_SITE_URL` to the real domain (drives canonicals, sitemap, JSON-LD).

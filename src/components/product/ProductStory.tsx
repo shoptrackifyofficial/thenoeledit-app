@@ -217,6 +217,10 @@ export function ProductStory({ story }: { story: Story }) {
 const INFO_GROUPS: { title: string; labels: string[] }[] = [
   { title: "Packs & colours", labels: ["Color", "Size"] },
   { title: "Material & build", labels: ["Material", "Manufacturing process"] },
+  { title: "Connect & charge", labels: ["Connection", "Charging", "Resolution"] },
+  { title: "Labels & library", labels: ["Labels", "Library", "Durability"] },
+  { title: "Ribbon", labels: ["Ribbon"] },
+  { title: "Box & compatibility", labels: ["In the box", "Certification", "Compatibility", "Size & length", "Printing"] },
   { title: "Great for", labels: ["Occasion for gifting", "Recipient relationship", "Applicable holidays", "Display method"] },
 ];
 const INFO_RENAMES: Record<string, string> = { Color: "Stencil packs", Size: "Camera colours" };

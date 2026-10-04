@@ -6,6 +6,8 @@ import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from "r
 import { useCart } from "@/components/cart/CartProvider";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { LowStockAlert } from "@/components/product/LowStockAlert";
+import { BoxContents } from "@/components/product/BoxContents";
+import { RibbonPicker, type RibbonOffer } from "@/components/product/RibbonPicker";
 import { SaleCountdown } from "@/components/product/SaleCountdown";
 import { Icon } from "@/components/ui/Icon";
 import { PaymentIcons } from "@/components/ui/PaymentIcons";
@@ -43,7 +45,7 @@ const SWATCH: Record<string, string> = {
   black: "#1c1b19", white: "#f7f5f0", snow: "#fbfaf6", silver: "linear-gradient(135deg,#f1f1f1,#a9a9a9)",
   gold: "linear-gradient(135deg,#f3dfa6,#b8913f)", "rose gold": "linear-gradient(135deg,#f6d2c4,#c58b78)",
   red: "#b3202f", berry: "#8a1428", green: "#2d5b45", pine: "#1b4332", oat: "#d9cbb1", cream: "#f2e8d6",
-  "dark green": "#2f4a3a", navy: "#1f2a44", blue: "#3b6aa0", pink: "#e8b4bc", grey: "#9a9a96", gray: "#9a9a96", brown: "#6b4a33",
+  "dark green": "#2f4a3a", "mint green": "#b9dcc8", "retro red": "#b3202f", navy: "#1f2a44", blue: "#3b6aa0", pink: "#e8b4bc", grey: "#9a9a96", gray: "#9a9a96", brown: "#6b4a33",
 };
 const swatchFor = (value: string) => SWATCH[value.trim().toLowerCase().replace(/\s+camera$/, "")] ?? null;
 /** "Dark Green Camera" → "Dark green" */
@@ -687,12 +689,49 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   // Shopify's own prices for the visitor's country (Markets); the page shows the shop's currency until they land.
   const { localizedPriceFor, requestPrices, isPriceLoading } = useLocalization();
   useEffect(() => {
-    requestPrices(baseView.variants.map((v) => v.id));
-  }, [requestPrices, baseView.variants]);
+    requestPrices([
+      ...baseView.variants.map((v) => v.id),
+      ...(baseView.addon?.variants.map((v) => v.id) ?? []),
+      ...(baseView.multi?.variants.map((v) => v.id) ?? []),
+    ]);
+  }, [requestPrices, baseView.variants, baseView.addon, baseView.multi]);
   const view = useMemo(() => localizeProductView(baseView, localizedPriceFor), [baseView, localizedPriceFor]);
   const pricesLoading = view === baseView && baseView.variants.some((v) => isPriceLoading(v.id));
   /** The shop-currency price of a variant (the bag always starts from this and re-prices itself). */
   const baseVariant = (id: string) => baseView.variants.find((v) => v.id === id);
+  // Ribbons: any colours in any quantity. Either the page's main purchase (`view.multi`, the ribbon's own
+  // page) or an optional extra on this product's page (`view.addon`).
+  const ribbonView = view.multi ?? view.addon;
+  const ribbonOnly = Boolean(view.multi);
+  const [ribbonQty, setRibbonQty] = useState<Record<string, number>>({});
+  const ribbonTiers = ribbonView && ribbonView.discounts.length ? { discounts: ribbonView.discounts, codePrefix: ribbonView.codePrefix } : null;
+  const ribbonUnits = ribbonView ? ribbonView.variants.reduce((n, v) => n + (ribbonQty[v.id] ?? 0), 0) : 0;
+  const ribbonList = round2(ribbonView ? ribbonView.variants.reduce((n, v) => n + v.price * (ribbonQty[v.id] ?? 0), 0) : 0);
+  const ribbonOffer: RibbonOffer = (() => {
+    if (!ribbonView || ribbonUnits === 0) return { units: 0, total: 0, compare: null, pct: null, code: null };
+    if (!ribbonTiers) return { units: ribbonUnits, total: ribbonList, compare: null, pct: null, code: null };
+    // Each ribbon's original is worked back from its own price; the step's percentage is off that.
+    const pct = tierPercent(ribbonTiers, ribbonUnits);
+    return {
+      units: ribbonUnits,
+      total: tierPrice(ribbonList, ribbonTiers, ribbonUnits),
+      compare: pct > 0 ? originalPrice(ribbonList, ribbonTiers.discounts[0]!) : null,
+      pct: pct > 0 ? pct : null,
+      code: tierCode(ribbonTiers, ribbonUnits),
+    };
+  })();
+  const ribbonTotal = ribbonOffer.total;
+  const setRibbon = (id: string, q: number) => {
+    setAdded(false);
+    // On the ribbon's own page, picking a colour brings its photo to the gallery.
+    if (ribbonOnly && q === 1 && !ribbonQty[id]) window.dispatchEvent(new CustomEvent("ne:variant", { detail: { variantId: id } }));
+    setRibbonQty((prev) => {
+      const next = { ...prev };
+      if (q <= 0) delete next[id];
+      else next[id] = Math.min(20, q);
+      return next;
+    });
+  };
   const initial = view.variants.find((v) => v.id === view.defaultVariantId) ?? view.variants[0]!;
   const [selection, setSelection] = useState<Record<string, string>>(initial.options);
   const [qty, setQty] = useState(1);
@@ -735,11 +774,13 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   /** What the shopper pays: Shopify's price × quantity, less the bundle step (checkout applies the matching code). */
   const bundleTotal = bundle && bundleLines.length ? (tiers ? tierPrice(bundleList, tiers, count) : bundleList) : 0;
   const bundleComplete = bundle ? bundleQty === count : true;
-  const canBuy = bundle
-    ? bundleComplete && bundleLines.every((l) => l.variant.availableForSale)
-    : Boolean(variant?.availableForSale);
+  const canBuy = ribbonOnly
+    ? ribbonUnits > 0
+    : bundle
+      ? bundleComplete && bundleLines.every((l) => l.variant.availableForSale)
+      : Boolean(variant?.availableForSale);
   /** What the order costs right now (all cameras), for the shipping strip, the button and the sticky bar. */
-  const orderTotal = bundle ? bundleTotal : variant ? variant.price * (hasPack ? 1 : qty) : 0;
+  const orderTotal = (ribbonOnly ? 0 : bundle ? bundleTotal : variant ? variant.price * (hasPack ? 1 : qty) : 0) + ribbonTotal;
 
   /** The scarcest variant in the order, when it is genuinely low (real Shopify stock only). */
   const lowStock = (() => {
@@ -793,8 +834,8 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   const currentOffer = bundle ? offerFor(count, coloursFor(count)) : null;
 
   /** Struck-through value and saving shown in the floating bar. */
-  const stickyCompare = bundle ? (currentOffer?.compare ?? null) : (variant?.compareAtPrice ?? null);
-  const stickyPct = bundle ? (currentOffer?.pct ?? null) : (variant?.compareAtPercent ?? null);
+  const stickyCompare = ribbonOnly ? ribbonOffer.compare : bundle ? (currentOffer?.compare ?? null) : (variant?.compareAtPrice ?? null);
+  const stickyPct = ribbonOnly ? ribbonOffer.pct : bundle ? (currentOffer?.pct ?? null) : (variant?.compareAtPercent ?? null);
 
   /** The template-pack choices (e.g. 4 or 12), each with its per-camera price for the current colour. */
   const packChoices: PackChoice[] =
@@ -918,7 +959,38 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
     return view.variants.some((v) => v.options[name] === value && v.availableForSale);
   };
 
+  /** Puts the chosen ribbons in the bag as one group (replacing the ribbons already there). */
+  const addRibbons = () => {
+    const rv = baseView.multi ?? baseView.addon;
+    if (!rv) return;
+    const entries = rv.variants
+      .filter((v) => (ribbonQty[v.id] ?? 0) > 0)
+      .map((v) => ({
+        variantId: v.id,
+        quantity: ribbonQty[v.id]!,
+        snapshot: {
+          productName: rv.name,
+          variantLabel: v.label,
+          price: v.price,
+          compareAtPrice: null,
+          image: v.image ?? rv.image,
+          href: `${rv.href}?variant=${numericId(v.id)}`,
+          available: true,
+          productId: rv.productId,
+          category: view.category.title,
+        },
+      }));
+    if (entries.length) addBundle(entries, rv.variants.map((v) => v.id));
+  };
+
   const onAdd = () => {
+    if (ribbonOnly) {
+      if (!canBuy) return;
+      addRibbons();
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 2200);
+      return;
+    }
     if (bundle) {
       if (!canBuy) return;
       // One bundle per product: a new size or colours replaces the one already in the bag.
@@ -940,6 +1012,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
         })),
         view.variants.map((v) => v.id),
       );
+      addRibbons();
       setAdded(true);
       window.setTimeout(() => setAdded(false), 2200);
       return;
@@ -956,37 +1029,34 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
       productId: view.productId,
       category: view.category.title,
     });
+    // Ribbons ride along as their own lines (a separate product in Shopify).
+    addRibbons();
     setAdded(true);
     window.setTimeout(() => setAdded(false), 2200);
   };
 
-  const priceBlock = useMemo(() => {
-    // Bundles show their own discounted price (with the saving) above the shipping strip instead.
-    if (!variant || hasPack || bundle) return null;
-    return (
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <p className="numeral text-[2rem] leading-none font-semibold text-berry-600" aria-live="polite">
-          {formatMoney(variant.price, view.currency)}
-        </p>
-        {variant.compareAtPrice && (
-          <s className="numeral text-[1.1rem] text-ink-faint">{formatMoney(variant.compareAtPrice, view.currency)}</s>
-        )}
-        {variant.compareAtPercent && (
-          <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">
-            −{variant.compareAtPercent}% OFF
-          </span>
-        )}
-      </div>
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, hasPack, bundle?.option, view.currency]);
+  /** "Your price" for a plain product (with any ribbons ticked): shown above the shipping strip, like the bundle page. */
+  const plainOffer = (() => {
+    if (!variant || bundle || ribbonOnly || hasPack) return null;
+    const q = hasPack ? 1 : qty;
+    const base = variant.price * q;
+    const ribbonOriginal = ribbonOffer.units > 0 ? (ribbonOffer.compare ?? ribbonOffer.total) : 0;
+    const total = round2(base + ribbonTotal);
+    const compare = round2((variant.compareAtPrice ?? variant.price) * q + ribbonOriginal);
+    const on = compare > total + 0.009;
+    return {
+      total,
+      compare: on ? compare : null,
+      pct: on ? Math.round((1 - total / compare) * 100) : null,
+      line: `${q > 1 ? `${q} × ` : ""}${variant.label || view.name}${ribbonOffer.units ? ` + ${ribbonOffer.units} ribbon${ribbonOffer.units === 1 ? "" : "s"}` : ""}`,
+    };
+  })();
 
   return (
     <div className={cn(pricesLoading && "[&_.numeral]:animate-pulse")}>
-      {priceBlock && <div className="mb-7">{priceBlock}</div>}
-
       <div className="space-y-7">
         {view.options.map((option) => {
+          if (ribbonOnly) return null;
           if (option.name === view.packOptionName) {
             return (
               <PackCards
@@ -1026,13 +1096,14 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             <fieldset key={option.name} className="min-w-0">
               <legend className="mb-3 flex w-full items-baseline justify-between text-[0.95rem] font-semibold">
                 {option.label}
-                <span className="font-normal text-ink-soft">{selection[option.name]}</span>
+                <span className="font-normal text-ink-soft">{view.story?.valueLabels[selection[option.name]!] ?? selection[option.name]}</span>
               </legend>
               <div className="flex flex-wrap gap-2.5">
                 {option.values.map((value) => {
                   const available = optionAvailable(option.name, value);
                   const checked = selection[option.name] === value;
-                  const swatch = swatchFor(value);
+                  const shown = view.story?.valueLabels[value] ?? value;
+                  const swatch = swatchFor(shown) ?? swatchFor(value);
                   return (
                     <label
                       key={value}
@@ -1059,7 +1130,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
                           style={{ background: swatch }}
                         />
                       )}
-                      <span className={cn(!available && "line-through decoration-1")}>{value}</span>
+                      <span className={cn(!available && "line-through decoration-1")}>{shown}</span>
                       {!available && (
                         <span id={`${option.name}-${value}-na`} className="sr-only">
                           sold out
@@ -1072,9 +1143,64 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             </fieldset>
           );
         })}
+        {view.story?.box && !ribbonOnly && <BoxContents box={view.story.box} />}
+        {ribbonView && (
+          <RibbonPicker addon={ribbonView} currency={view.currency} quantities={ribbonQty} offer={ribbonOffer} optional={!ribbonOnly} onChange={setRibbon} />
+        )}
       </div>
 
       <div className="mt-8 space-y-3">
+        {plainOffer && (
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3 shadow-soft ring-1 ring-line" aria-live="polite">
+            <div className="min-w-0">
+              <p className="text-[0.66rem] font-bold tracking-[0.12em] text-ink-soft uppercase">Your price</p>
+              <p className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 tabular-nums">
+                <span key={plainOffer.total} className="numeral text-[1.9rem] leading-none font-semibold text-berry-600 motion-safe:animate-[pop_0.5s_var(--ease-spring)_both]">
+                  {formatMoney(plainOffer.total, view.currency)}
+                </span>
+                {plainOffer.compare != null && <s className="text-[1.05rem] text-ink-faint">{formatMoney(plainOffer.compare, view.currency)}</s>}
+              </p>
+              <p className="mt-1.5 text-[0.74rem] text-ink-soft">
+                {plainOffer.line}
+                {ribbonOffer.code && <> · code <span className="numeral font-semibold tracking-wide text-berry-600">{ribbonOffer.code}</span> applied</>}
+              </p>
+            </div>
+            {plainOffer.pct != null && plainOffer.compare != null && (
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {plainOffer.pct}%</span>
+                <span className="text-[0.72rem] font-semibold text-pine-700 tabular-nums">
+                  You save {formatMoney(round2(plainOffer.compare - plainOffer.total), view.currency)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        {ribbonOnly && ribbonOffer.units > 0 && (
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3 shadow-soft ring-1 ring-line" aria-live="polite">
+            <div className="min-w-0">
+              <p className="text-[0.66rem] font-bold tracking-[0.12em] text-ink-soft uppercase">Your price</p>
+              <p className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 tabular-nums">
+                <span key={ribbonOffer.total} className="numeral text-[1.9rem] leading-none font-semibold text-berry-600 motion-safe:animate-[pop_0.5s_var(--ease-spring)_both]">
+                  {formatMoney(ribbonOffer.total, view.currency)}
+                </span>
+                {ribbonOffer.compare != null && <s className="text-[1.05rem] text-ink-faint">{formatMoney(ribbonOffer.compare, view.currency)}</s>}
+              </p>
+              <p className="mt-1.5 text-[0.74rem] text-ink-soft">
+                {ribbonOffer.units} ribbon{ribbonOffer.units === 1 ? "" : "s"}
+                {ribbonOffer.units > 1 && ` · ${formatMoney(Math.floor((ribbonOffer.total / ribbonOffer.units) * 100 + 1e-6) / 100, view.currency)} each`}
+                {ribbonOffer.code && <> · code <span className="numeral font-semibold tracking-wide text-berry-600">{ribbonOffer.code}</span> applied</>}
+              </p>
+            </div>
+            {ribbonOffer.pct != null && ribbonOffer.compare != null && (
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {ribbonOffer.pct}%</span>
+                <span className="text-[0.72rem] font-semibold text-pine-700 tabular-nums">
+                  You save {formatMoney(round2(ribbonOffer.compare - ribbonOffer.total), view.currency)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
         {bundle && currentOffer && (
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3 shadow-soft ring-1 ring-line" aria-live="polite">
             <div className="min-w-0">
@@ -1109,7 +1235,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
         {lowStock && <LowStockAlert left={lowStock.left} wanted={lowStock.wanted} />}
 
         <div className="flex gap-3">
-          {!hasPack && !bundle && (
+          {!hasPack && !bundle && !ribbonOnly && (
             <div className="flex shrink-0 items-center rounded-full border border-line bg-surface">
               <button
                 type="button"
@@ -1139,7 +1265,9 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             onClick={onAdd}
             disabled={!canBuy}
           >
-            {!variant || (bundle && !bundleComplete) ? (
+            {ribbonOnly && ribbonUnits === 0 ? (
+              "Pick your ribbons"
+            ) : !variant || (bundle && !bundleComplete) ? (
               "Choose your options"
             ) : !canBuy ? (
               "Sold out"
@@ -1177,7 +1305,13 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
           {/* The cameras in the bag, fanned like the bundle card (fixed width, so the text never gets pushed) */}
           <span className="relative size-14 shrink-0 sm:size-16">
             <Fan
-              images={bundle ? picks.slice(0, count).map(colourImage) : [variant?.image ?? view.cardImage?.url ?? null]}
+              images={
+                ribbonOnly
+                  ? (ribbonView!.variants.filter((v) => ribbonQty[v.id]).map((v) => v.image).slice(0, 3).concat(null).slice(0, Math.max(1, Math.min(3, Object.keys(ribbonQty).length))))
+                  : bundle
+                    ? picks.slice(0, count).map(colourImage)
+                    : [variant?.image ?? view.cardImage?.url ?? null]
+              }
               size="64px"
             />
           </span>
@@ -1185,7 +1319,9 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             <p className="truncate text-[0.82rem] sm:text-[0.86rem] leading-tight font-semibold">
               {bundle
                 ? `${count} ${bundle.noun}${count === 1 ? ` · ${shortName(picks[0]!)}` : "s"}`
-                : variant?.label || view.name}
+                : ribbonOnly
+                  ? `${ribbonUnits || "No"} ribbon${ribbonUnits === 1 ? "" : "s"}`
+                  : `${variant?.label || view.name}${ribbonUnits ? ` + ${ribbonUnits} ribbon${ribbonUnits === 1 ? "" : "s"}` : ""}`}
             </p>
             {variant && (
               <p className="mt-0.5 flex min-w-0 items-center gap-x-1.5 overflow-hidden whitespace-nowrap tabular-nums">

@@ -1,4 +1,5 @@
 import type { ProductRecord, ProductStory } from "@/lib/catalog/types";
+import { buildAddonView, type ViewAddon } from "@/lib/commerce/addon";
 import { plainText, sanitizeHtml } from "@/lib/utils";
 
 /**
@@ -67,6 +68,10 @@ export type ProductView = {
   summary: string;
   giftFor: string | null;
   story: ProductStory | null;
+  /** An optional extra sold alongside this product (see story.addon), or null. */
+  addon: ViewAddon | null;
+  /** For a "pick any colours, any quantity" product (ribbons): its own variants as a picker; null otherwise. */
+  multi: ViewAddon | null;
 };
 
 /** The light shape product cards, the menu and search need. */
@@ -130,6 +135,7 @@ export function buildProductView(
   record: ProductRecord,
   currency: string,
   category: { slug: string; title: string },
+  addonRecord: ProductRecord | null = null,
 ): ProductView {
   const packName =
     record.options.find((o) => PACK_OPTION.test(o.name.trim()) && o.values.length > 1)?.name ?? null;
@@ -200,6 +206,22 @@ export function buildProductView(
     summary: record.seo.description || plainText(record.descriptionHtml, 220),
     giftFor: record.giftFor,
     story: record.story ?? null,
+    multi: record.story?.multi
+      ? buildAddonView(record, {
+          name: record.story.shortName || record.title,
+          intro: "",
+          discounts: record.story.multi.discounts,
+          codePrefix: record.story.multi.codePrefix,
+        })
+      : null,
+    addon:
+      addonRecord && record.story?.addon
+        ? buildAddonView(addonRecord, {
+            ...record.story.addon,
+            discounts: addonRecord.story?.multi?.discounts ?? [],
+            codePrefix: addonRecord.story?.multi?.codePrefix ?? "",
+          })
+        : null,
   };
 }
 

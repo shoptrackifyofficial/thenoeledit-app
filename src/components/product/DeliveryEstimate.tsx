@@ -1,48 +1,18 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 import { Icon, type IconName } from "@/components/ui/Icon";
 
-const fmt = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" });
-const fmtDay = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
-
-/** `days` working days (Mon–Fri) after `from`. */
-function addWorkingDays(from: Date, days: number): Date {
-  const d = new Date(from);
-  let left = days;
-  while (left > 0) {
-    d.setDate(d.getDate() + 1);
-    const dow = d.getDay();
-    if (dow !== 0 && dow !== 6) left -= 1;
-  }
-  return d;
-}
-
 /**
- * Delivery panel for the product page: a three-step track (order today →
- * we pack it → it arrives between two dates, counted in working days from
- * today) and a gentle nudge to order early so Christmas week isn't a rush.
- * Dates are worked out in the browser, so they are always "from today" for the
- * visitor; until then the plain "3–7 working days" is shown.
+ * Delivery panel for the product page: a three-step track (order → we pack it →
+ * it arrives) with the delivery time as a range of working days, and a gentle
+ * nudge to order early so Christmas week isn't a rush. Set the range in
+ * content/site.ts (`delivery.minDays` / `maxDays`).
  */
 export function DeliveryEstimate({ minDays, maxDays }: { minDays: number; maxDays: number }) {
-  const [range, setRange] = useState<{ today: string; from: string; to: string } | null>(null);
-
-  useEffect(() => {
-    const now = new Date();
-    setRange({
-      today: fmtDay.format(now),
-      from: fmt.format(addWorkingDays(now, minDays)),
-      to: fmt.format(addWorkingDays(now, maxDays)),
-    });
-  }, [minDays, maxDays]);
-
   const steps: { icon: IconName; title: string; note: string }[] = [
-    { icon: "bag", title: "Order today", note: range?.today ?? "Now" },
+    { icon: "bag", title: "Order", note: "Place it today" },
     { icon: "gift", title: "Packed & shipped", note: "Tracking by email" },
-    { icon: "truck", title: "Arrives", note: "At your door" },
+    { icon: "truck", title: "Arrives", note: `${minDays}–${maxDays} working days` },
   ];
 
   return (
@@ -53,17 +23,9 @@ export function DeliveryEstimate({ minDays, maxDays }: { minDays: number; maxDay
             Estimated delivery
           </h3>
           <p className="numeral mt-1.5 text-[1.3rem] leading-tight font-semibold text-ink tabular-nums">
-            {range ? (
-              <>
-                {range.from} <span className="text-ink-faint">–</span> {range.to}
-              </>
-            ) : (
-              <>
-                {minDays}–{maxDays} working days
-              </>
-            )}
+            {minDays}–{maxDays} working days
           </p>
-          <p className="mt-0.5 text-[0.76rem] text-ink-soft">{minDays}–{maxDays} working days from today</p>
+          <p className="mt-0.5 text-[0.76rem] text-ink-soft">Counted from the day you order</p>
         </div>
         <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-berry-50 text-berry-600 ring-1 ring-berry-100">
           <Icon name="truck" className="size-6" strokeWidth={1.5} />
