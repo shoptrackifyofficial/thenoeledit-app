@@ -54,7 +54,7 @@ export function HeaderShell({ announcement, children }: { announcement: ReactNod
         <div
           data-scrolled={scrolled}
           data-over-hero={isHome && !scrolled}
-          className="header-pill group/header relative mx-auto grid h-(--header-h) max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-full bg-white/65 px-1.5 shadow-[0_0_0_1px_rgb(239_226_217/0.7)] backdrop-blur-xl backdrop-saturate-150 sm:px-3"
+          className="header-pill group/header relative mx-auto grid h-(--header-h) max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-full bg-surface/70 px-1.5 shadow-[0_0_0_1px_rgb(255_255_255/0.08)] backdrop-blur-xl backdrop-saturate-150 sm:px-3"
         >
           {children}
         </div>
@@ -118,7 +118,7 @@ export function DesktopNav({ menu }: { menu: MenuData }) {
               aria-expanded={open}
               aria-controls={`${id}-panel`}
               onClick={() => setOpen((o) => !o)}
-              className="flex h-10 items-center gap-1.5 rounded-full px-4 transition-colors hover:bg-berry-50 hover:text-berry-700 aria-expanded:bg-berry-50 aria-expanded:text-berry-700"
+              className="flex h-10 items-center gap-1.5 rounded-full px-4 transition-colors hover:bg-berry-50 hover:text-berry-500 aria-expanded:bg-berry-50 aria-expanded:text-berry-500"
             >
               Shop
               <Icon
@@ -130,7 +130,7 @@ export function DesktopNav({ menu }: { menu: MenuData }) {
           </li>
           {quick.map((c) => (
             <li key={c.slug}>
-              <Link href={c.href} className="flex h-10 items-center rounded-full px-4 transition-colors hover:bg-berry-50 hover:text-berry-700">
+              <Link href={c.href} className="flex h-10 items-center rounded-full px-4 transition-colors hover:bg-berry-50 hover:text-berry-500">
                 {c.title}
               </Link>
             </li>
@@ -150,7 +150,7 @@ export function DesktopNav({ menu }: { menu: MenuData }) {
         onPointerEnter={enter}
         className="absolute inset-x-0 top-full z-40 pt-3"
       >
-        <div className="mega-in mx-auto grid grid-cols-[250px_1fr_280px] overflow-hidden rounded-[1.75rem] bg-white text-ink shadow-lift ring-1 ring-line">
+        <div className="mega-in mx-auto grid grid-cols-[250px_1fr_280px] overflow-hidden rounded-[1.75rem] bg-surface text-ink shadow-lift ring-1 ring-line">
           {/* Categories */}
           <ul className="flex flex-col gap-0.5 border-r border-line bg-cream/70 p-3">
             <li className="kicker px-3 pt-2 pb-3">Shop by category</li>
@@ -162,7 +162,7 @@ export function DesktopNav({ menu }: { menu: MenuData }) {
                   onFocus={() => setActive(i)}
                   className={cn(
                     "group flex items-center justify-between rounded-xl px-3 py-2.5 transition-colors",
-                    i === active ? "bg-white shadow-soft" : "hover:bg-white/60",
+                    i === active ? "bg-surface shadow-soft" : "hover:bg-surface/60",
                   )}
                 >
                   <span>
@@ -290,7 +290,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
           if (e.target === ref.current) setOpen(false);
         }}
         aria-label="Menu"
-        className="fixed inset-y-0 left-0 m-0 h-dvh max-h-dvh w-[92%] max-w-[400px] rounded-r-[1.75rem] bg-paper p-0 text-ink backdrop:bg-ink/40 backdrop:backdrop-blur-[3px] open:flex open:animate-[sheet-in_0.45s_var(--ease-out-soft)] open:flex-col"
+        className="fixed inset-y-0 left-0 m-0 h-dvh max-h-dvh w-[92%] max-w-[400px] rounded-r-[1.75rem] bg-paper p-0 text-ink backdrop:bg-pine-950/45 backdrop:backdrop-blur-[3px] open:flex open:animate-[sheet-in_0.45s_var(--ease-out-soft)] open:flex-col"
       >
         <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
           {level ? (
@@ -303,7 +303,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
             </button>
           ) : (
             <span className="flex items-center gap-2.5">
-              <Image src="/logo-200.webp" alt="" width={40} height={40} className="size-10" />
+              <Image src="/logo-200.webp" alt="" width={40} height={40} className="size-10 rounded-full bg-snow p-0.5" />
               <span className="font-display text-[1.2rem]">The Noel Edit</span>
             </span>
           )}
@@ -345,7 +345,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
                     onClick={() => setLevel(c)}
                     className="flex w-full items-center gap-4 py-3 text-left"
                   >
-                    <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-cream shadow-soft ring-2 ring-white">
+                    <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-cream shadow-soft ring-2 ring-surface">
                       <Image src={c.image} alt="" fill sizes="56px" className="object-cover" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -359,23 +359,23 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
             </ul>
             <ul className="mt-6 grid grid-cols-2 gap-2 text-[0.85rem] font-semibold">
               <li>
-                <Link href="/shop?budget=25" className="flex h-11 items-center justify-center rounded-full bg-berry-50 text-berry-700">Under $25</Link>
+                <Link href="/shop?budget=25" className="flex h-11 items-center justify-center rounded-full bg-berry-50 text-berry-500">Under $25</Link>
               </li>
               <li>
-                <Link href="/shop?budget=50" className="flex h-11 items-center justify-center rounded-full bg-berry-50 text-berry-700">Under $50</Link>
+                <Link href="/shop?budget=50" className="flex h-11 items-center justify-center rounded-full bg-berry-50 text-berry-500">Under $50</Link>
               </li>
               <li>
-                <Link href="/search" className="flex h-11 items-center justify-center gap-2 rounded-full border border-line bg-white">
+                <Link href="/search" className="flex h-11 items-center justify-center gap-2 rounded-full border border-line bg-surface">
                   <Icon name="search" className="size-4" /> Search
                 </Link>
               </li>
               <li>
                 {accountUrl ? (
-                  <a href={accountUrl} className="flex h-11 items-center justify-center gap-2 rounded-full border border-line bg-white">
+                  <a href={accountUrl} className="flex h-11 items-center justify-center gap-2 rounded-full border border-line bg-surface">
                     <Icon name="user" className="size-4" /> Account
                   </a>
                 ) : (
-                  <Link href="/pages/contact" className="flex h-11 items-center justify-center gap-2 rounded-full border border-line bg-white">
+                  <Link href="/pages/contact" className="flex h-11 items-center justify-center gap-2 rounded-full border border-line bg-surface">
                     <Icon name="mail" className="size-4" /> Contact
                   </Link>
                 )}
@@ -439,7 +439,7 @@ export function BagButton() {
     >
       <Icon name="bag" />
       {hydrated && count > 0 && (
-        <span className="absolute top-1 right-0.5 grid min-w-5 animate-[pop_0.4s_var(--ease-spring)] place-items-center rounded-full bg-berry-600 px-1 text-[0.66rem] leading-5 font-bold text-snow tabular-nums ring-2 ring-white">
+        <span className="absolute top-1 right-0.5 grid min-w-5 animate-[pop_0.4s_var(--ease-spring)] place-items-center rounded-full bg-berry-600 px-1 text-[0.66rem] leading-5 font-bold text-snow tabular-nums ring-2 ring-surface">
           {count}
         </span>
       )}

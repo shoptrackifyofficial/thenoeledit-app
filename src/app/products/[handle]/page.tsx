@@ -128,7 +128,7 @@ export default async function ProductPage({ params }: Props) {
               {trust.map((t) => (
                 <li
                   key={t.text}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-berry-50 px-3 py-1.5 text-[0.72rem] leading-none font-semibold text-berry-700"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-berry-50 px-3 py-1.5 text-[0.72rem] leading-none font-semibold text-berry-500"
                 >
                   <Icon name={t.icon} className="size-3.5" />
                   {t.text}
@@ -227,7 +227,7 @@ export default async function ProductPage({ params }: Props) {
                 ["Category", view.category.title],
                 ["Gift wrap", "Free, with card"],
               ].map(([k, v]) => (
-                <div key={k} className="bg-white p-3.5">
+                <div key={k} className="bg-surface p-3.5">
                   <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">{k}</dt>
                   <dd className="mt-0.5 font-semibold">{v}</dd>
                 </div>

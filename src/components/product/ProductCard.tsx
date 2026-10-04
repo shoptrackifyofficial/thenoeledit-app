@@ -52,11 +52,11 @@ export function ProductCard({
         {card.percentOff != null && card.percentOff > 0 && (
           <span className="absolute top-2.5 left-2.5 inline-flex -rotate-3 items-center gap-1.5 rounded-[0.35rem_999px_999px_0.35rem] bg-berry-600 py-1 pr-2.5 pl-1.5 text-[0.7rem] leading-none font-bold text-snow shadow-ribbon">
             {/* gift-tag hole */}
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-white/85" />−{card.percentOff}%
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-surface/85" />−{card.percentOff}%
           </span>
         )}
         {!card.available && (
-          <span className="absolute top-2.5 right-2.5 rounded-full bg-white/90 px-2.5 py-1 text-[0.66rem] font-bold tracking-wide text-ink uppercase backdrop-blur">
+          <span className="absolute top-2.5 right-2.5 rounded-full bg-surface/90 px-2.5 py-1 text-[0.66rem] font-bold tracking-wide text-ink uppercase backdrop-blur">
             Sold out
           </span>
         )}
@@ -67,7 +67,7 @@ export function ProductCard({
         <h3 className="mt-0.5 line-clamp-2 text-[0.9rem] leading-snug font-semibold sm:text-[0.95rem]">
           <Link
             href={card.href}
-            className="transition-colors after:absolute after:inset-0 after:z-[1] after:rounded-[1.25rem] group-hover:text-berry-700"
+            className="transition-colors after:absolute after:inset-0 after:z-[1] after:rounded-[1.25rem] group-hover:text-berry-500"
           >
             {card.name}
           </Link>

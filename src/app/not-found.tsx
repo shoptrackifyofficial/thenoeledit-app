@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 export default function NotFound() {
   return (
     <div className="container-page flex min-h-[64vh] flex-col items-center justify-center py-20 text-center">
-      <Image src="/logo-200.webp" alt="" width={200} height={200} className="mb-5 size-24 animate-float [--r:-6deg]" />
+      <Image src="/logo-200.webp" alt="" width={200} height={200} className="mb-5 size-24 rounded-full bg-snow p-1 animate-float [--r:-6deg]" />
       <p className="kicker mb-3">Oh, snow!</p>
       <h1 className="display-lg">
         This page slipped <span className="accent text-berry-600">off the sleigh</span>

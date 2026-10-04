@@ -58,7 +58,7 @@ export function Countdown({
           className={cn(
             "flex flex-col items-center rounded-xl",
             z.cell,
-            tone === "light" ? "bg-white/12 ring-1 ring-white/15" : "bg-white text-ink shadow-soft ring-1 ring-line",
+            tone === "light" ? "bg-white/12 ring-1 ring-white/15" : "bg-surface text-ink shadow-soft ring-1 ring-line",
           )}
         >
           <span key={value} className={cn("numeral animate-[fade_0.4s_ease-out] leading-none font-medium", z.num)}>

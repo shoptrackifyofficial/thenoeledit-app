@@ -25,7 +25,7 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
       <div
         className={cn(
           "flex items-center gap-2 rounded-full p-1.5 ring-1",
-          tone === "dark" ? "bg-white/8 ring-white/20 focus-within:ring-gold-300" : "bg-white ring-line focus-within:ring-ink",
+          tone === "dark" ? "bg-white/8 ring-white/20 focus-within:ring-gold-300" : "bg-surface ring-line focus-within:ring-ink",
         )}
       >
         <label htmlFor="newsletter-email" className="sr-only">

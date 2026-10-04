@@ -53,7 +53,7 @@ export function SearchClient({ cards, suggestions }: { cards: CardView[]; sugges
           placeholder="Candles, watches, under $50…"
           autoComplete="off"
           enterKeyHint="search"
-          className="h-14 w-full rounded-full bg-white pr-6 pl-14 text-[1rem] shadow-soft ring-1 ring-line outline-none transition-shadow focus:shadow-lift focus:ring-2 focus:ring-berry-500"
+          className="h-14 w-full rounded-full bg-surface pr-6 pl-14 text-[1rem] shadow-soft ring-1 ring-line outline-none transition-shadow focus:shadow-lift focus:ring-2 focus:ring-berry-500"
         />
       </form>
 
@@ -63,7 +63,7 @@ export function SearchClient({ cards, suggestions }: { cards: CardView[]; sugges
           <ul className="mt-3 flex flex-wrap gap-2">
             {suggestions.map((s) => (
               <li key={s.href}>
-                <Link href={s.href} className="flex h-9 items-center rounded-full bg-white px-4 text-[0.84rem] font-semibold shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow">
+                <Link href={s.href} className="flex h-9 items-center rounded-full bg-surface px-4 text-[0.84rem] font-semibold shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow">
                   {s.label}
                 </Link>
               </li>

@@ -6,6 +6,7 @@ import { display, sans } from "./fonts";
 import { Analytics } from "@/components/analytics/Analytics";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { CartProvider } from "@/components/cart/CartProvider";
+import { FlyingSleigh, SnowSky } from "@/components/decor/NightScene";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
@@ -65,6 +66,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           Skip to content
         </a>
+        <SnowSky />
+        <FlyingSleigh />
         <CartProvider>
           <Header />
           <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">

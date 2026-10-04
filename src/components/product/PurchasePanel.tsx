@@ -75,14 +75,14 @@ function PackCards({
   const surface = (c: (typeof cards)[number]) =>
     c.featured
       ? cn("bg-gold-100", c.checked ? "border-gold-600" : "border-gold-300 hover:border-gold-600")
-      : cn("bg-snow", c.checked ? "border-pine-800" : "border-line hover:border-pine-300");
+      : cn("bg-surface", c.checked ? "border-gold-500" : "border-line hover:border-pine-300");
 
   const Dot = ({ checked, featured }: { checked: boolean; featured: boolean }) => (
     <span
       aria-hidden="true"
       className={cn(
         "grid size-5 place-items-center rounded-full border-2 transition-colors",
-        checked ? (featured ? "border-gold-600 bg-gold-600" : "border-pine-800 bg-pine-800") : "border-line bg-snow",
+        checked ? (featured ? "border-gold-600 bg-gold-600" : "border-gold-500 bg-gold-500") : "border-line bg-surface",
       )}
     >
       {checked && <Icon name="check" className="size-3 text-snow" strokeWidth={3} />}
@@ -244,7 +244,7 @@ const CONFETTI = [
 
 function GiftWrapUnlocked() {
   return (
-    <div className="relative min-w-0 flex-1 basis-56 overflow-hidden rounded-xl border border-dashed border-pine-300 bg-pine-50 py-1.5 pr-3 pl-2 text-pine-800">
+    <div className="relative min-w-0 flex-1 basis-56 overflow-hidden rounded-xl border border-dashed border-pine-300 bg-pine-900 py-1.5 pr-3 pl-2 text-pine-200">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/70 to-transparent motion-safe:animate-[sweep_3.6s_ease-in-out_infinite]"
@@ -410,7 +410,7 @@ export function PurchasePanel({ view }: { view: ProductView }) {
                       className={cn(
                         "relative flex min-h-12 cursor-pointer items-center gap-2.5 rounded-full border-2 py-2 pr-5 pl-2.5 text-[0.9rem] font-medium transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
                         !swatch && "pl-5",
-                        checked ? "border-pine-800 bg-pine-50" : "border-line bg-snow hover:border-pine-300",
+                        checked ? "border-gold-500 bg-pine-900" : "border-line bg-surface hover:border-pine-300",
                         !available && "text-ink-faint",
                       )}
                     >
@@ -457,7 +457,7 @@ export function PurchasePanel({ view }: { view: ProductView }) {
 
         <div className="flex gap-3">
           {!hasPack && (
-            <div className="flex shrink-0 items-center rounded-full border border-line bg-snow">
+            <div className="flex shrink-0 items-center rounded-full border border-line bg-surface">
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}

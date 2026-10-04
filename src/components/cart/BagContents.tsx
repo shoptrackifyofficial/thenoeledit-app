@@ -67,7 +67,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
               ? "You've unlocked free tracked delivery"
               : `Add ${formatMoney(remaining, currency)} for free delivery`}
           </p>
-          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white" aria-hidden="true">
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-surface" aria-hidden="true">
             <div
               className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
               style={{ width: `${progress * 100}%` }}
@@ -164,7 +164,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
               maxLength={240}
               rows={2}
               placeholder="Merry Christmas! Love, …"
-              className="mt-1.5 w-full resize-none rounded-xl border border-line bg-white px-3 py-2.5 text-[0.9rem] outline-none focus:border-berry-500"
+              className="mt-1.5 w-full resize-none rounded-xl border border-line bg-surface px-3 py-2.5 text-[0.9rem] outline-none focus:border-berry-500"
             />
           </label>
         </fieldset>
@@ -174,7 +174,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
         className={cn(
           variant === "drawer"
             ? "border-t border-line bg-paper px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
-            : "rounded-[1.75rem] bg-white p-6 shadow-soft ring-1 ring-line lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]",
+            : "rounded-[1.75rem] bg-surface p-6 shadow-soft ring-1 ring-line lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]",
         )}
       >
         <dl className="space-y-1.5 text-[0.92rem]">

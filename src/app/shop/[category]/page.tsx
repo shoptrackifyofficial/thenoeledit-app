@@ -61,7 +61,7 @@ export default async function CategoryPage({ params }: Props) {
             <h1 className="display-lg">{c.title}</h1>
             <p className="mx-auto mt-3 max-w-xl text-ink-soft sm:mx-0">{c.blurb}</p>
             {/* Quick facts — a compact, quotable summary for shoppers and answer engines. */}
-            <dl className="mx-auto mt-6 grid max-w-lg sm:mx-0 grid-cols-3 divide-x divide-line rounded-2xl bg-white py-3.5 shadow-soft ring-1 ring-line">
+            <dl className="mx-auto mt-6 grid max-w-lg sm:mx-0 grid-cols-3 divide-x divide-line rounded-2xl bg-surface py-3.5 shadow-soft ring-1 ring-line">
               <div className="px-4">
                 <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">Gifts</dt>
                 <dd className="numeral mt-1 text-[1.5rem] leading-none">{cards.length}</dd>
@@ -77,7 +77,7 @@ export default async function CategoryPage({ params }: Props) {
             </dl>
           </div>
           <div className="order-1 lg:order-2">
-            <div className="relative mx-auto aspect-[16/10] w-full max-w-[520px] overflow-hidden rounded-[1.5rem] shadow-lift ring-[5px] ring-white lg:aspect-[5/4] lg:rounded-t-full lg:rounded-b-[2rem]">
+            <div className="relative mx-auto aspect-[16/10] w-full max-w-[520px] overflow-hidden rounded-[1.5rem] shadow-lift ring-[5px] ring-surface lg:aspect-[5/4] lg:rounded-t-full lg:rounded-b-[2rem]">
               <Image src={c.image} alt="" fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
             </div>
           </div>
@@ -88,7 +88,7 @@ export default async function CategoryPage({ params }: Props) {
       <nav aria-label="Categories">
         <ul className="scrollbar-none container-page flex gap-2 overflow-x-auto py-3">
           <li>
-            <Link href="/shop" className="flex h-9 items-center rounded-full bg-white px-4 text-[0.8rem] font-semibold whitespace-nowrap ring-1 ring-line hover:bg-cream">
+            <Link href="/shop" className="flex h-9 items-center rounded-full bg-surface px-4 text-[0.8rem] font-semibold whitespace-nowrap ring-1 ring-line hover:bg-cream">
               All gifts
             </Link>
           </li>
@@ -99,7 +99,7 @@ export default async function CategoryPage({ params }: Props) {
                 aria-current={x.slug === c.slug ? "page" : undefined}
                 className={cn(
                   "flex h-9 items-center rounded-full px-4 text-[0.8rem] font-semibold whitespace-nowrap",
-                  x.slug === c.slug ? "bg-berry-600 text-snow shadow-ribbon" : "bg-white ring-1 ring-line hover:bg-cream",
+                  x.slug === c.slug ? "bg-berry-600 text-snow shadow-ribbon" : "bg-surface ring-1 ring-line hover:bg-cream",
                 )}
               >
                 {x.title}

@@ -40,7 +40,7 @@ export async function Header() {
       <Link
         href="/"
         aria-label={`${site.name} — home`}
-        className="header-logo grid place-items-center justify-self-center rounded-full p-0.5 transition-[transform,background-color,box-shadow] duration-500 ease-out-soft hover:rotate-[-6deg] group-data-[over-hero=true]/header:bg-white group-data-[over-hero=true]/header:shadow-[0_6px_20px_-6px_rgb(0_0_0/0.6)]"
+        className="header-logo grid place-items-center justify-self-center rounded-full p-0.5 transition-[transform,background-color,box-shadow] duration-500 ease-out-soft hover:rotate-[-6deg] bg-snow shadow-[0_6px_20px_-6px_rgb(0_0_0/0.6)]"
       >
         <Image
           src="/logo-200.webp"

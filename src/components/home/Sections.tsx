@@ -163,7 +163,7 @@ export function CategoryOrnaments({ categories }: { categories: CategoryInfo[] }
                   <span className="mx-auto block size-2.5 rounded-full border-2 border-gold-500" />
                   <span className="-mt-0.5 block h-3 w-7 rounded-t-[0.3rem] rounded-b-sm bg-linear-to-b from-gold-300 via-gold-500 to-gold-700 shadow-sm" />
                 </span>
-                <span className="relative block size-[6.25rem] overflow-hidden rounded-full bg-cream shadow-lift ring-[3px] ring-white transition-shadow duration-500 group-hover:shadow-glow sm:size-32 lg:size-36">
+                <span className="relative block size-[6.25rem] overflow-hidden rounded-full bg-cream shadow-lift ring-[3px] ring-surface transition-shadow duration-500 group-hover:shadow-glow sm:size-32 lg:size-36">
                   <Image
                     src={c.image}
                     alt=""
@@ -321,7 +321,7 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
   const tiers = [
     { max: 25, label: "Under", tone: "bg-berry-50 text-ink", accent: "text-berry-600", hole: "bg-paper" },
     { max: 50, label: "Under", tone: "bg-gold-100 text-ink", accent: "text-gold-700", hole: "bg-paper" },
-    { max: 100, label: "Under", tone: "bg-pine-100 text-ink", accent: "text-pine-700", hole: "bg-paper" },
+    { max: 100, label: "Under", tone: "bg-pine-900 text-snow", accent: "text-gold-300", hole: "bg-paper" },
     { max: 0, label: "Luxe", tone: "bg-berry-600 text-snow", accent: "text-gold-200", hole: "bg-paper" },
   ].map((t) => ({
     ...t,
@@ -382,7 +382,7 @@ export function WrappedStory() {
     <section aria-labelledby="wrap-title" className="section-y overflow-hidden bg-cream">
       <div className="container-page grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
         <div className="reveal relative mx-auto w-full max-w-[440px]">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2rem] bg-pine-900 shadow-lift ring-[6px] ring-white">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2rem] bg-pine-900 shadow-lift ring-[6px] ring-surface">
             <Image
               src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?fit=crop&crop=entropy&ar=4:5"
               alt="Gifts tied with gold satin ribbon"
@@ -392,7 +392,7 @@ export function WrappedStory() {
             />
           </div>
           {/* Gift tag */}
-          <div className="absolute -bottom-5 -left-1 w-[58%] max-w-[230px] animate-float rounded-[0.6rem_1.4rem_1.4rem_0.6rem] bg-white p-4 shadow-lift ring-1 ring-line [--r:-6deg] sm:-left-8">
+          <div className="absolute -bottom-5 -left-1 w-[58%] max-w-[230px] animate-float rounded-[0.6rem_1.4rem_1.4rem_0.6rem] bg-surface p-4 shadow-lift ring-1 ring-line [--r:-6deg] sm:-left-8">
             <span className="absolute top-1/2 left-3 size-2.5 -translate-y-1/2 rounded-full bg-cream ring-1 ring-line" aria-hidden="true" />
             <div className="pl-4">
               <p className="text-[0.6rem] font-bold tracking-[0.2em] text-ink-faint uppercase">To</p>
@@ -401,7 +401,7 @@ export function WrappedStory() {
               <p className="accent text-[1.2rem] leading-tight">you, with love</p>
             </div>
           </div>
-          <span className="absolute -top-3 right-0 grid size-[4.5rem] place-items-center rounded-full bg-white p-1 shadow-lift sm:size-24" aria-hidden="true">
+          <span className="absolute -top-3 right-0 grid size-[4.5rem] place-items-center rounded-full bg-snow p-1 shadow-lift sm:size-24" aria-hidden="true">
             <Image src="/logo-200.webp" alt="" width={200} height={200} sizes="96px" className="size-full animate-[spin_30s_linear_infinite]" />
           </span>
         </div>
@@ -417,7 +417,7 @@ export function WrappedStory() {
           </p>
           <ul className="mt-7 grid w-full gap-2.5 text-left sm:grid-cols-2">
             {site.promises.map((p) => (
-              <li key={p.title} className="flex gap-3.5 rounded-2xl bg-white p-3.5 shadow-soft ring-1 ring-line/70">
+              <li key={p.title} className="flex gap-3.5 rounded-2xl bg-surface p-3.5 shadow-soft ring-1 ring-line/70">
                 <span className="grid size-10 shrink-0 place-items-center rounded-full bg-berry-50 text-berry-600">
                   <Icon name={p.icon} className="size-[1.1rem]" />
                 </span>
@@ -462,7 +462,7 @@ export function DeliveryTimeline() {
           action={{ href: "/pages/shipping", label: "Delivery details" }}
           align="center"
         />
-        <ol className="dots relative mt-8 grid gap-3 rounded-[1.75rem] bg-white p-4 shadow-soft ring-1 ring-line sm:p-6 md:grid-cols-4 md:gap-4 md:p-8">
+        <ol className="dots relative mt-8 grid gap-3 rounded-[1.75rem] bg-surface p-4 shadow-soft ring-1 ring-line sm:p-6 md:grid-cols-4 md:gap-4 md:p-8">
           <span
             className="absolute top-[3.75rem] right-[14%] left-[14%] hidden border-t-2 border-dashed border-berry-200 md:block"
             aria-hidden="true"
@@ -472,11 +472,11 @@ export function DeliveryTimeline() {
               <span
                 className={cn(
                   "relative grid size-[3.75rem] shrink-0 place-items-center rounded-full",
-                  s.final ? "bg-berry-600 text-snow shadow-ribbon" : "bg-white text-berry-600 shadow-soft ring-1 ring-line",
+                  s.final ? "bg-berry-600 text-snow shadow-ribbon" : "bg-surface text-berry-600 shadow-soft ring-1 ring-line",
                 )}
               >
                 <Icon name={s.icon} className="size-6" strokeWidth={1.5} />
-                <span className="absolute -top-1 -left-1 grid size-5 place-items-center rounded-full bg-ink text-[0.62rem] font-bold text-snow tabular-nums">
+                <span className="absolute -top-1 -left-1 grid size-5 place-items-center rounded-full bg-gold-500 text-[0.62rem] font-bold text-pine-950 tabular-nums">
                   {i + 1}
                 </span>
               </span>
@@ -500,7 +500,7 @@ export function FaqList({ faqs, className }: { faqs: { q: string; a: string }[];
       {faqs.map((f) => (
         <details
           key={f.q}
-          className="group rounded-2xl bg-white px-4 ring-1 ring-line transition-shadow open:shadow-soft sm:px-5"
+          className="group rounded-2xl bg-surface px-4 ring-1 ring-line transition-shadow open:shadow-soft sm:px-5"
         >
           <summary className="flex items-center justify-between gap-5 py-3.5">
             <h3 className="text-[0.95rem] leading-snug font-semibold">{f.q}</h3>

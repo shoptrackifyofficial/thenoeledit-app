@@ -38,7 +38,7 @@ export function CartDrawer() {
         if (e.target === ref.current) close();
       }}
       aria-label="Your bag"
-      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-dvh w-[94%] max-w-[420px] rounded-l-[1.75rem] bg-paper p-0 text-ink shadow-lift backdrop:bg-ink/40 backdrop:backdrop-blur-[3px] open:flex open:animate-[drawer-in_0.5s_var(--ease-out-soft)] open:flex-col"
+      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-dvh w-[94%] max-w-[420px] rounded-l-[1.75rem] bg-paper p-0 text-ink shadow-lift backdrop:bg-pine-950/45 backdrop:backdrop-blur-[3px] open:flex open:animate-[drawer-in_0.5s_var(--ease-out-soft)] open:flex-col"
     >
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <p className="display-md">

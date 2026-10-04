@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
 /* ───────────────────────────────────────────────────────────────────────────
-   The Noel Edit — design tokens ("Velvet & Porcelain")
-   Pulled straight from the logo: velvet ribbon red, leaf gold and holly
-   green on a warm porcelain-blush paper. Light and airy by default; evergreen
-   is saved for one or two deep moments per page. Token names are kept from
-   the first theme (pine / berry / gold / cream) so every component follows.
+   The Noel Edit — design tokens ("Snow & Night")
+   Fresh-snow white pages with an icy-blue tint and midnight-navy type; the
+   deep "night" panels (hero, advent calendar, footer) are midnight navy.
+   Lit by the logo's velvet red and leaf gold. Token names are kept from the
+   first theme (paper / cream / ink / pine / berry / gold); `pine-*` now holds
+   the night-navy scale.
    ─────────────────────────────────────────────────────────────────────────── */
 
 @theme {
   /* Evergreen — holly leaves, dark sections, footer */
-  --color-pine-950: #0a1d15;
-  --color-pine-900: #0f281d;
-  --color-pine-800: #153427;
-  --color-pine-700: #1d4433;
-  --color-pine-600: #285a44;
-  --color-pine-500: #3c7259;
-  --color-pine-300: #a8c4b3;
-  --color-pine-200: #cfe0d5;
-  --color-pine-100: #e7f0ea;
-  --color-pine-50: #f3f8f5;
+  --color-pine-950: #060c1d;
+  --color-pine-900: #0b1630;
+  --color-pine-800: #13213f;
+  --color-pine-700: #1c2e55;
+  --color-pine-600: #2a4170;
+  --color-pine-500: #3d5a92;
+  --color-pine-300: #9fb0cf;
+  --color-pine-200: #c8d3e6;
+  --color-pine-100: #e4eaf4;
+  --color-pine-50: #f2f5fa;
 
   /* Velvet red — the ribbon and the lettering */
   --color-berry-900: #560915;
@@ -41,14 +42,16 @@
   --color-gold-100: #faf3e4;
 
   /* Porcelain neutrals with a whisper of blush */
-  --color-cream: #f8efe9;
-  --color-paper: #fffaf6;
-  --color-linen: #f0e3da;
-  --color-ink: #1f1613;
-  --color-ink-soft: #6a5c55;
-  --color-ink-faint: #9d8f87;
-  --color-line: #efe2d9;
+  --color-cream: #edf2f9;
+  --color-paper: #f8fafd;
+  --color-linen: #e0e8f3;
+  --color-ink: #0e1a33;
+  --color-ink-soft: #4f5d78;
+  --color-ink-faint: #8a97ad;
+  --color-line: #e2e9f3;
   --color-snow: #ffffff;
+  --color-surface: #ffffff;
+  --color-midnight: #050914;
 
   --font-display: var(--ff-display), Georgia, serif;
   --font-sans: var(--ff-sans), ui-sans-serif, system-ui, sans-serif;
@@ -60,10 +63,10 @@
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --shadow-soft: 0 1px 2px rgb(31 22 19 / 0.04), 0 6px 20px -10px rgb(31 22 19 / 0.12);
-  --shadow-lift: 0 2px 4px rgb(31 22 19 / 0.04), 0 22px 44px -18px rgb(31 22 19 / 0.22);
+  --shadow-soft: 0 1px 2px rgb(14 26 51 / 0.05), 0 8px 22px -12px rgb(14 26 51 / 0.16);
+  --shadow-lift: 0 2px 4px rgb(14 26 51 / 0.05), 0 22px 44px -18px rgb(14 26 51 / 0.28);
   --shadow-glow: 0 0 0 1px rgb(201 163 90 / 0.35), 0 16px 40px -16px rgb(173 28 50 / 0.35);
-  --shadow-ribbon: 0 10px 30px -10px rgb(173 28 50 / 0.55);
+  --shadow-ribbon: 0 10px 30px -10px rgb(173 28 50 / 0.5);
 
   --animate-marquee: marquee 40s linear infinite;
   --animate-spin-slow: spin 24s linear infinite;
@@ -94,7 +97,11 @@
     scroll-padding-top: calc(var(--header-h) + 1.5rem);
   }
   body {
-    background: var(--color-paper);
+    background:
+      radial-gradient(120% 60% at 50% -10%, rgb(206 222 244 / 0.55), transparent 60%),
+      radial-gradient(70% 50% at 100% 45%, rgb(225 234 247 / 0.7), transparent 70%),
+      var(--color-paper);
+    background-attachment: fixed;
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 0.97rem;
@@ -254,9 +261,9 @@
 }
 
 @utility glass {
-  background: rgb(255 250 246 / 0.8);
-  backdrop-filter: saturate(1.5) blur(16px);
-  -webkit-backdrop-filter: saturate(1.5) blur(16px);
+  background: rgb(255 255 255 / 0.78);
+  backdrop-filter: saturate(1.5) blur(18px);
+  -webkit-backdrop-filter: saturate(1.5) blur(18px);
 }
 
 /* Very faint paper grain so large flat panels feel printed, not digital. */
@@ -269,15 +276,15 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.3;
-    mix-blend-mode: multiply;
+    opacity: 0.45;
+    mix-blend-mode: soft-light;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .28 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
 /* Soft dotted "snow on paper" pattern for light panels. */
 @utility dots {
-  background-image: radial-gradient(rgb(173 28 50 / 0.09) 1px, transparent 1.2px);
+  background-image: radial-gradient(rgb(14 26 51 / 0.07) 1px, transparent 1.2px);
   background-size: 18px 18px;
 }
 
@@ -334,23 +341,23 @@
   background: var(--color-ink);
   color: var(--color-snow);
   &:hover:not(:disabled) {
-    background: var(--color-pine-800);
+    background: var(--color-pine-700);
   }
 }
 
 @utility btn-light {
   background: var(--color-snow);
-  color: var(--color-ink);
+  color: #1f1613;
   box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.45);
   &:hover:not(:disabled) {
-    background: var(--color-berry-50);
-    color: var(--color-berry-700);
+    background: #fff1f3;
+    color: #921529;
   }
 }
 
 @utility btn-gold {
   background: linear-gradient(135deg, var(--color-gold-300), var(--color-gold-500) 60%, var(--color-gold-600));
-  color: var(--color-ink);
+  color: #1f1613;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5);
   &:hover:not(:disabled) {
     box-shadow:
@@ -372,7 +379,7 @@
 
 @utility btn-outline {
   color: var(--color-ink);
-  background: var(--color-snow);
+  background: var(--color-surface);
   box-shadow: inset 0 0 0 1px var(--color-line);
   &:hover {
     box-shadow: inset 0 0 0 1px var(--color-ink);
@@ -405,6 +412,12 @@
 
 /* ── Snowfall: pure CSS, three parallax layers, no JS ───────────────────── */
 
+.snow {
+  --flake: 255 255 255;
+}
+.snow-ice {
+  --flake: 150 176 216;
+}
 .snow,
 .snow::before,
 .snow::after {
@@ -415,10 +428,10 @@
 }
 .snow {
   background-image:
-    radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 51%),
-    radial-gradient(2px 2px at 140px 90px, rgb(255 255 255 / 0.8) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 90px 160px, #fff 50%, transparent 51%),
-    radial-gradient(2.5px 2.5px at 200px 210px, rgb(255 255 255 / 0.9) 50%, transparent 51%);
+    radial-gradient(2px 2px at 20px 30px, rgb(var(--flake)) 50%, transparent 51%),
+    radial-gradient(2px 2px at 140px 90px, rgb(var(--flake) / 0.8) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90px 160px, rgb(var(--flake)) 50%, transparent 51%),
+    radial-gradient(2.5px 2.5px at 200px 210px, rgb(var(--flake) / 0.9) 50%, transparent 51%);
   background-size: 240px 240px;
   animation: snow-fall 20s linear infinite;
   opacity: 0.55;
@@ -426,9 +439,9 @@
 .snow::before {
   content: "";
   background-image:
-    radial-gradient(3px 3px at 60px 60px, #fff 50%, transparent 51%),
-    radial-gradient(3.5px 3.5px at 250px 180px, rgb(255 255 255 / 0.85) 50%, transparent 51%),
-    radial-gradient(2.5px 2.5px at 330px 40px, #fff 50%, transparent 51%);
+    radial-gradient(3px 3px at 60px 60px, rgb(var(--flake)) 50%, transparent 51%),
+    radial-gradient(3.5px 3.5px at 250px 180px, rgb(var(--flake) / 0.85) 50%, transparent 51%),
+    radial-gradient(2.5px 2.5px at 330px 40px, rgb(var(--flake)) 50%, transparent 51%);
   background-size: 380px 380px;
   animation: snow-fall 28s linear infinite;
   filter: blur(0.4px);
@@ -436,8 +449,8 @@
 .snow::after {
   content: "";
   background-image:
-    radial-gradient(5px 5px at 120px 120px, rgb(255 255 255 / 0.7) 50%, transparent 51%),
-    radial-gradient(4px 4px at 420px 320px, rgb(255 255 255 / 0.55) 50%, transparent 51%);
+    radial-gradient(5px 5px at 120px 120px, rgb(var(--flake) / 0.7) 50%, transparent 51%),
+    radial-gradient(4px 4px at 420px 320px, rgb(var(--flake) / 0.55) 50%, transparent 51%);
   background-size: 560px 560px;
   animation: snow-fall 36s linear infinite;
   filter: blur(1.5px);
@@ -641,8 +654,8 @@
 .header-pill[data-scrolled="true"] {
   background: rgb(255 255 255 / 0.86);
   box-shadow:
-    0 0 0 1px rgb(239 226 217 / 0.9),
-    0 14px 34px -18px rgb(31 22 19 / 0.3);
+    0 0 0 1px var(--color-line),
+    0 14px 34px -18px rgb(14 26 51 / 0.3);
 }
 /* Home, before scrolling: the pill dissolves into the hero. */
 .header-pill[data-over-hero="true"] {
@@ -743,6 +756,191 @@
   }
 }
 
+/* ── Night characters (components/decor/NightScene) ──────────────────────── */
+
+/* Santa only appears where scroll-driven animations exist. */
+.sleigh-flight {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  .sleigh-flight {
+    display: block;
+    animation: sleigh-fly linear both;
+    animation-timeline: scroll(root block);
+  }
+  .gift-drop-1,
+  .gift-drop-2,
+  .gift-drop-3,
+  .gift-drop-4 {
+    opacity: 0;
+    animation: linear both;
+    animation-timeline: scroll(root block);
+  }
+  .gift-drop-1 {
+    animation-name: gift-drop-1;
+  }
+  .gift-drop-2 {
+    animation-name: gift-drop-2;
+  }
+  .gift-drop-3 {
+    animation-name: gift-drop-3;
+  }
+  .gift-drop-4 {
+    animation-name: gift-drop-4;
+  }
+}
+@keyframes sleigh-fly {
+  0% {
+    transform: translate3d(-40vw, 6vh, 0) rotate(-4deg);
+  }
+  25% {
+    transform: translate3d(15vw, -2vh, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(42vw, 3vh, 0) rotate(1deg);
+  }
+  75% {
+    transform: translate3d(70vw, -3vh, 0) rotate(-3deg);
+  }
+  100% {
+    transform: translate3d(110vw, 1vh, 0) rotate(0deg);
+  }
+}
+.sleigh-bob {
+  animation: sleigh-bob 2.6s ease-in-out infinite;
+}
+@keyframes sleigh-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+.reindeer-legs {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: gallop 0.5s ease-in-out infinite alternate;
+}
+@keyframes gallop {
+  to {
+    transform: scaleX(0.82);
+  }
+}
+
+/* Gift drops: hidden until their moment, then fall with an accelerating
+   (gravity-like) ease, tumble a little and fade as they leave the frame. */
+@keyframes gift-drop-1 {
+  0%,
+  17% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.6);
+  }
+  18% {
+    opacity: 1;
+  }
+  27% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(160deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(160deg);
+  }
+}
+@keyframes gift-drop-2 {
+  0%,
+  39% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.6);
+  }
+  40% {
+    opacity: 1;
+  }
+  49% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(-140deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(-140deg);
+  }
+}
+@keyframes gift-drop-3 {
+  0%,
+  61% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.6);
+  }
+  62% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(190deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(190deg);
+  }
+}
+@keyframes gift-drop-4 {
+  0%,
+  81% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.6);
+  }
+  82% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(-170deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 46vh, 0) rotate(-170deg);
+  }
+}
+
+/* Snowman: waves continuously, and rises into view as it scrolls in. */
+.snowman-wave {
+  transform-box: view-box;
+  transform-origin: 67px 56px;
+  animation: wave 1.6s ease-in-out infinite;
+}
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-18deg);
+  }
+}
+@supports (animation-timeline: view()) {
+  .snowman-peek {
+    animation: peek linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 90%;
+  }
+}
+@keyframes peek {
+  from {
+    transform: translateY(70%) rotate(-8deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
 /* ── Rich text from Shopify (product descriptions) ───────────────────────── */
 
 .prose-gift {
@@ -805,5 +1003,8 @@
   }
   .advent-door {
     transform: rotateY(-100deg);
+  }
+  .sleigh-flight {
+    display: none !important;
   }
 }

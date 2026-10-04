@@ -55,7 +55,7 @@ export function MobileTabBar() {
               <span className="relative">
                 <Icon name="bag" className="size-5" />
                 {hydrated && count > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 grid min-w-4.5 animate-[pop_0.4s_var(--ease-spring)] place-items-center rounded-full bg-berry-600 px-1 text-[0.6rem] leading-[1.125rem] font-bold text-snow tabular-nums ring-2 ring-white">
+                  <span className="absolute -top-1.5 -right-2.5 grid min-w-4.5 animate-[pop_0.4s_var(--ease-spring)] place-items-center rounded-full bg-berry-600 px-1 text-[0.6rem] leading-[1.125rem] font-bold text-snow tabular-nums ring-2 ring-surface">
                     {count}
                   </span>
                 )}

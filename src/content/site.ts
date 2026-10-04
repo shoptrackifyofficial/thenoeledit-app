@@ -14,7 +14,7 @@ export const site = {
   url: siteUrl,
   locale: "en_US",
   email: "hello@thenoeledit.com",
-  themeColor: "#fffaf6",
+  themeColor: "#f8fafd",
 
   sale: {
     headline: "Up to 40% off",

@@ -81,7 +81,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
 
   return (
     <div>
-      <div className="sticky top-[calc(var(--header-h)+0.75rem)] z-20 rounded-[1.4rem] bg-white/85 p-2 shadow-soft ring-1 ring-line backdrop-blur-xl sm:rounded-full">
+      <div className="sticky top-[calc(var(--header-h)+0.75rem)] z-20 rounded-[1.4rem] bg-surface/85 p-2 shadow-soft ring-1 ring-line backdrop-blur-xl sm:rounded-full">
         <div className="flex items-center gap-3">
           <ul className="scrollbar-none -my-1 flex flex-1 gap-2 overflow-x-auto py-1" aria-label="Filter by price">
             {budgets.map((b) => (
@@ -112,7 +112,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
                 }}
                 className={cn(
                   "flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[0.8rem] font-semibold whitespace-nowrap ring-1 transition-colors",
-                  inStock ? "bg-pine-100 text-pine-700 ring-pine-300" : "ring-line hover:bg-cream",
+                  inStock ? "bg-pine-800 text-pine-200 ring-pine-600" : "ring-line hover:bg-cream",
                 )}
               >
                 {inStock && <Icon name="check" className="size-3.5" strokeWidth={2.4} />}

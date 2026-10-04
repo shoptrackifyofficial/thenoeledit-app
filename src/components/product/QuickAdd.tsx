@@ -30,7 +30,7 @@ export function QuickAdd({ card, className }: { card: CardView; className?: stri
       }}
       aria-label={`Add ${card.name} to bag`}
       className={cn(
-        "grid size-10 place-items-center rounded-full bg-white text-ink shadow-lift ring-1 ring-black/5 transition-all duration-300 ease-out-soft hover:scale-110 hover:bg-berry-600 hover:text-snow active:scale-95",
+        "grid size-10 place-items-center rounded-full bg-surface text-ink shadow-lift ring-1 ring-black/5 transition-all duration-300 ease-out-soft hover:scale-110 hover:bg-berry-600 hover:text-snow active:scale-95",
         done && "animate-[pop_0.4s_var(--ease-spring)] bg-pine-600 text-snow",
         className,
       )}

@@ -284,7 +284,7 @@ function VideoSlide({ video, active }: { video: ViewVideo; active: boolean }) {
   }, [active]);
   const src = video.sources.find((s) => (s.width ?? 0) >= 720) ?? video.sources[video.sources.length - 1];
   return (
-    <div className="relative aspect-square overflow-hidden bg-ink lg:aspect-auto lg:h-(--gallery-h)">
+    <div className="relative aspect-square overflow-hidden bg-black lg:aspect-auto lg:h-(--gallery-h)">
       <video
         ref={ref}
         className="absolute inset-0 size-full object-contain"

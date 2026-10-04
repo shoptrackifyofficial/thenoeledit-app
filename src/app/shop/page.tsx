@@ -53,7 +53,7 @@ export default async function ShopPage() {
               <li key={c.slug} className="shrink-0">
                 <Link
                   href={`/shop/${c.slug}`}
-                  className="group flex items-center gap-2.5 rounded-full bg-white py-1 pr-4 pl-1 shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow"
+                  className="group flex items-center gap-2.5 rounded-full bg-surface py-1 pr-4 pl-1 shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow"
                 >
                   <span className="relative size-9 overflow-hidden rounded-full">
                     <Image src={c.image} alt="" fill sizes="40px" className="object-cover" />

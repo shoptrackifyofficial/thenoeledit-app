@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { SnowCap, SnowDrift } from "@/components/decor/NightScene";
 import { NewsletterForm } from "@/components/content/NewsletterForm";
 import { Icon } from "@/components/ui/Icon";
 import { site } from "@/content/site";
@@ -12,14 +13,16 @@ export async function Footer() {
 
   return (
     <footer className="px-2 pb-2 sm:px-4 sm:pb-4">
+      <SnowDrift />
       <div className="relative mx-auto max-w-[1600px] overflow-hidden rounded-[1.75rem] bg-pine-950 text-pine-100 sm:rounded-[2.25rem]">
+        <SnowCap />
         <div aria-hidden="true" className="absolute -top-48 -right-24 size-[30rem] rounded-full bg-berry-600/20 blur-3xl" />
         <div aria-hidden="true" className="absolute -bottom-40 -left-20 size-[26rem] rounded-full bg-gold-500/10 blur-3xl" />
 
         {/* Newsletter band */}
         <div className="relative container-page pt-10 lg:pt-14">
           <div className="grid items-center gap-5 rounded-[1.5rem] bg-white/[0.04] p-5 text-center ring-1 ring-white/10 sm:p-7 lg:grid-cols-[auto_1fr_minmax(0,26rem)] lg:gap-10 lg:text-left">
-            <span className="hidden size-20 rounded-full bg-white p-1 shadow-lift lg:block">
+            <span className="hidden size-20 rounded-full bg-snow p-1 shadow-lift lg:block">
               <Image src="/logo-200.webp" alt="" width={200} height={200} sizes="80px" className="size-full" />
             </span>
             <div>
@@ -38,7 +41,7 @@ export async function Footer() {
         <div className="relative container-page grid grid-cols-2 gap-x-6 gap-y-10 pt-10 pb-8 lg:pt-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:gap-10">
           <div className="col-span-2 mx-auto flex max-w-sm flex-col items-center text-center lg:col-span-1 lg:mx-0 lg:items-start lg:text-left">
             <Link href="/" className="inline-flex items-center gap-3">
-              <Image src="/logo-200.webp" alt="" width={200} height={200} sizes="56px" className="size-14 rounded-full bg-white p-0.5" />
+              <Image src="/logo-200.webp" alt="" width={200} height={200} sizes="56px" className="size-14 rounded-full bg-snow p-0.5" />
               <span className="font-display text-[1.4rem] text-snow">{site.name}</span>
             </Link>
             <p className="mt-4 text-[0.86rem] leading-relaxed text-pine-200/80">{site.tagline} Hand-picked gifts, wrapped free and delivered before Christmas.</p>
