@@ -53,17 +53,17 @@ export function SearchClient({ cards, suggestions }: { cards: CardView[]; sugges
           placeholder="Candles, watches, under $50…"
           autoComplete="off"
           enterKeyHint="search"
-          className="h-16 w-full rounded-full bg-snow pr-6 pl-14 text-[1.1rem] shadow-soft ring-1 ring-line outline-none focus:ring-2 focus:ring-gold-500"
+          className="h-14 w-full rounded-full bg-white pr-6 pl-14 text-[1rem] shadow-soft ring-1 ring-line outline-none transition-shadow focus:shadow-lift focus:ring-2 focus:ring-berry-500"
         />
       </form>
 
       {words.length === 0 ? (
         <div className="mt-8">
-          <p className="eyebrow text-ink-soft">Popular</p>
+          <p className="kicker">Popular</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {suggestions.map((s) => (
               <li key={s.href}>
-                <Link href={s.href} className="flex h-10 items-center rounded-full bg-cream px-4 text-[0.88rem] font-semibold hover:bg-linen">
+                <Link href={s.href} className="flex h-9 items-center rounded-full bg-white px-4 text-[0.84rem] font-semibold shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow">
                   {s.label}
                 </Link>
               </li>
@@ -83,7 +83,7 @@ export function SearchClient({ cards, suggestions }: { cards: CardView[]; sugges
               </Link>
             </div>
           ) : (
-            <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-9 sm:gap-x-5 md:grid-cols-3 xl:grid-cols-4">
+            <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 md:grid-cols-3 xl:grid-cols-4">
               {results.map((c) => (
                 <li key={c.handle}>
                   <ProductCard card={c} />

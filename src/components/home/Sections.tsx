@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { DragScroll } from "@/components/ui/DragScroll";
 import { Icon } from "@/components/ui/Icon";
 import { ProductCard } from "@/components/product/ProductCard";
 import { site } from "@/content/site";
@@ -12,15 +13,17 @@ import { cn } from "@/lib/utils";
 /* ── Shared heading ───────────────────────────────────────────────────── */
 
 export function SectionHeading({
-  script,
+  kicker,
   title,
   intro,
   id,
   align = "left",
   tone = "dark",
   action,
+  stack = false,
 }: {
-  script?: string;
+  stack?: boolean;
+  kicker?: string;
   title: React.ReactNode;
   intro?: string;
   id: string;
@@ -31,40 +34,41 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between",
-        align === "center" && "items-center text-center sm:flex-col sm:items-center",
+        "flex flex-col items-center gap-4 text-center",
+        align === "left" && !stack && "sm:flex-row sm:items-end sm:justify-between sm:text-left",
+        align === "left" && stack && "lg:items-start lg:text-left",
       )}
     >
-      <div className={cn("max-w-2xl", align === "center" && "mx-auto")}>
-        {script && (
-          <p className={cn("script text-[2.3rem] sm:text-[2.8rem]", tone === "dark" ? "text-berry-600" : "text-gold-300")} aria-hidden="true">
-            {script}
-          </p>
-        )}
-        <h2 id={id} className={cn("display-lg", script && "-mt-1")}>
+      <div className={cn("flex max-w-2xl flex-col items-center", align === "center" ? "mx-auto" : stack ? "lg:items-start" : "sm:items-start")}>
+        {kicker && <p className={cn("kicker mb-3", tone === "light" && "text-gold-300")}>{kicker}</p>}
+        <h2 id={id} className="display-lg">
           {title}
         </h2>
         {intro && (
-          <p className={cn("mt-4 text-[1.02rem]", tone === "dark" ? "text-ink-soft" : "text-snow/75")}>{intro}</p>
+          <p className={cn("mt-3 max-w-xl text-[0.95rem] sm:text-[0.98rem]", align === "center" && "mx-auto", tone === "dark" ? "text-ink-soft" : "text-white/70")}>
+            {intro}
+          </p>
         )}
       </div>
       {action && (
         <Link
           href={action.href}
-          className={cn(
-            "group/link inline-flex shrink-0 items-center gap-2 text-[0.78rem] font-bold tracking-[0.16em] uppercase",
-            tone === "light" && "text-gold-300",
-          )}
+          className={cn("btn btn-sm shrink-0", tone === "dark" ? "btn-outline" : "btn-ghost-light")}
         >
-          <span className="link-underline">{action.label}</span>
-          <Icon name="arrow-right" className="size-4 transition-transform group-hover/link:translate-x-1" />
+          {action.label}
+          <Icon name="arrow-right" className="size-3.5" />
         </Link>
       )}
     </div>
   );
 }
 
-/* ── Ribbon marquee ───────────────────────────────────────────────────── */
+/** Heading text with the soft italic accent word. */
+export function Accent({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+  return <span className={cn("accent", light ? "text-gold-300" : "text-berry-600")}>{children}</span>;
+}
+
+/* ── Satin ribbon marquee ─────────────────────────────────────────────── */
 
 const ribbon = [
   "Up to 40% off",
@@ -79,131 +83,196 @@ export function RibbonMarquee() {
   const row = (hidden: boolean) => (
     <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
       {ribbon.map((t) => (
-        <li key={t} className="flex items-center gap-6 pr-6 whitespace-nowrap">
-          <span className="font-display text-[1.15rem] italic sm:text-[1.35rem]">{t}</span>
-          <Icon name="sparkle" className="size-4 text-gold-400" />
+        <li key={t} className="flex items-center gap-5 pr-5 whitespace-nowrap">
+          <span className="font-display text-[1.02rem] italic sm:text-[1.15rem]">{t}</span>
+          <Icon name="sparkle" className="size-3.5 text-gold-300" />
         </li>
       ))}
     </ul>
   );
   return (
-    <div className="relative overflow-hidden bg-berry-700 py-4 text-snow">
-      <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-        {row(false)}
-        {row(true)}
+    <div className="relative z-10 -my-1 overflow-hidden py-6 sm:py-8">
+      <div className="-mx-4 -rotate-[1.4deg] bg-linear-to-r from-berry-700 via-berry-600 to-berry-700 py-2.5 text-snow shadow-ribbon ring-1 ring-gold-400/40">
+        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+          {row(false)}
+          {row(true)}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ── Shop by category: advent arches ──────────────────────────────────── */
+/* ── Shop by category: ornaments on a garland ─────────────────────────── */
 
-export function CategoryArches({ categories }: { categories: CategoryInfo[] }) {
+const STRING = ["h-3", "h-8", "h-5"];
+
+export function CategoryOrnaments({ categories }: { categories: CategoryInfo[] }) {
   return (
-    <section aria-labelledby="cat-title" className="py-16 lg:py-24">
+    <section aria-labelledby="cat-title" className="scroll-mt-24 pt-4 pb-10 lg:pt-8 lg:pb-14">
       <div className="container-page">
         <SectionHeading
           id="cat-title"
-          script="for everyone"
-          title="Shop by who you're gifting"
-          action={{ href: "/shop", label: "All categories" }}
+          kicker="For everyone on your list"
+          title={
+            <>
+              Shop by who <Accent>you&apos;re gifting</Accent>
+            </>
+          }
+          align="center"
         />
       </div>
-      <ul className="scrollbar-none container-page mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-6 lg:gap-5 lg:overflow-visible">
+      {/* Each ornament carries its own swag of garland, so the line scrolls
+          with the rail and joins seamlessly at every berry. */}
+      <DragScroll
+        label="Gift categories"
+        centerOnDesktop
+        className="mt-7 lg:justify-center-safe px-[max(1rem,calc((100vw-1320px)/2+2rem))] pb-3 [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]"
+      >
         {categories.map((c, i) => (
-          <li key={c.slug} className="reveal w-[62vw] max-w-[260px] shrink-0 snap-start sm:w-[38vw] lg:w-auto lg:max-w-none">
-            <Link href={`/shop/${c.slug}`} className="group block">
-              <span className="relative block aspect-[3/4] overflow-hidden rounded-t-full rounded-b-[1.4rem] bg-cream ring-1 ring-line transition-shadow duration-500 group-hover:shadow-glow">
-                <Image
-                  src={c.image}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 15vw, 62vw"
-                  className="object-cover transition-transform duration-[1.2s] ease-out-soft group-hover:scale-105"
-                />
-                <span className="absolute inset-0 bg-linear-to-t from-pine-950/60 via-transparent to-transparent" />
-                <span className="numeral absolute top-[18%] left-1/2 -translate-x-1/2 text-[0.8rem] text-snow/90">
-                  {String(i + 1).padStart(2, "0")}
+          <li key={c.slug} className="relative w-[7.5rem] shrink-0 snap-start sm:w-40 lg:w-44">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 100 28"
+              preserveAspectRatio="none"
+              className="pointer-events-none absolute inset-x-0 top-0 h-7 w-full text-gold-500"
+            >
+              <path d="M0 3 Q 50 26 100 3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeDasharray="1 5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              <path d="M0 3 Q 50 26 100 3" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+            </svg>
+            {/* holly berries where two swags meet */}
+            <span aria-hidden="true" className="absolute top-0 left-0 z-10 flex -translate-x-1/2 -translate-y-px gap-px">
+              <span className="size-2 rounded-full bg-berry-600 ring-1 ring-paper" />
+              <span className="mt-1 size-1.5 rounded-full bg-berry-500 ring-1 ring-paper" />
+            </span>
+            {i === categories.length - 1 && (
+              <span aria-hidden="true" className="absolute top-0 right-0 z-10 flex translate-x-1/2 -translate-y-px gap-px">
+                <span className="size-2 rounded-full bg-berry-600 ring-1 ring-paper" />
+                <span className="mt-1 size-1.5 rounded-full bg-berry-500 ring-1 ring-paper" />
+              </span>
+            )}
+
+            <Link
+              href={`/shop/${c.slug}`}
+              draggable={false}
+              className="group flex flex-col items-center pt-[0.85rem] text-center outline-none"
+            >
+              <span aria-hidden="true" className={cn("w-px bg-linear-to-b from-gold-400 to-gold-600", STRING[i % 3])} />
+              <span className="ornament relative mt-3 block">
+                {/* cap + loop */}
+                <span aria-hidden="true" className="absolute -top-3.5 left-1/2 z-10 -translate-x-1/2">
+                  <span className="mx-auto block size-2.5 rounded-full border-2 border-gold-500" />
+                  <span className="-mt-0.5 block h-3 w-7 rounded-t-[0.3rem] rounded-b-sm bg-linear-to-b from-gold-300 via-gold-500 to-gold-700 shadow-sm" />
                 </span>
-                <span className="absolute inset-x-0 bottom-0 p-4 text-snow">
-                  <span className="block font-display text-[1.5rem] leading-none">{c.title}</span>
-                  <span className="mt-1 block text-[0.75rem] text-snow/80">{c.count} gifts</span>
+                <span className="relative block size-[6.25rem] overflow-hidden rounded-full bg-cream shadow-lift ring-[3px] ring-white transition-shadow duration-500 group-hover:shadow-glow sm:size-32 lg:size-36">
+                  <Image
+                    src={c.image}
+                    alt=""
+                    fill
+                    draggable={false}
+                    sizes="(min-width: 1024px) 144px, 110px"
+                    className="object-cover transition-transform duration-[1.2s] ease-out-soft group-hover:scale-110"
+                  />
+                  <span className="bauble-gloss absolute inset-0" aria-hidden="true" />
                 </span>
               </span>
-              <span className="mt-3 block px-1 text-[0.82rem] text-ink-soft">{c.kicker}</span>
+              <span className="mt-3 block px-1 font-display text-[1rem] leading-tight transition-colors group-hover:text-berry-600 sm:text-[1.12rem]">
+                {c.title}
+              </span>
+              <span className="mt-0.5 block text-[0.7rem] text-ink-faint">{c.count} {c.count === 1 ? "gift" : "gifts"}</span>
             </Link>
           </li>
         ))}
-      </ul>
+      </DragScroll>
     </section>
   );
 }
 
 /* ── 12 Days of Deals: advent doors ───────────────────────────────────── */
 
+const DOOR_TONES = [
+  { door: "bg-berry-600", num: "text-gold-200", line: "border-gold-300/40" },
+  { door: "bg-pine-700", num: "text-gold-300", line: "border-gold-300/35" },
+  { door: "bg-cream", num: "text-berry-600", line: "border-berry-600/25" },
+];
+
 export function AdventDeals({ cards }: { cards: CardView[] }) {
   const doors = cards.slice(0, 12);
   if (doors.length < 4) return null;
   return (
-    <section aria-labelledby="advent-title" className="grain relative overflow-hidden bg-pine-900 py-16 text-snow lg:py-24">
-      <div className="snow opacity-40" aria-hidden="true" />
-      <div className="relative container-page">
-        <SectionHeading
-          id="advent-title"
-          tone="light"
-          script="behind every door"
-          title={
-            <>
-              The 12 Days <span className="italic text-gold-300">of Deals</span>
-            </>
-          }
-          intro="Our deepest Christmas discounts, hidden in an advent calendar. Hover — or scroll on your phone — to open each door."
-          action={{ href: "/shop?sort=discount", label: "Every deal" }}
-        />
-        <ol className="mt-10 grid grid-cols-3 gap-2.5 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
-          {doors.map((p, i) => (
-            <li key={p.handle} className="advent-cell relative aspect-[3/4]">
-              <Link
-                href={p.href}
-                className="group absolute inset-0 overflow-hidden rounded-xl bg-pine-950 ring-1 ring-gold-500/30 sm:rounded-2xl"
-                aria-label={`Day ${i + 1}: ${p.name}${p.percentOff ? `, ${p.percentOff}% off` : ""}, now ${formatMoney(p.price, p.currency)}`}
-              >
-                {/* Behind the door */}
-                {p.image && (
-                  <Image src={p.image.url} alt="" fill sizes="(min-width: 1024px) 15vw, 32vw" className="object-cover" />
-                )}
-                <span className="absolute inset-0 bg-linear-to-t from-pine-950/95 via-pine-950/10 to-transparent" />
-                <span className="absolute inset-x-0 bottom-0 p-2 sm:p-3">
-                  {p.percentOff != null && (
-                    <span className="numeral inline-block rounded-md bg-berry-600 px-1.5 py-0.5 text-[0.75rem] sm:text-[0.9rem]">
-                      −{p.percentOff}%
+    <section aria-labelledby="advent-title" className="px-2 sm:px-4">
+      <div
+        className="grain relative mx-auto max-w-[1600px] overflow-hidden rounded-[1.75rem] bg-pine-900 py-12 text-snow sm:rounded-[2.25rem] lg:py-16"
+      >
+        <div className="snow opacity-35" aria-hidden="true" />
+        <div aria-hidden="true" className="absolute -top-40 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-gold-500/15 blur-3xl" />
+        <div className="relative container-page">
+          <SectionHeading
+            id="advent-title"
+            tone="light"
+            kicker="Behind every door"
+            title={
+              <>
+                The 12 Days <Accent light>of Deals</Accent>
+              </>
+            }
+            intro="Our deepest Christmas discounts, hidden in an advent calendar. Hover — or scroll on your phone — to open each door."
+            action={{ href: "/shop?sort=discount", label: "Every deal" }}
+          />
+          <ol className="mt-8 grid grid-cols-3 gap-2 sm:gap-3 md:grid-cols-4 lg:grid-cols-6">
+            {doors.map((p, i) => {
+              const tone = DOOR_TONES[i % 3]!;
+              return (
+                <li key={p.handle} className="advent-cell relative aspect-[3/4]">
+                  <Link
+                    href={p.href}
+                    className="group absolute inset-0 overflow-hidden rounded-2xl bg-pine-950 ring-1 ring-white/10"
+                    aria-label={`Day ${i + 1}: ${p.name}${p.percentOff ? `, ${p.percentOff}% off` : ""}, now ${formatMoney(p.price, p.currency)}`}
+                  >
+                    {/* Behind the door */}
+                    {p.image && (
+                      <Image
+                        src={p.image.url}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 15vw, 32vw"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                      />
+                    )}
+                    <span className="absolute inset-0 bg-linear-to-t from-pine-950/95 via-pine-950/10 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 p-2 sm:p-3">
+                      {p.percentOff != null && (
+                        <span className="inline-block rounded-full bg-berry-600 px-2 py-0.5 text-[0.68rem] font-bold sm:text-[0.78rem]">
+                          −{p.percentOff}%
+                        </span>
+                      )}
+                      <span className="mt-1 line-clamp-2 block text-[0.68rem] leading-tight font-semibold sm:text-[0.8rem]">
+                        {p.name}
+                      </span>
                     </span>
-                  )}
-                  <span className="mt-1 line-clamp-2 block text-[0.7rem] leading-tight font-semibold sm:text-[0.82rem]">
-                    {p.name}
-                  </span>
-                </span>
 
-                {/* The door */}
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "advent-door absolute inset-0 flex flex-col items-center justify-center rounded-xl shadow-[inset_0_0_0_1px_rgb(198_161_91/0.45),inset_0_0_0_6px_rgb(0_0_0/0.12)] sm:rounded-2xl",
-                    i % 3 === 0 ? "bg-berry-700" : i % 3 === 1 ? "bg-pine-700" : "bg-[#5a1220]",
-                  )}
-                >
-                  <span className="absolute inset-2 rounded-lg border border-dashed border-gold-400/35 sm:inset-3" />
-                  <Icon name="sparkle" className="size-4 text-gold-400/80 sm:size-5" />
-                  <span className="numeral mt-1 text-[2.3rem] leading-none text-gold-300 sm:text-[3.4rem]">{i + 1}</span>
-                  <span className="mt-1 text-[0.5rem] font-bold tracking-[0.3em] text-gold-300/70 uppercase sm:text-[0.6rem]">
-                    Dec
-                  </span>
-                  <span className="absolute top-1/2 right-2 size-1.5 rounded-full bg-gold-400 shadow-[0_0_6px_rgb(217_189_132/0.9)] sm:right-3 sm:size-2" />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ol>
+                    {/* The door */}
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "advent-door absolute inset-0 flex flex-col items-center justify-center rounded-2xl shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]",
+                        tone.door,
+                      )}
+                    >
+                      <span className={cn("absolute inset-2 rounded-xl border border-dashed sm:inset-2.5", tone.line)} />
+                      <span className={cn("numeral text-[2.2rem] leading-none sm:text-[3rem]", tone.num)}>{i + 1}</span>
+                      <span className={cn("mt-1 text-[0.5rem] font-bold tracking-[0.3em] uppercase opacity-70 sm:text-[0.58rem]", tone.num)}>
+                        Dec
+                      </span>
+                      {/* little bow on top */}
+                      <Icon name="sparkle" className={cn("absolute top-3 size-3 opacity-70 sm:size-3.5", tone.num)} />
+                      <span className="absolute top-1/2 right-2 size-1.5 rounded-full bg-gold-400 shadow-[0_0_6px_rgb(220_190_132/0.9)] sm:right-2.5 sm:size-2" />
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
     </section>
   );
@@ -213,27 +282,29 @@ export function AdventDeals({ cards }: { cards: CardView[] }) {
 
 export function ProductGridSection({
   id,
-  script,
+  kicker,
   title,
   intro,
   cards,
   action,
+  className,
 }: {
   id: string;
-  script?: string;
+  kicker?: string;
   title: React.ReactNode;
   intro?: string;
   cards: CardView[];
   action?: { href: string; label: string };
+  className?: string;
 }) {
   if (cards.length === 0) return null;
   return (
-    <section aria-labelledby={id} className="py-16 lg:py-24">
+    <section aria-labelledby={id} className={cn("section-y", className)}>
       <div className="container-page">
-        <SectionHeading id={id} script={script} title={title} intro={intro} action={action} />
-        <ul className="mt-10 grid grid-cols-2 gap-x-3 gap-y-9 sm:gap-x-5 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-12">
+        <SectionHeading id={id} kicker={kicker} title={title} intro={intro} action={action} />
+        <ul className="reveal-stagger mt-7 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 lg:mt-9 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
           {cards.map((c) => (
-            <li key={c.handle} className="reveal">
+            <li key={c.handle}>
               <ProductCard card={c} />
             </li>
           ))}
@@ -243,15 +314,15 @@ export function ProductGridSection({
   );
 }
 
-/* ── Gift finder by budget ────────────────────────────────────────────── */
+/* ── Gift finder by budget: hanging gift tags ─────────────────────────── */
 
 export function GiftFinder({ cards }: { cards: CardView[] }) {
   const currency = cards[0]?.currency ?? "USD";
   const tiers = [
-    { max: 25, label: "Under", tone: "bg-gold-100", accent: "text-gold-700" },
-    { max: 50, label: "Under", tone: "bg-berry-100", accent: "text-berry-600" },
-    { max: 100, label: "Under", tone: "bg-pine-100", accent: "text-pine-700" },
-    { max: 0, label: "Luxe", tone: "bg-pine-900 text-snow", accent: "text-gold-300" },
+    { max: 25, label: "Under", tone: "bg-berry-50 text-ink", accent: "text-berry-600", hole: "bg-paper" },
+    { max: 50, label: "Under", tone: "bg-gold-100 text-ink", accent: "text-gold-700", hole: "bg-paper" },
+    { max: 100, label: "Under", tone: "bg-pine-100 text-ink", accent: "text-pine-700", hole: "bg-paper" },
+    { max: 0, label: "Luxe", tone: "bg-berry-600 text-snow", accent: "text-gold-200", hole: "bg-paper" },
   ].map((t) => ({
     ...t,
     href: t.max ? `/shop?budget=${t.max}` : "/shop?budget=luxe",
@@ -259,36 +330,42 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
   }));
 
   return (
-    <section id="gift-finder" aria-labelledby="finder-title" className="scroll-mt-24 bg-cream py-16 lg:py-24">
+    <section id="gift-finder" aria-labelledby="finder-title" className="section-y scroll-mt-24">
       <div className="container-page">
         <SectionHeading
           id="finder-title"
-          script="on any budget"
-          title="Find the gift by price"
-          intro="Every price below is already discounted — and every order is gift-wrapped free."
+          kicker="On any budget"
+          title={
+            <>
+              Find the gift <Accent>by price</Accent>
+            </>
+          }
+          intro="Every price is already discounted — and every order is gift-wrapped free."
           align="center"
         />
-        <ul className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 lg:grid-cols-4 lg:gap-5">
           {tiers.map((t) => (
-            <li key={t.href}>
+            <li key={t.href} className="flex flex-col items-center">
+              {/* string */}
+              <span aria-hidden="true" className="h-5 w-px bg-ink-faint/50" />
               <Link
                 href={t.href}
                 className={cn(
-                  "group relative flex aspect-square flex-col justify-between overflow-hidden rounded-[1.6rem] p-5 transition-transform duration-500 ease-out-soft hover:-translate-y-1 sm:aspect-[4/3] sm:p-7",
+                  "gift-tag group relative flex w-full flex-col items-center overflow-hidden rounded-t-[2.75rem] rounded-b-[1.4rem] px-4 pt-9 pb-5 text-center ring-1 ring-black/5 sm:pt-11 sm:pb-6",
                   t.tone,
                 )}
               >
-                <span className={cn("script text-[2rem] leading-none sm:text-[2.6rem]", t.accent)}>{t.label}</span>
-                <span className="numeral text-[3.2rem] leading-none tracking-tight sm:text-[4.6rem]">
+                {/* punched hole */}
+                <span aria-hidden="true" className={cn("absolute top-3.5 size-3.5 rounded-full shadow-[inset_0_1px_2px_rgb(0_0_0/0.2)]", t.hole)} />
+                <span className={cn("accent text-[1.25rem] leading-none sm:text-[1.45rem]", t.accent)}>{t.label}</span>
+                <span className="numeral mt-1 text-[2.6rem] leading-none tracking-tight sm:text-[3.4rem]">
                   {t.max ? formatMoney(t.max, currency) : `${formatMoney(100, currency)}+`}
                 </span>
-                <span className="flex items-center justify-between text-[0.75rem] font-bold tracking-[0.14em] uppercase">
-                  {t.count} gifts
-                  <span className="grid size-9 place-items-center rounded-full bg-current/10 transition-transform group-hover:translate-x-1">
-                    <Icon name="arrow-right" className="size-4" />
-                  </span>
+                <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-current/8 px-3 py-1.5 text-[0.72rem] font-semibold">
+                  <span>{t.count} gifts</span>
+                  <Icon name="arrow-right" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
-                <Icon name="snowflake" className="absolute -right-6 -bottom-6 size-32 opacity-[0.07]" strokeWidth={1} />
+                <Icon name="snowflake" className="absolute -right-5 -bottom-5 size-20 opacity-[0.07]" strokeWidth={1} />
               </Link>
             </li>
           ))}
@@ -302,58 +379,56 @@ export function GiftFinder({ cards }: { cards: CardView[] }) {
 
 export function WrappedStory() {
   return (
-    <section aria-labelledby="wrap-title" className="overflow-hidden py-16 lg:py-28">
-      <div className="container-page grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-        <div className="reveal relative mx-auto w-full max-w-[520px]">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2rem] bg-pine-900">
+    <section aria-labelledby="wrap-title" className="section-y overflow-hidden bg-cream">
+      <div className="container-page grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
+        <div className="reveal relative mx-auto w-full max-w-[440px]">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2rem] bg-pine-900 shadow-lift ring-[6px] ring-white">
             <Image
               src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?fit=crop&crop=entropy&ar=4:5"
               alt="Gifts tied with gold satin ribbon"
               fill
-              sizes="(min-width: 1024px) 40vw, 90vw"
+              sizes="(min-width: 1024px) 36vw, 90vw"
               className="object-cover"
             />
           </div>
           {/* Gift tag */}
-          <div className="absolute -bottom-6 -left-2 w-[58%] max-w-[260px] rotate-[-7deg] rounded-[0.6rem_1.6rem_1.6rem_0.6rem] bg-paper p-5 shadow-lift ring-1 ring-line sm:-left-8">
-            <span className="absolute top-1/2 left-3 size-3 -translate-y-1/2 rounded-full bg-cream ring-1 ring-line" aria-hidden="true" />
-            <div className="pl-5">
-              <p className="text-[0.62rem] font-bold tracking-[0.2em] text-ink-faint uppercase">To</p>
-              <p className="script text-[1.9rem] leading-tight text-berry-600">someone special</p>
-              <p className="mt-1 text-[0.62rem] font-bold tracking-[0.2em] text-ink-faint uppercase">From</p>
-              <p className="script text-[1.6rem] leading-tight">you, with love</p>
+          <div className="absolute -bottom-5 -left-1 w-[58%] max-w-[230px] animate-float rounded-[0.6rem_1.4rem_1.4rem_0.6rem] bg-white p-4 shadow-lift ring-1 ring-line [--r:-6deg] sm:-left-8">
+            <span className="absolute top-1/2 left-3 size-2.5 -translate-y-1/2 rounded-full bg-cream ring-1 ring-line" aria-hidden="true" />
+            <div className="pl-4">
+              <p className="text-[0.6rem] font-bold tracking-[0.2em] text-ink-faint uppercase">To</p>
+              <p className="accent text-[1.35rem] leading-tight text-berry-600">someone special</p>
+              <p className="mt-1 text-[0.6rem] font-bold tracking-[0.2em] text-ink-faint uppercase">From</p>
+              <p className="accent text-[1.2rem] leading-tight">you, with love</p>
             </div>
           </div>
-          <span className="absolute -top-4 right-2 grid size-20 animate-spin-slow place-items-center rounded-full bg-gold-500 text-pine-950 sm:size-24" aria-hidden="true">
-            <Icon name="gift" className="size-8" strokeWidth={1.4} />
+          <span className="absolute -top-3 right-0 grid size-[4.5rem] place-items-center rounded-full bg-white p-1 shadow-lift sm:size-24" aria-hidden="true">
+            <Image src="/logo-200.webp" alt="" width={200} height={200} sizes="96px" className="size-full animate-[spin_30s_linear_infinite]" />
           </span>
         </div>
 
-        <div>
-          <p className="script text-[2.4rem] text-berry-600 sm:text-[3rem]" aria-hidden="true">
-            wrapped with love
-          </p>
-          <h2 id="wrap-title" className="display-lg -mt-1">
-            Every gift arrives <span className="italic">ready to give.</span>
+        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+          <p className="kicker mb-3">Wrapped with love</p>
+          <h2 id="wrap-title" className="display-lg">
+            Every gift arrives <Accent>ready to give.</Accent>
           </h2>
-          <p className="mt-5 max-w-lg text-[1.05rem] text-ink-soft">
-            Tick one box in your bag and we wrap it for you — matte paper, satin ribbon and a card with your own
-            words. Send it to them directly, or to you to tuck under the tree.
+          <p className="mt-4 max-w-lg text-[0.98rem] text-ink-soft">
+            Tick one box in your bag and we wrap it for you — matte paper, satin ribbon and a card with your own words.
+            Send it to them directly, or to you to tuck under the tree.
           </p>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-7 grid w-full gap-2.5 text-left sm:grid-cols-2">
             {site.promises.map((p) => (
-              <li key={p.title} className="flex gap-4 rounded-2xl bg-cream/70 p-4">
-                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-pine-900 text-gold-300">
-                  <Icon name={p.icon} className="size-5" />
+              <li key={p.title} className="flex gap-3.5 rounded-2xl bg-white p-3.5 shadow-soft ring-1 ring-line/70">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-berry-50 text-berry-600">
+                  <Icon name={p.icon} className="size-[1.1rem]" />
                 </span>
                 <span>
-                  <span className="block font-semibold">{p.title}</span>
-                  <span className="mt-0.5 block text-[0.86rem] text-ink-soft">{p.text}</span>
+                  <span className="block text-[0.9rem] font-semibold">{p.title}</span>
+                  <span className="mt-0.5 block text-[0.8rem] leading-snug text-ink-soft">{p.text}</span>
                 </span>
               </li>
             ))}
           </ul>
-          <Link href="/shop" className="btn btn-dark shine mt-9">
+          <Link href="/shop" className="btn btn-primary shine mt-8">
             Start your list <Icon name="arrow-right" className="size-4" />
           </Link>
         </div>
@@ -379,35 +454,45 @@ export function DeliveryTimeline() {
   ];
 
   return (
-    <section aria-labelledby="delivery-title" className="relative overflow-hidden bg-berry-800 py-16 text-snow lg:py-24">
-      <div className="snow opacity-30" aria-hidden="true" />
-      <div className="relative container-page">
+    <section aria-labelledby="delivery-title" className="section-y">
+      <div className="container-page">
         <SectionHeading
           id="delivery-title"
-          tone="light"
-          script="don't miss it"
-          title="Order-by dates for Christmas"
+          kicker="Don't miss it"
+          title={
+            <>
+              Order-by dates <Accent>for Christmas</Accent>
+            </>
+          }
           intro="Order before these dates and your gifts arrive in time for the tree."
           action={{ href: "/pages/shipping", label: "Delivery details" }}
         />
-        <ol className="relative mt-12 grid gap-8 md:grid-cols-4 md:gap-4">
-          <span className="absolute top-8 right-[12%] left-[12%] hidden h-px bg-linear-to-r from-gold-400/20 via-gold-400 to-gold-400/20 md:block" aria-hidden="true" />
+        <ol className="dots relative mt-8 grid gap-3 rounded-[1.75rem] bg-white p-4 shadow-soft ring-1 ring-line sm:p-6 md:grid-cols-4 md:gap-4 md:p-8">
+          <span
+            className="absolute top-[3.75rem] right-[14%] left-[14%] hidden border-t-2 border-dashed border-berry-200 md:block"
+            aria-hidden="true"
+          />
           {steps.map((s) => (
-            <li key={s.title} className="relative flex items-center gap-5 md:flex-col md:text-center">
+            <li key={s.title} className="relative flex items-center gap-4 rounded-2xl p-2 md:flex-col md:gap-3 md:text-center">
               <span
                 className={cn(
-                  "relative grid size-16 shrink-0 place-items-center rounded-full ring-1",
-                  s.final ? "bg-gold-500 text-pine-950 ring-gold-300" : "bg-berry-900 ring-gold-400/50",
+                  "relative grid size-[3.75rem] shrink-0 place-items-center rounded-full",
+                  s.final
+                    ? "bg-berry-600 text-snow shadow-ribbon"
+                    : "bg-white text-ink ring-1 ring-line shadow-soft",
                 )}
               >
                 <span className="text-center leading-none">
-                  <span className="numeral block text-[1.5rem]">{s.day}</span>
-                  <span className="block text-[0.55rem] font-bold tracking-[0.2em] uppercase opacity-80">{s.month}</span>
+                  <span className="numeral block text-[1.35rem]">{s.day}</span>
+                  <span className="block text-[0.52rem] font-bold tracking-[0.2em] uppercase opacity-70">{s.month}</span>
                 </span>
+                {s.final && (
+                  <Icon name="sparkle" className="absolute -top-1 -right-1 size-4 animate-twinkle text-gold-400" />
+                )}
               </span>
               <span>
-                <span className="block font-display text-[1.5rem] leading-tight">{s.title}</span>
-                <span className="block text-[0.85rem] text-snow/70">
+                <span className="block font-display text-[1.2rem] leading-tight">{s.title}</span>
+                <span className="block text-[0.8rem] text-ink-soft">
                   {s.final ? s.note : `Order by ${s.weekday} · ${s.note}`}
                 </span>
               </span>
@@ -423,16 +508,19 @@ export function DeliveryTimeline() {
 
 export function FaqList({ faqs, className }: { faqs: { q: string; a: string }[]; className?: string }) {
   return (
-    <div className={cn("divide-y divide-line border-y border-line", className)}>
+    <div className={cn("grid gap-2", className)}>
       {faqs.map((f) => (
-        <details key={f.q} className="group py-1">
-          <summary className="flex items-center justify-between gap-6 py-4 text-left">
-            <h3 className="font-display text-[1.2rem] leading-snug sm:text-[1.35rem]">{f.q}</h3>
-            <span className="grid size-9 shrink-0 place-items-center rounded-full ring-1 ring-line transition-transform duration-300 group-open:rotate-45">
-              <Icon name="plus" className="size-4" />
+        <details
+          key={f.q}
+          className="group rounded-2xl bg-white px-4 ring-1 ring-line transition-shadow open:shadow-soft sm:px-5"
+        >
+          <summary className="flex items-center justify-between gap-5 py-3.5">
+            <h3 className="text-[0.95rem] leading-snug font-semibold">{f.q}</h3>
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-cream transition-[transform,background-color,color] duration-300 group-open:rotate-45 group-open:bg-berry-600 group-open:text-snow">
+              <Icon name="plus" className="size-3.5" />
             </span>
           </summary>
-          <p className="max-w-3xl pb-5 text-ink-soft">{f.a}</p>
+          <p className="max-w-3xl pb-4 text-[0.9rem] text-ink-soft">{f.a}</p>
         </details>
       ))}
     </div>

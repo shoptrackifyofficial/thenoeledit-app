@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 /**
  * Product card. The whole card is one link (one tab stop); the quick-add
  * button sits outside the link so it stays a separate, valid control.
- * A gift-tag badge carries the real Shopify discount.
+ * A ribbon badge carries the real Shopify discount.
  */
 export function ProductCard({
   card,
@@ -24,7 +24,7 @@ export function ProductCard({
 }) {
   return (
     <article className={cn("group relative", className)}>
-      <div className="relative aspect-[4/5] overflow-hidden rounded-[1.4rem] bg-cream">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] bg-cream ring-1 ring-line/60 transition-shadow duration-500 group-hover:shadow-lift">
         {card.image && (
           <Image
             src={card.image.url}
@@ -33,7 +33,7 @@ export function ProductCard({
             priority={priority}
             sizes={sizes}
             className={cn(
-              "object-cover transition-[transform,opacity] duration-[1.1s] ease-out-soft group-hover:scale-[1.04]",
+              "object-cover transition-[transform,opacity] duration-[1.1s] ease-out-soft group-hover:scale-[1.05]",
               card.hoverImage && "group-hover:opacity-0",
             )}
           />
@@ -50,35 +50,36 @@ export function ProductCard({
         )}
 
         {card.percentOff != null && card.percentOff > 0 && (
-          <span className="absolute top-3 left-3 flex -rotate-6 items-center gap-1.5 rounded-[0.4rem_0.9rem_0.9rem_0.4rem] bg-berry-600 py-1.5 pr-3 pl-2 text-snow shadow-soft">
-            <span className="size-1.5 rounded-full bg-snow/80" aria-hidden="true" />
-            <span className="numeral text-[0.82rem] leading-none font-semibold">−{card.percentOff}%</span>
+          <span className="absolute top-2.5 left-2.5 inline-flex -rotate-3 items-center gap-1.5 rounded-[0.35rem_999px_999px_0.35rem] bg-berry-600 py-1 pr-2.5 pl-1.5 text-[0.7rem] leading-none font-bold text-snow shadow-ribbon">
+            {/* gift-tag hole */}
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-white/85" />−{card.percentOff}%
           </span>
         )}
         {!card.available && (
-          <span className="absolute top-3 right-3 rounded-full bg-ink/80 px-3 py-1 text-[0.7rem] font-bold tracking-wider text-snow uppercase">
+          <span className="absolute top-2.5 right-2.5 rounded-full bg-white/90 px-2.5 py-1 text-[0.66rem] font-bold tracking-wide text-ink uppercase backdrop-blur">
             Sold out
           </span>
         )}
       </div>
 
-      <div className="mt-3 flex items-start justify-between gap-2 px-0.5">
-        <div className="min-w-0">
-          <p className="text-[0.66rem] font-bold tracking-[0.18em] text-gold-700 uppercase">{card.category.title}</p>
-          <h3 className="mt-1 text-[0.98rem] leading-snug font-semibold">
-            <Link href={card.href} className="after:absolute after:inset-0 after:z-[1] after:rounded-[1.4rem]">
-              {card.name}
-            </Link>
-          </h3>
-          <Price price={card.price} compareAtPrice={card.compareAtPrice} currency={card.currency} size="sm" className="mt-1" />
-        </div>
+      <div className="mt-2.5 px-0.5">
+        <p className="text-[0.62rem] font-bold tracking-[0.16em] text-gold-700 uppercase">{card.category.title}</p>
+        <h3 className="mt-0.5 line-clamp-2 text-[0.9rem] leading-snug font-semibold sm:text-[0.95rem]">
+          <Link
+            href={card.href}
+            className="transition-colors after:absolute after:inset-0 after:z-[1] after:rounded-[1.25rem] group-hover:text-berry-700"
+          >
+            {card.name}
+          </Link>
+        </h3>
+        <Price price={card.price} compareAtPrice={card.compareAtPrice} currency={card.currency} size="sm" className="mt-1" />
       </div>
 
       {card.available && card.quickAddVariantId && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] aspect-[4/5]">
           <QuickAdd
             card={card}
-            className="pointer-events-auto absolute right-3 bottom-3 md:translate-y-2 md:opacity-0 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 md:group-hover:translate-y-0 md:group-hover:opacity-100"
+            className="pointer-events-auto absolute right-2.5 bottom-2.5 md:translate-y-2 md:opacity-0 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 md:group-hover:translate-y-0 md:group-hover:opacity-100"
           />
         </div>
       )}

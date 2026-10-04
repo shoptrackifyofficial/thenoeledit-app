@@ -14,7 +14,7 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
 
   if (state.status === "ok") {
     return (
-      <p role="status" className="flex items-center gap-3 rounded-full bg-gold-500/15 px-5 py-4 text-[0.95rem]">
+      <p role="status" className="flex items-center gap-3 rounded-full bg-gold-500/15 px-5 py-3.5 text-[0.95rem]">
         <Icon name="sparkle" className="size-5 text-gold-400" /> {state.message}
       </p>
     );
@@ -25,7 +25,7 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
       <div
         className={cn(
           "flex items-center gap-2 rounded-full p-1.5 ring-1",
-          tone === "dark" ? "bg-snow/8 ring-snow/25 focus-within:ring-gold-400" : "bg-snow ring-line focus-within:ring-ink",
+          tone === "dark" ? "bg-white/8 ring-white/20 focus-within:ring-gold-300" : "bg-white ring-line focus-within:ring-ink",
         )}
       >
         <label htmlFor="newsletter-email" className="sr-only">
@@ -44,7 +44,7 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
           )}
         />
         <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
-        <button type="submit" disabled={pending} className="btn btn-gold min-h-11 px-5 text-[0.72rem]">
+        <button type="submit" disabled={pending} className="btn btn-primary min-h-10 px-5 text-[0.8rem]">
           {pending ? <Icon name="spinner" className="size-4 animate-spin" /> : "Join"}
         </button>
       </div>

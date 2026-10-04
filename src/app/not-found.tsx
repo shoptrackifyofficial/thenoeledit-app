@@ -1,12 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Icon } from "@/components/ui/Icon";
 
 export default function NotFound() {
   return (
-    <div className="container-page flex min-h-[70vh] flex-col items-center justify-center py-20 text-center">
-      <p className="script text-[3rem] text-berry-600">oh, snow!</p>
-      <h1 className="display-lg">This page slipped off the sleigh</h1>
+    <div className="container-page flex min-h-[64vh] flex-col items-center justify-center py-20 text-center">
+      <Image src="/logo-200.webp" alt="" width={200} height={200} className="mb-5 size-24 animate-float [--r:-6deg]" />
+      <p className="kicker mb-3">Oh, snow!</p>
+      <h1 className="display-lg">
+        This page slipped <span className="accent text-berry-600">off the sleigh</span>
+      </h1>
       <p className="mt-4 max-w-md text-ink-soft">
         The link may be old, or the gift has sold out for the season. The rest of the sale is still here.
       </p>

@@ -38,12 +38,12 @@ export function CartDrawer() {
         if (e.target === ref.current) close();
       }}
       aria-label="Your bag"
-      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-dvh w-full max-w-[440px] bg-paper p-0 text-ink shadow-lift backdrop:bg-pine-950/45 backdrop:backdrop-blur-[2px] open:flex open:animate-[drawer-in_0.5s_var(--ease-out-soft)] open:flex-col"
+      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-dvh w-[94%] max-w-[420px] rounded-l-[1.75rem] bg-paper p-0 text-ink shadow-lift backdrop:bg-ink/40 backdrop:backdrop-blur-[3px] open:flex open:animate-[drawer-in_0.5s_var(--ease-out-soft)] open:flex-col"
     >
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <p className="display-md">
           Your bag{" "}
-          {count > 0 && <span className="numeral align-top text-[0.9rem] text-ink-soft">({count})</span>}
+          {count > 0 && <span className="ml-1 inline-grid min-w-6 place-items-center rounded-full bg-berry-600 px-1.5 align-middle font-sans text-[0.72rem] leading-6 font-bold text-snow">{count}</span>}
         </p>
         <button
           type="button"

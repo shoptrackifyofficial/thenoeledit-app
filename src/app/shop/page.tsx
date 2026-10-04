@@ -34,39 +34,41 @@ export default async function ShopPage() {
         )}
       />
 
-      <section className="grain relative overflow-hidden bg-pine-900 text-snow">
-        <div className="snow opacity-40" aria-hidden="true" />
-        <div className="relative container-page pt-8 pb-12 lg:pt-12 lg:pb-16">
-          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Shop" }]} className="text-snow/70 [&_[aria-current]]:text-snow" />
-          <p className="script mt-6 text-[2.6rem] text-gold-300 sm:text-[3.2rem]" aria-hidden="true">
-            the whole edit
-          </p>
-          <h1 className="display-lg -mt-1">Every Christmas gift, on sale</h1>
-          <p className="mt-4 max-w-xl text-snow/75">
+      <section className="px-2 pt-3 sm:px-4 sm:pt-4">
+        <div className="dots relative mx-auto max-w-[1600px] overflow-hidden rounded-[1.75rem] bg-cream sm:rounded-[2.25rem]">
+        <div aria-hidden="true" className="absolute -top-24 -right-24 size-80 rounded-full bg-berry-200/50 blur-3xl" />
+        <div className="relative container-page pt-6 pb-8 text-center sm:text-left lg:pt-8 lg:pb-12 [&_nav_ol]:justify-center sm:[&_nav_ol]:justify-start">
+          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Shop" }]} />
+          <p className="kicker mt-6 mb-3">The whole edit</p>
+          <h1 className="display-lg">
+            Every Christmas gift, <span className="accent text-berry-600">on sale</span>
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-ink-soft sm:mx-0">
             {cards.length} hand-picked gifts, {site.sale.headline.toLowerCase()}. Filter by budget, then let us do the
             wrapping.
           </p>
 
-          <ul className="scrollbar-none -mx-4 mt-8 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+          <ul className="scrollbar-none -mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
             {categories.map((c) => (
               <li key={c.slug} className="shrink-0">
                 <Link
                   href={`/shop/${c.slug}`}
-                  className="group flex items-center gap-3 rounded-full bg-snow/8 py-1.5 pr-5 pl-1.5 ring-1 ring-snow/15 transition-colors hover:bg-snow hover:text-ink"
+                  className="group flex items-center gap-2.5 rounded-full bg-white py-1 pr-4 pl-1 shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow"
                 >
-                  <span className="relative size-10 overflow-hidden rounded-full">
+                  <span className="relative size-9 overflow-hidden rounded-full">
                     <Image src={c.image} alt="" fill sizes="40px" className="object-cover" />
                   </span>
-                  <span className="text-[0.88rem] font-semibold whitespace-nowrap">{c.title}</span>
-                  <span className="numeral text-[0.78rem] opacity-60">{c.count}</span>
+                  <span className="text-[0.84rem] font-semibold whitespace-nowrap">{c.title}</span>
+                  <span className="text-[0.74rem] tabular-nums opacity-60">{c.count}</span>
                 </Link>
               </li>
             ))}
           </ul>
         </div>
+        </div>
       </section>
 
-      <div className="container-page py-8 lg:py-12">
+      <div className="container-page py-6 lg:py-10">
         <ShopGrid cards={cards} />
       </div>
     </>

@@ -1,41 +1,31 @@
-import { Bodoni_Moda, Manrope, Pinyon_Script } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 
 /**
- * Three faces, self-hosted at build time by next/font (no runtime request to
+ * Two faces, self-hosted at build time by next/font (no runtime request to
  * Google, size-adjusted fallbacks so swapping in causes no layout shift):
  *
- *  - Bodoni Moda (display): high-contrast didone with an optical-size axis —
- *    the look of a luxury Christmas catalogue. Headlines and prices only.
- *  - Manrope (text + interface): warm geometric grotesk, highly legible at
+ *  - Fraunces (display): a warm "soft serif" with optical-size and SOFT axes.
+ *    Its rounded terminals echo the engraved serif of the logo while feeling
+ *    friendly rather than stiff. Headlines, numerals and the italic accent word.
+ *  - Plus Jakarta Sans (text + interface): clean, open and very legible at
  *    small sizes on phones. Preloaded — it is the most-used face.
- *  - Pinyon Script (accent): a copperplate script for one- or two-word
- *    flourishes ("Merry", "with love"). Never body copy; not preloaded.
  */
-export const display = Bodoni_Moda({
+export const display = Fraunces({
   subsets: ["latin"],
   weight: "variable",
   style: ["normal", "italic"],
-  axes: ["opsz"],
+  axes: ["opsz", "SOFT"],
   variable: "--ff-display",
   display: "swap",
   preload: true,
-  fallback: ["Didot", "Georgia", "serif"],
+  fallback: ["Georgia", "serif"],
 });
 
-export const sans = Manrope({
+export const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: "variable",
   variable: "--ff-sans",
   display: "swap",
   preload: true,
   fallback: ["ui-sans-serif", "system-ui", "Segoe UI", "Helvetica Neue", "Arial"],
-});
-
-export const script = Pinyon_Script({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--ff-script",
-  display: "swap",
-  preload: false,
-  fallback: ["cursive"],
 });

@@ -15,6 +15,12 @@ function parts(ms: number) {
   return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
 }
 
+const SIZES = {
+  lg: { cell: "min-w-[3.6rem] px-2 py-2 sm:min-w-[4.25rem] sm:py-2.5", num: "text-[1.7rem] sm:text-[2.1rem]", label: "text-[0.55rem]" },
+  md: { cell: "min-w-[3.1rem] px-1.5 py-1.5 sm:min-w-[3.6rem] sm:py-2", num: "text-[1.35rem] sm:text-[1.65rem]", label: "text-[0.5rem]" },
+  sm: { cell: "min-w-[2.6rem] px-1.5 py-1", num: "text-[1.05rem]", label: "text-[0.48rem]" },
+} as const;
+
 export function Countdown({
   endsAt,
   tone = "light",
@@ -23,7 +29,7 @@ export function Countdown({
 }: {
   endsAt: string;
   tone?: "light" | "dark";
-  size?: "lg" | "sm";
+  size?: keyof typeof SIZES;
   className?: string;
 }) {
   const [left, setLeft] = useState<ReturnType<typeof parts> | null>(null);
@@ -42,38 +48,23 @@ export function Countdown({
     ["Min", left?.m],
     ["Sec", left?.s],
   ];
+  const z = SIZES[size];
 
   return (
-    <div className={cn("flex items-start gap-1.5 sm:gap-2", className)} aria-hidden="true">
-      {cells.map(([label, value], i) => (
-        <div key={label} className="flex items-start gap-1.5 sm:gap-2">
-          <div
-            className={cn(
-              "flex flex-col items-center rounded-xl",
-              size === "lg" ? "min-w-[3.6rem] px-2 py-2 sm:min-w-[4.25rem] sm:py-2.5" : "min-w-[2.6rem] px-1.5 py-1",
-              tone === "light" ? "bg-snow/10 ring-1 ring-snow/20 backdrop-blur-md" : "bg-pine-900 text-snow",
-            )}
-          >
-            <span
-              className={cn(
-                "numeral leading-none font-medium",
-                size === "lg" ? "text-[1.7rem] sm:text-[2.1rem]" : "text-[1.05rem]",
-              )}
-            >
-              {value === undefined ? "--" : String(value).padStart(2, "0")}
-            </span>
-            <span
-              className={cn(
-                "mt-1 font-bold tracking-[0.16em] uppercase opacity-70",
-                size === "lg" ? "text-[0.55rem]" : "text-[0.48rem]",
-              )}
-            >
-              {label}
-            </span>
-          </div>
-          {i < cells.length - 1 && (
-            <span className={cn("numeral opacity-50", size === "lg" ? "pt-2 text-[1.4rem]" : "pt-0.5 text-[0.9rem]")}>:</span>
+    <div className={cn("flex items-center gap-1.5", className)} aria-hidden="true">
+      {cells.map(([label, value]) => (
+        <div
+          key={label}
+          className={cn(
+            "flex flex-col items-center rounded-xl",
+            z.cell,
+            tone === "light" ? "bg-white/12 ring-1 ring-white/15" : "bg-white text-ink shadow-soft ring-1 ring-line",
           )}
+        >
+          <span key={value} className={cn("numeral animate-[fade_0.4s_ease-out] leading-none font-medium", z.num)}>
+            {value === undefined ? "--" : String(value).padStart(2, "0")}
+          </span>
+          <span className={cn("mt-1 font-bold tracking-[0.14em] uppercase opacity-65", z.label)}>{label}</span>
         </div>
       ))}
     </div>

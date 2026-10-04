@@ -20,11 +20,11 @@ export default async function SearchPage() {
     { label: "Under $50", href: "/shop?budget=50" },
   ];
   return (
-    <div className="container-page min-h-[60vh] py-10 lg:py-16">
-      <p className="script text-[2.4rem] text-berry-600" aria-hidden="true">
-        looking for
-      </p>
-      <h1 className="display-lg -mt-1 mb-8">Find the perfect gift</h1>
+    <div className="container-page min-h-[60vh] py-8 lg:py-12">
+      <p className="kicker mb-3">Looking for something?</p>
+      <h1 className="display-lg mb-6">
+        Find the <span className="accent text-berry-600">perfect gift</span>
+      </h1>
       <SearchClient cards={cards} suggestions={suggestions} />
     </div>
   );

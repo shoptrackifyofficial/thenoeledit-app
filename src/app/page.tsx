@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 
 import { Hero } from "@/components/home/Hero";
 import {
+  Accent,
   AdventDeals,
-  CategoryArches,
+  CategoryOrnaments,
   DeliveryTimeline,
   FaqList,
   GiftFinder,
@@ -42,39 +43,51 @@ export default async function HomePage() {
       />
       <Hero />
       <RibbonMarquee />
-      <CategoryArches categories={categories} />
+      <CategoryOrnaments categories={categories} />
       <AdventDeals cards={deals} />
       <ProductGridSection
         id="wanted-title"
-        script="this season's"
+        kicker="This season's favourites"
         title={
           <>
-            The most-wanted <span className="italic">list</span>
+            The most-wanted <Accent>list</Accent>
           </>
         }
         intro="The gifts everyone is asking for this Christmas — on sale, wrapped free."
         cards={mostWanted}
         action={{ href: "/shop", label: "Shop all gifts" }}
       />
-      <GiftFinder cards={cards} />
       <WrappedStory />
-      <DeliveryTimeline />
+      <GiftFinder cards={cards} />
       <ProductGridSection
         id="new-title"
-        script="just in"
-        title="Fresh under the tree"
+        kicker="Just in"
+        title={
+          <>
+            Fresh <Accent>under the tree</Accent>
+          </>
+        }
         cards={newest}
         action={{ href: "/shop?sort=new", label: "See what's new" }}
+        className="bg-cream"
       />
-      <section aria-labelledby="faq-title" className="bg-cream py-16 lg:py-24">
-        <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
+      <DeliveryTimeline />
+      <section aria-labelledby="faq-title" className="pb-14 lg:pb-20">
+        <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
+          <div className="lg:sticky lg:top-28 lg:self-start">
           <SectionHeading
+            stack
             id="faq-title"
-            script="good to know"
-            title="Christmas gifting, answered"
+            kicker="Good to know"
+            title={
+              <>
+                Christmas gifting, <Accent>answered</Accent>
+              </>
+            }
             intro="Everything you need to order with confidence before the big day."
             action={{ href: "/pages/faq", label: "All questions" }}
           />
+          </div>
           <FaqList faqs={faqs} />
         </div>
       </section>

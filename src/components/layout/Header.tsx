@@ -14,19 +14,23 @@ function Announcement() {
     timeZone: "UTC",
   });
   return (
-    <div className="bg-pine-900 text-pine-100">
-      <p className="container-page flex h-(--announce-h) items-center justify-center gap-3 text-center text-[0.74rem] font-medium tracking-[0.08em]">
-        <Icon name="snowflake" className="size-3.5 shrink-0 text-gold-400" />
+    <div className="bg-berry-600 text-snow">
+      <p className="container-page flex h-(--announce-h) items-center justify-center gap-2.5 text-center text-[0.74rem] font-medium">
+        <Icon name="sparkle" className="size-3.5 shrink-0 animate-twinkle text-gold-300" />
         <span>
-          <strong className="font-bold text-snow">{site.sale.headline}</strong> · Free gift wrap
-          <span className="hidden sm:inline"> · Order by {cutoff} for Christmas delivery</span>
+          <strong className="font-bold">{site.sale.headline}</strong>
+          <span className="opacity-60"> · </span>Free gift wrap
+          <span className="hidden sm:inline">
+            <span className="opacity-60"> · </span>Order by {cutoff} for Christmas delivery
+          </span>
         </span>
+        <Icon name="sparkle" className="size-3.5 shrink-0 animate-twinkle text-gold-300 [animation-delay:1.6s]" />
       </p>
     </div>
   );
 }
 
-/** Site header: logo centred, Shop → Category → Products menu, search, account, bag. */
+/** Site header: floating pill, logo badge centred, Shop → Category → Products menu, search, account, bag. */
 export async function Header() {
   const menu = await getMenuData();
   const accountUrl = customerAccountUrl();
@@ -38,22 +42,26 @@ export async function Header() {
         <DesktopNav menu={menu} />
       </div>
 
-      <Link href="/" aria-label={`${site.name} — home`} className="justify-self-center transition-transform duration-500 ease-out-soft hover:scale-105">
+      <Link
+        href="/"
+        aria-label={`${site.name} — home`}
+        className="header-logo grid place-items-center justify-self-center rounded-full p-0.5 transition-[transform,background-color,box-shadow] duration-500 ease-out-soft hover:rotate-[-6deg] group-data-[over-hero=true]/header:bg-white group-data-[over-hero=true]/header:shadow-[0_6px_20px_-6px_rgb(0_0_0/0.6)]"
+      >
         <Image
           src="/logo-200.webp"
           alt={site.name}
           width={200}
           height={200}
           priority
-          sizes="72px"
-          className="size-14 drop-shadow-[0_2px_10px_rgb(0_0_0/0.35)] sm:size-16 lg:size-[4.5rem]"
+          sizes="52px"
+          className="size-11 lg:size-[3.25rem]"
         />
       </Link>
 
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end gap-0.5">
         <Link
           href="/search"
-          className="grid size-11 place-items-center rounded-full transition-colors hover:bg-current/8"
+          className="hidden size-11 place-items-center rounded-full transition-colors hover:bg-berry-50 sm:grid"
           aria-label="Search gifts"
         >
           <Icon name="search" />
@@ -61,7 +69,7 @@ export async function Header() {
         {accountUrl && (
           <a
             href={accountUrl}
-            className="hidden size-11 place-items-center rounded-full transition-colors hover:bg-current/8 lg:grid"
+            className="hidden size-11 place-items-center rounded-full transition-colors hover:bg-berry-50 lg:grid"
             aria-label="Your account"
           >
             <Icon name="user" />

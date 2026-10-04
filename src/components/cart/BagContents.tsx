@@ -42,14 +42,14 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
   if (lines.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-16 text-center">
-        <span className="grid size-20 place-items-center rounded-full bg-pine-100 text-pine-700">
+        <span className="grid size-20 place-items-center rounded-full bg-berry-50 text-berry-600">
           <Icon name="gift" className="size-9" strokeWidth={1.3} />
         </span>
         <div>
           <p className="display-md">Your bag is empty</p>
           <p className="mt-2 text-ink-soft">The best gifts are still waiting under the tree.</p>
         </div>
-        <Link href="/shop" onClick={onNavigate} className="btn btn-dark shine">
+        <Link href="/shop" onClick={onNavigate} className="btn btn-primary shine">
           Shop the sale
         </Link>
       </div>
@@ -60,16 +60,16 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
     <div className={cn("flex min-h-0 flex-1 flex-col", variant === "page" && "lg:grid lg:grid-cols-[1fr_400px] lg:items-start lg:gap-12")}>
       <div className={cn("min-h-0", variant === "drawer" && "flex-1 overflow-y-auto overscroll-contain px-5")}>
         {/* Free delivery progress */}
-        <div className="mt-1 rounded-2xl bg-pine-50 p-4">
-          <p className="flex items-center gap-2 text-[0.85rem] font-semibold text-pine-800">
+        <div className="mt-1 rounded-2xl bg-cream p-3.5">
+          <p className="flex items-center gap-2 text-[0.82rem] font-semibold text-ink">
             <Icon name={remaining === 0 ? "sparkle" : "truck"} className="size-4.5 shrink-0" />
             {remaining === 0
               ? "You've unlocked free tracked delivery"
               : `Add ${formatMoney(remaining, currency)} for free delivery`}
           </p>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-pine-200" aria-hidden="true">
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white" aria-hidden="true">
             <div
-              className="h-full rounded-full bg-linear-to-r from-pine-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
+              className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
               style={{ width: `${progress * 100}%` }}
             />
           </div>
@@ -77,11 +77,11 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
 
         <ul className="mt-2 divide-y divide-line">
           {lines.map((line) => (
-            <li key={line.variantId} className="flex gap-4 py-5">
+            <li key={line.variantId} className="flex gap-3.5 py-4">
               <Link
                 href={line.href}
                 onClick={onNavigate}
-                className="relative block size-24 shrink-0 overflow-hidden rounded-xl bg-cream"
+                className="relative block size-20 shrink-0 overflow-hidden rounded-2xl bg-cream ring-1 ring-line"
               >
                 {line.image && (
                   <Image src={line.image} alt="" fill sizes="96px" className="object-cover" />
@@ -142,7 +142,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
         </ul>
 
         {/* Gift options — sent to Shopify as cart attributes + order note */}
-        <fieldset className="mb-4 rounded-2xl border border-line p-4">
+        <fieldset className="mb-4 rounded-2xl bg-berry-50/60 p-4 ring-1 ring-berry-100">
           <legend className="px-1 text-[0.8rem] font-bold tracking-[0.12em] uppercase">Make it a gift</legend>
           <label className="flex cursor-pointer items-center justify-between gap-3 py-1">
             <span className="flex items-center gap-2.5 text-[0.9rem]">
@@ -164,7 +164,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
               maxLength={240}
               rows={2}
               placeholder="Merry Christmas! Love, …"
-              className="mt-1.5 w-full resize-none rounded-xl border border-line bg-snow px-3 py-2.5 text-[0.9rem] outline-none focus:border-gold-500"
+              className="mt-1.5 w-full resize-none rounded-xl border border-line bg-white px-3 py-2.5 text-[0.9rem] outline-none focus:border-berry-500"
             />
           </label>
         </fieldset>
@@ -174,7 +174,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
         className={cn(
           variant === "drawer"
             ? "border-t border-line bg-paper px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
-            : "rounded-3xl bg-cream p-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]",
+            : "rounded-[1.75rem] bg-white p-6 shadow-soft ring-1 ring-line lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]",
         )}
       >
         <dl className="space-y-1.5 text-[0.92rem]">
@@ -186,7 +186,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
           )}
           <div className="flex justify-between">
             <dt className="font-semibold">Subtotal</dt>
-            <dd className="numeral text-[1.25rem] font-semibold">{formatMoney(subtotal, currency)}</dd>
+            <dd className="numeral text-[1.35rem]">{formatMoney(subtotal, currency)}</dd>
           </div>
         </dl>
         <p className="mt-1 text-[0.75rem] text-ink-soft">Shipping and taxes calculated at checkout.</p>

@@ -81,7 +81,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
 
   return (
     <div>
-      <div className="sticky top-(--header-h) z-20 -mx-4 border-b border-line bg-paper/90 px-4 py-3 backdrop-blur-lg sm:mx-0 sm:rounded-full sm:border sm:px-3">
+      <div className="sticky top-[calc(var(--header-h)+0.75rem)] z-20 rounded-[1.4rem] bg-white/85 p-2 shadow-soft ring-1 ring-line backdrop-blur-xl sm:rounded-full">
         <div className="flex items-center gap-3">
           <ul className="scrollbar-none -my-1 flex flex-1 gap-2 overflow-x-auto py-1" aria-label="Filter by price">
             {budgets.map((b) => (
@@ -94,8 +94,8 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
                     sync({ budget: b.value });
                   }}
                   className={cn(
-                    "h-10 rounded-full px-4 text-[0.82rem] font-semibold whitespace-nowrap transition-colors",
-                    budget === b.value ? "bg-pine-900 text-snow" : "bg-cream hover:bg-linen",
+                    "h-9 rounded-full px-3.5 text-[0.8rem] font-semibold whitespace-nowrap transition-colors",
+                    budget === b.value ? "bg-berry-600 text-snow shadow-ribbon" : "bg-cream hover:bg-linen",
                   )}
                 >
                   {b.label}
@@ -111,8 +111,8 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
                   sync({ inStock: !inStock });
                 }}
                 className={cn(
-                  "flex h-10 items-center gap-1.5 rounded-full px-4 text-[0.82rem] font-semibold whitespace-nowrap ring-1 transition-colors",
-                  inStock ? "bg-pine-100 ring-pine-600" : "ring-line hover:bg-cream",
+                  "flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[0.8rem] font-semibold whitespace-nowrap ring-1 transition-colors",
+                  inStock ? "bg-pine-100 text-pine-700 ring-pine-300" : "ring-line hover:bg-cream",
                 )}
               >
                 {inStock && <Icon name="check" className="size-3.5" strokeWidth={2.4} />}
@@ -129,7 +129,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
                 setSort(v);
                 sync({ sort: v });
               }}
-              className="h-10 appearance-none rounded-full bg-cream pr-10 pl-4 text-[0.82rem] font-semibold outline-none"
+              className="h-9 appearance-none rounded-full bg-cream pr-9 pl-4 text-[0.8rem] font-semibold outline-none"
             >
               {SORTS.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -149,7 +149,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
               setSort(v);
               sync({ sort: v });
             }}
-            className="h-10 w-full appearance-none rounded-full bg-cream pr-10 pl-4 text-[0.82rem] font-semibold outline-none"
+            className="h-9 w-full appearance-none rounded-full bg-cream pr-9 pl-4 text-[0.8rem] font-semibold outline-none"
           >
             {SORTS.map((s) => (
               <option key={s.value} value={s.value}>
@@ -161,7 +161,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
         </label>
       </div>
 
-      <p className="mt-6 text-[0.85rem] text-ink-soft" aria-live="polite">
+      <p className="mt-5 text-[0.8rem] text-ink-soft" aria-live="polite">
         {shown.length} {shown.length === 1 ? "gift" : "gifts"}
       </p>
 
@@ -181,7 +181,7 @@ export function ShopGrid({ cards, priorityCount = 4 }: { cards: CardView[]; prio
           </button>
         </div>
       ) : (
-        <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-9 sm:gap-x-5 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-6 xl:gap-y-12">
+        <ul className="reveal-stagger mt-3 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-5 xl:gap-y-10">
           {shown.map((c, i) => (
             <li key={c.handle}>
               <ProductCard card={c} priority={i < priorityCount} />

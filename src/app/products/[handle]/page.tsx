@@ -143,7 +143,7 @@ export default async function ProductPage({ params }: Props) {
               {trust.map((t) => (
                 <li
                   key={t.text}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-pine-100 px-3 py-1.5 text-[0.74rem] leading-none font-semibold text-pine-800"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-berry-50 px-3 py-1.5 text-[0.72rem] leading-none font-semibold text-berry-700"
                 >
                   <Icon name={t.icon} className="size-3.5" />
                   {t.text}
@@ -154,12 +154,12 @@ export default async function ProductPage({ params }: Props) {
             <Link href={`/shop/${view.category.slug}`} className="eyebrow text-gold-700 hover:text-berry-600">
               {view.category.title}
             </Link>
-            <h1 className="mt-2 font-display text-[clamp(1.9rem,1.5rem+1.6vw,2.8rem)] leading-[1.04] font-medium tracking-[-0.015em]">
+            <h1 className="display-lg mt-2 text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)]">
               {view.name}
             </h1>
             {view.giftFor && (
               <p className="mt-3 flex items-start gap-2 text-[0.95rem] text-ink-soft">
-                <span className="script -mt-1 text-[1.6rem] leading-none text-berry-600">for</span>
+                <span className="accent text-[1.15rem] leading-none text-berry-600">for</span>
                 {view.giftFor}
               </p>
             )}
@@ -168,7 +168,7 @@ export default async function ProductPage({ params }: Props) {
               <ul className="mt-6 grid grid-cols-1 gap-x-4 gap-y-2.5 sm:grid-cols-2">
                 {view.perks.map((perk) => (
                   <li key={perk} className="flex items-start gap-2.5 text-[0.9rem]">
-                    <span aria-hidden="true" className="mt-px grid size-5.5 shrink-0 place-items-center rounded-full bg-pine-700 text-snow">
+                    <span aria-hidden="true" className="mt-px grid size-5.5 shrink-0 place-items-center rounded-full bg-berry-50 text-berry-600">
                       <Icon name={perkIcon(perk)} className="size-3" strokeWidth={2} />
                     </span>
                     {perk}
@@ -224,7 +224,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             {cutoff && (
-              <aside className="mt-4 flex gap-3 rounded-2xl bg-berry-100 p-4 text-[0.88rem]" aria-label="Christmas delivery">
+              <aside className="mt-4 flex gap-3 rounded-2xl bg-berry-50 p-4 text-[0.86rem] ring-1 ring-berry-100" aria-label="Christmas delivery">
                 <Icon name="snowflake" className="mt-0.5 size-5 shrink-0 text-berry-600" />
                 <p>
                   <strong className="font-semibold">Want it by Christmas?</strong> Order by {cutoff.label} for{" "}
@@ -244,7 +244,7 @@ export default async function ProductPage({ params }: Props) {
                 ["Category", view.category.title],
                 ["Gift wrap", "Free, with card"],
               ].map(([k, v]) => (
-                <div key={k} className="bg-snow p-3.5">
+                <div key={k} className="bg-white p-3.5">
                   <dt className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-faint uppercase">{k}</dt>
                   <dd className="mt-0.5 font-semibold">{v}</dd>
                 </div>
@@ -255,9 +255,10 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       {/* ── The gift story ────────────────────────────────────────────── */}
-      <section aria-labelledby="story-title" className="grain relative overflow-hidden bg-pine-900 py-16 text-snow lg:py-24">
-        <div className="container-page grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-[480px] overflow-hidden rounded-t-full rounded-b-[2rem] ring-1 ring-gold-500/30">
+      <section aria-labelledby="story-title" className="px-2 sm:px-4">
+        <div className="grain relative mx-auto max-w-[1600px] overflow-hidden rounded-[1.75rem] bg-pine-900 py-12 text-snow sm:rounded-[2.25rem] lg:py-16">
+        <div className="container-page grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="relative mx-auto aspect-[4/5] w-full max-w-[420px] overflow-hidden rounded-t-full rounded-b-[2rem] ring-[5px] ring-white/10">
             {(() => {
               const img = view.gallery.filter((m) => m.type === "image")[1] ?? view.gallery.find((m) => m.type === "image");
               return img && img.type === "image" ? (
@@ -266,18 +267,16 @@ export default async function ProductPage({ params }: Props) {
             })()}
           </div>
           <div>
-            <p className="script text-[2.4rem] text-gold-300 sm:text-[3rem]" aria-hidden="true">
-              the gift story
-            </p>
-            <h2 id="story-title" className="display-lg -mt-1">
-              Why it&apos;s <span className="italic text-gold-300">the one.</span>
+            <p className="kicker mb-3 text-gold-300">The gift story</p>
+            <h2 id="story-title" className="display-lg">
+              Why it&apos;s <span className="accent text-gold-300">the one.</span>
             </h2>
-            <p className="mt-5 max-w-lg text-[1.05rem] leading-relaxed text-snow/80">{view.summary}</p>
+            <p className="mt-4 max-w-lg text-[0.98rem] leading-relaxed text-white/75">{view.summary}</p>
             {view.perks.length > 0 && (
-              <ol className="mt-8 grid gap-3 sm:grid-cols-2">
+              <ol className="mt-7 grid gap-2.5 sm:grid-cols-2">
                 {view.perks.map((perk, i) => (
-                  <li key={perk} className="flex items-start gap-3 rounded-2xl bg-snow/6 p-4 ring-1 ring-snow/10">
-                    <span className="numeral text-[1.6rem] leading-none text-gold-400">{String(i + 1).padStart(2, "0")}</span>
+                  <li key={perk} className="flex items-start gap-3 rounded-2xl bg-white/5 p-3.5 ring-1 ring-white/10">
+                    <span className="numeral text-[1.4rem] leading-none text-gold-300">{String(i + 1).padStart(2, "0")}</span>
                     <span className="text-[0.92rem] text-snow/90">{perk}</span>
                   </li>
                 ))}
@@ -285,11 +284,12 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
         </div>
+        </div>
       </section>
 
       <ProductGridSection
         id="related-title"
-        script="complete the gift"
+        kicker="Complete the gift"
         title={`More ${view.category.title}`}
         cards={related}
         action={{ href: `/shop/${view.category.slug}`, label: `All ${view.category.title}` }}
@@ -297,14 +297,12 @@ export default async function ProductPage({ params }: Props) {
 
       <DeliveryTimeline />
 
-      <section aria-labelledby="pdp-faq" className="py-16 lg:py-24">
-        <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
+      <section aria-labelledby="pdp-faq" className="pb-14 lg:pb-20">
+        <div className="container-page grid gap-8 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
           <div>
-            <p className="script text-[2.3rem] text-berry-600" aria-hidden="true">
-              questions?
-            </p>
-            <h2 id="pdp-faq" className="display-lg -mt-1">
-              Good to know
+            <p className="kicker mb-3">Questions?</p>
+            <h2 id="pdp-faq" className="display-lg">
+              Good to <span className="accent text-berry-600">know</span>
             </h2>
           </div>
           <FaqList faqs={productFaqs} />
@@ -312,7 +310,7 @@ export default async function ProductPage({ params }: Props) {
       </section>
 
       <div className={cn("bg-cream", more.length === 0 && "hidden")}>
-        <ProductGridSection id="more-title" script="you may also love" title="Deals in other categories" cards={more} />
+        <ProductGridSection id="more-title" kicker="You may also love" title="Deals in other categories" cards={more} />
       </div>
     </>
   );

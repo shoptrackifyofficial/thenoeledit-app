@@ -28,11 +28,11 @@ export function Price({
       <span
         aria-hidden="true"
         className={cn(
-          "numeral font-semibold",
+          "font-bold tabular-nums",
           onSale ? "text-berry-600" : "text-ink",
-          size === "sm" && "text-[1.05rem]",
-          size === "md" && "text-[1.2rem]",
-          size === "lg" && "text-[1.9rem] leading-none",
+          size === "sm" && "text-[0.92rem]",
+          size === "md" && "text-[1.1rem]",
+          size === "lg" && "numeral text-[1.9rem] leading-none font-medium",
         )}
       >
         {from && <span className="mr-1 font-sans text-[0.7em] font-medium text-ink-soft">from</span>}
@@ -42,8 +42,8 @@ export function Price({
         <s
           aria-hidden="true"
           className={cn(
-            "numeral text-ink-faint decoration-1",
-            size === "lg" ? "text-[1.1rem]" : "text-[0.85rem]",
+            "text-ink-faint tabular-nums decoration-1",
+            size === "lg" ? "text-[1.05rem]" : "text-[0.8rem]",
           )}
         >
           {formatMoney(compareAtPrice!, currency)}

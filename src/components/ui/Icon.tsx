@@ -27,6 +27,13 @@ const paths = {
     </>
   ),
   menu: <path d="M4 7h16M4 12h16M4 17h10" />,
+  home: <path d="M4 10.5 12 4l8 6.5V20h-5v-5.5H9V20H4z" />,
+  tree: (
+    <>
+      <path d="M12 3.5 7.5 9.5h2.8L6 15.5h12l-4.3-6h2.8z" />
+      <path d="M12 15.5V20M9.5 20h5" />
+    </>
+  ),
   close: <path d="M6 6l12 12M18 6 6 18" />,
   "chevron-down": <path d="m6 9 6 6 6-6" />,
   "chevron-right": <path d="m9 6 6 6-6 6" />,

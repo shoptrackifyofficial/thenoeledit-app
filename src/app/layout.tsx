@@ -2,12 +2,13 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 import "./globals.css";
-import { display, sans, script } from "./fonts";
+import { display, sans } from "./fonts";
 import { Analytics } from "@/components/analytics/Analytics";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/content/site";
 import { graph, organizationSchema, websiteSchema } from "@/lib/seo/schema";
@@ -51,7 +52,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} ${script.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <head>
         {/* Placeholder + Shopify image CDNs: open the connection before the hero asks. */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
+          <MobileTabBar />
           <CartDrawer />
         </CartProvider>
         <Analytics />

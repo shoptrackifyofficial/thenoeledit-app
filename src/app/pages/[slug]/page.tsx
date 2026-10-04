@@ -115,16 +115,14 @@ export default async function InfoPage({ params }: Props) {
   return (
     <>
       <JsonLd data={graph(breadcrumbSchema(crumbs), page.faq ? faqSchema(faqs) : null)} />
-      <div className="container-page py-10 lg:py-16">
+      <div className="container-page py-8 lg:py-12">
         <Breadcrumbs items={[crumbs[0]!, { label: page.title }]} />
-        <p className="script mt-8 text-[2.4rem] text-berry-600" aria-hidden="true">
-          {page.script}
-        </p>
-        <h1 className="display-lg -mt-1">{page.title}</h1>
-        <div className="prose-gift mt-6 max-w-2xl text-[1.05rem]">{page.body}</div>
-        {page.faq && <FaqList faqs={faqs} className="mt-10 max-w-3xl" />}
-        <p className="mt-10">
-          <Link href="/shop" className="btn btn-dark">
+        <p className="kicker mt-7 mb-3">{page.script}</p>
+        <h1 className="display-lg">{page.title}</h1>
+        <div className="prose-gift mt-5 max-w-2xl">{page.body}</div>
+        {page.faq && <FaqList faqs={faqs} className="mt-8 max-w-3xl" />}
+        <p className="mt-8">
+          <Link href="/shop" className="btn btn-primary">
             Back to the sale
           </Link>
         </p>
