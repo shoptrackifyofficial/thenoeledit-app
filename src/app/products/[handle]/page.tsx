@@ -153,7 +153,7 @@ export default async function ProductPage({ params }: Props) {
             <Link href={`/shop/${view.category.slug}`} className="eyebrow text-gold-700 hover:text-berry-600">
               {view.category.title}
             </Link>
-            <h1 className="display-lg mt-2 text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)]">
+            <h1 className="display-lg mt-2 text-wrap text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)]">
               {view.name}
             </h1>
             {view.giftFor && (
