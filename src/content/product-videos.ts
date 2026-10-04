@@ -32,11 +32,18 @@ const p15: ShowcaseVideo[] = [
   clip("p15-5", "Labelling kitchen jars and gift tags with the P15 label maker"),
 ];
 
+const nfc: ShowcaseVideo[] = [
+  clip("nfc-1", "Tapping a record disc onto the NFC music box fridge magnet to play a Christmas song"),
+  clip("nfc-2", "Changing record discs on the NFC music box fridge magnet and watching the player glow"),
+  clip("nfc-3", "The fridge starts playing: the glowing NFC music box magnet playing a Christmas record"),
+];
+
 /** Shown on a product page unless its handle has its own list below. None by default: a product only shows videos that belong to it. */
 export const productVideos: ShowcaseVideo[] = [];
 
 /** Per-product lists, keyed by product handle. */
 export const productVideosByHandle: Record<string, ShowcaseVideo[]> = {
+  "christmas-mini-nfc-music-box-refrigerator-magnet-cute-record-player-style-ambient-night-light-for-teen-gifts": nfc,
   "phomemo-p15-label-printer-gift-label-printer-ribbon-label-printer-bluetooth-enabled-printing-rechargeable-for-name-tag": p15,
   "one-touch-3d-printed-latte-art-cameras-coffee-stencil-printers-handheld-tools-templates-cappuccino-interchangeable-mold-christmas-gift": latteCamera,
 };
