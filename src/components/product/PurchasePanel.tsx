@@ -271,7 +271,7 @@ function FreeShippingStrip({ total, currency, ratio = 1 }: { total: number; curr
   return (
     <div
       className={cn(
-        "relative min-w-0 flex-1 basis-56 overflow-hidden rounded-xl border border-dashed py-1.5 pr-3 pl-2",
+        "relative flex min-w-0 flex-1 basis-56 items-center self-stretch overflow-hidden rounded-xl border border-dashed py-1.5 pr-3 pl-2",
         unlocked ? "border-gold-400 bg-gold-100 text-ink" : "border-line bg-cream text-ink",
       )}
     >
@@ -281,7 +281,7 @@ function FreeShippingStrip({ total, currency, ratio = 1 }: { total: number; curr
           className="unlock-anim pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/70 to-transparent motion-safe:animate-[unlock-sweep_3.6s_ease-in-out_infinite]"
         />
       )}
-      <div className="relative flex items-center gap-3">
+      <div className="relative flex w-full items-center gap-3">
         <span className="relative grid size-9 shrink-0 place-items-center">
           {unlocked && (
             <>

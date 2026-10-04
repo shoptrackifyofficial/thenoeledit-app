@@ -205,10 +205,24 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
             <Icon name="truck" className="size-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[0.82rem] font-semibold">
-              {noMinimum ? "Free shipping on every order" : remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
-            </p>
-            {noMinimum && <p className="text-[0.72rem] text-ink-soft">Limited-time offer</p>}
+            {/* Row 1: title, with the "Free" badge at the far end */}
+            <div className="flex items-center justify-between gap-2">
+              <p className="min-w-0 text-[0.82rem] leading-tight font-semibold">
+                {noMinimum ? "Free shipping on every order" : remaining === 0 ? "Free shipping unlocked" : `Add ${formatMoney(remaining, currency)} for free shipping`}
+              </p>
+              {remaining === 0 && (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
+                  <Icon name="check" className="size-3" strokeWidth={3} /> Free
+                </span>
+              )}
+            </div>
+            {/* Row 2: secondary text, with the offer timer at the far end */}
+            {noMinimum && (
+              <div className="mt-0.5 flex items-center justify-between gap-2">
+                <p className="text-[0.72rem] leading-tight text-ink-soft">Limited-time offer</p>
+                {freeShipping.endsAt && <SaleCountdown endsAt={freeShipping.endsAt} compact />}
+              </div>
+            )}
             <div hidden={noMinimum} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-cream" aria-hidden="true">
               <div
                 className="h-full rounded-full bg-linear-to-r from-berry-600 to-gold-500 transition-[width] duration-700 ease-out-soft"
@@ -216,15 +230,6 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
               />
             </div>
           </div>
-          {remaining === 0 && (
-            // The "Free" badge, with the offer timer tucked directly under it.
-            <div className="flex shrink-0 flex-col items-end gap-1.5">
-              <span className="inline-flex items-center gap-1 rounded-full bg-pine-600 py-0.5 pr-2 pl-1.5 text-[0.68rem] leading-none font-semibold text-snow">
-                <Icon name="check" className="size-3" strokeWidth={3} /> Free
-              </span>
-              {freeShipping.endsAt && <SaleCountdown endsAt={freeShipping.endsAt} compact />}
-            </div>
-          )}
         </div>
 
         <dl className="mt-3 space-y-1.5 border-t border-line pt-3 text-[0.84rem]">

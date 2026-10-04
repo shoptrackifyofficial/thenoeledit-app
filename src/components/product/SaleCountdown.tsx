@@ -81,9 +81,9 @@ export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { en
 
   if (compact) {
     return (
-      <div role="timer" aria-live="off">
+      <div className="flex" role="timer" aria-live="off">
         {/* Icon + days + digits only, so it stays small enough to sit under a badge. */}
-        <p className="inline-flex items-center gap-1 text-[0.7rem] font-semibold whitespace-nowrap text-berry-600" title={label}>
+        <p className="inline-flex items-center gap-1 text-[0.7rem] leading-tight font-semibold whitespace-nowrap text-berry-600" title={label}>
           <Icon name="hourglass" className="size-3.5 shrink-0" />
           {left.days > 0 && <span className="text-[0.64rem] font-bold">{left.days}d</span>}
           <span className="text-[0.74rem]">{digits}</span>
