@@ -19,7 +19,7 @@ export class CartServiceError extends Error {
 const CART_CREATE = `
 mutation CartCreate($input: CartInput!) {
   cartCreate(input: $input) {
-    cart { id checkoutUrl totalQuantity }
+    cart { id checkoutUrl totalQuantity discountCodes { code applicable } }
     userErrors { field message }
   }
 }`;
@@ -28,12 +28,12 @@ export type CartLineInput = { merchandiseId: string; quantity: number };
 
 export async function createCheckout(
   lines: CartLineInput[],
-  options: { attributes?: { key: string; value: string }[]; note?: string } = {},
-): Promise<{ id: string; checkoutUrl: string }> {
+  options: { attributes?: { key: string; value: string }[]; note?: string; discountCodes?: string[]; country?: string } = {},
+): Promise<{ id: string; checkoutUrl: string; discountCodes: { code: string; applicable: boolean }[] }> {
   if (!isStorefrontConfigured()) throw new CartServiceError("Storefront API is not configured.");
   const data = await graphqlRequest<{
     cartCreate: {
-      cart: { id: string; checkoutUrl: string } | null;
+      cart: { id: string; checkoutUrl: string; discountCodes?: { code: string; applicable: boolean }[] } | null;
       userErrors?: { message?: string }[];
     };
   }>({
@@ -44,6 +44,8 @@ export async function createCheckout(
         lines,
         ...(options.attributes?.length ? { attributes: options.attributes } : {}),
         ...(options.note ? { note: options.note } : {}),
+        ...(options.discountCodes?.length ? { discountCodes: options.discountCodes } : {}),
+        ...(options.country ? { buyerIdentity: { countryCode: options.country } } : {}),
       },
     },
     storefrontToken: shopifyConfig().storefrontToken,
@@ -53,5 +55,5 @@ export async function createCheckout(
   if (!cart) {
     throw new CartServiceError(data.cartCreate?.userErrors?.[0]?.message ?? "We could not create your bag.");
   }
-  return cart;
+  return { ...cart, discountCodes: cart.discountCodes ?? [] };
 }

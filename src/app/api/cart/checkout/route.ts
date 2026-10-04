@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { isDemoCatalog, variantIndex } from "@/lib/catalog";
+import { getProducts, isDemoCatalog, variantIndex } from "@/lib/catalog";
+import { site } from "@/content/site";
+import { tierCode } from "@/lib/commerce/tiers";
 import { gaClientIdFromCookie, gaSessionIdFromCookie } from "@/lib/ga/mp";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { isStorefrontConfigured } from "@/lib/shopify/config";
@@ -13,8 +15,8 @@ export const runtime = "nodejs";
  * POST /api/cart/checkout — turns the browser bag into a Shopify Storefront
  * cart and returns Shopify's hosted checkout URL.
  *
- * Trust model: the client sends only variant ids + quantities (+ gift
- * options). Every id must be a variant in the synced catalog (the store is
+ * Trust model: the client sends only variant ids + quantities
+ * (+ an anonymous ad id). Every id must be a variant in the synced catalog (the store is
  * shared with other brands), quantities are clamped, and Shopify prices the
  * cart itself — no price or discount is ever accepted from the browser.
  */
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
 
   const raw = await request.text();
   if (raw.length > 8_000) return json({ error: "Request too large." }, 413);
-  let body: { lines?: unknown; gift?: { wrap?: unknown; message?: unknown }; externalId?: unknown };
+  let body: { lines?: unknown; externalId?: unknown };
   try {
     body = JSON.parse(raw);
   } catch {
@@ -62,14 +64,7 @@ export async function POST(request: NextRequest) {
   }
   if (merged.size === 0) return json({ error: "The items in your bag are no longer available." }, 400);
 
-  // Gift options travel as cart attributes + the order note, visible to the
-  // merchant on the Shopify order.
-  const message =
-    typeof body.gift?.message === "string"
-      ? body.gift.message.replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "").trim().slice(0, 240)
-      : "";
   const attributes: { key: string; value: string }[] = [];
-  if (message) attributes.push({ key: "Gift message", value: message });
 
   // Ad identity for the server-side Purchase event (the orders/paid webhook
   // reads these back). "_"-prefixed attributes are hidden from the shopper.
@@ -87,11 +82,31 @@ export async function POST(request: NextRequest) {
     attributes.push({ key: "_eid", value: body.externalId });
   }
 
+  // Quantity-tier discount: the code is chosen here from the validated
+  // quantities (never from the browser), and Shopify applies the real discount.
+  const products = await getProducts();
+  let tier: { code: string } | null = null;
+  for (const p of products) {
+    const cfg = p.story?.bundle;
+    if (!cfg || !cfg.discounts.length || !cfg.codePrefix) continue;
+    const units = p.variants.reduce((n, v) => n + (merged.get(v.id) ?? 0), 0);
+    const code = units > 0 ? tierCode(cfg, units) : null;
+    if (code) {
+      tier = { code };
+      break;
+    }
+  }
+
   try {
     const cart = await createCheckout(
       [...merged].map(([merchandiseId, quantity]) => ({ merchandiseId, quantity })),
-      { attributes, note: message ? `Gift message: ${message}` : undefined },
+      { attributes, discountCodes: tier ? [tier.code] : undefined, country: site.market },
     );
+    // The page shows the discounted price, so never send the shopper to a checkout that would charge more.
+    if (tier && !cart.discountCodes.some((d) => d.code.toUpperCase() === tier.code.toUpperCase() && d.applicable)) {
+      console.error(`[cart/checkout] discount code ${tier.code} is not applicable — create it in Shopify (see README).`);
+      return json({ error: "This offer is being set up. Please try again shortly." }, 409);
+    }
     const url = new URL(cart.checkoutUrl);
     if (url.protocol !== "https:") throw new Error("Unexpected checkout URL");
     return json({ checkoutUrl: cart.checkoutUrl });

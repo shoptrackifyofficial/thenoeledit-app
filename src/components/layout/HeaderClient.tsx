@@ -197,7 +197,7 @@ export function DesktopNav({ menu }: { menu: MenuData }) {
                 {category.products.map((p) => (
                   <li key={p.href} className="mega-in">
                     <Link href={p.href} className="group block">
-                      <span className="relative block aspect-square overflow-hidden rounded-2xl bg-cream">
+                      <span className="img-skeleton relative block aspect-square overflow-hidden rounded-2xl">
                         {p.image && (
                           <Image
                             src={p.image}
@@ -345,7 +345,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
                     onClick={() => setLevel(c)}
                     className="flex w-full items-center gap-4 py-3 text-left"
                   >
-                    <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-cream shadow-soft ring-2 ring-surface">
+                    <span className="img-skeleton relative size-14 shrink-0 overflow-hidden rounded-full shadow-soft ring-2 ring-surface">
                       <Image src={c.image} alt="" fill sizes="56px" className="object-cover" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -404,7 +404,7 @@ export function MobileMenu({ menu, accountUrl }: { menu: MenuData; accountUrl: s
                   {level.products.map((p) => (
                     <li key={p.href}>
                       <Link href={p.href} className="block">
-                        <span className="relative block aspect-square overflow-hidden rounded-2xl bg-cream">
+                        <span className="img-skeleton relative block aspect-square overflow-hidden rounded-2xl">
                           {p.image && <Image src={p.image} alt="" fill sizes="45vw" className="object-cover" />}
                         </span>
                         <span className="mt-2 block text-[0.85rem] leading-snug font-semibold">{p.name}</span>

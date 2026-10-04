@@ -83,7 +83,7 @@ export function ProductStory({ story }: { story: Story }) {
             <div className="mt-9 grid items-center gap-8 lg:mt-12 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
               {how.image && (
                 <div className="reveal relative mx-auto w-full max-w-[560px]">
-                  <div className="relative aspect-square overflow-hidden rounded-[2rem] bg-cream shadow-lift ring-[6px] ring-surface">
+                  <div className="img-skeleton relative aspect-square overflow-hidden rounded-[2rem] shadow-lift ring-[6px] ring-surface">
                     <Image
                       src={how.image}
                       alt={how.imageAlt}
@@ -132,7 +132,7 @@ export function ProductStory({ story }: { story: Story }) {
                     {/* instant-photo frame */}
                     <figure className="rounded-[0.6rem] bg-white p-3 pb-4 text-ink shadow-lift">
                       {/* crops the supplier watermark off the bottom edge */}
-                      <div className="relative aspect-[1/0.9] overflow-hidden rounded-[0.3rem] bg-cream">
+                      <div className="img-skeleton relative aspect-[1/0.9] overflow-hidden rounded-[0.3rem]">
                         <Image src={img.url} alt={img.alt} fill sizes="(min-width: 640px) 360px, 90vw" className="object-cover object-top" />
                       </div>
                       {img.caption && <figcaption className="accent mt-3 text-center text-[1.15rem]">{img.caption}</figcaption>}
@@ -165,7 +165,7 @@ export function ProductStory({ story }: { story: Story }) {
               >
                 <div
                   className={cn(
-                    "relative aspect-[1/0.95] overflow-hidden",
+                    "img-skeleton relative aspect-[1/0.95] overflow-hidden",
                     i % 2 === 1 && "lg:order-2",
                   )}
                 >

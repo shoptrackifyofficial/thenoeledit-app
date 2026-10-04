@@ -49,7 +49,17 @@ export type ProductStory = {
   /** Portrait demo clips for the "See it in action" row (Shopify-hosted mp4). */
   videos: { src: string; poster: string | null; alt: string }[];
   /** Turns one option (e.g. camera colour) into a "how many, and which colours" picker. */
-  bundle: { option: string; secondary: string | null; max: number; noun: string; popular: number | null; tags: string[] } | null;
+  bundle: {
+    option: string;
+    secondary: string | null;
+    max: number;
+    noun: string;
+    popular: number | null;
+    tags: string[];
+    /** Percent off for 1, 2, 3… units (e.g. [50, 56, 65]); applied at checkout by the code `${codePrefix}${percent}`. */
+    discounts: number[];
+    codePrefix: string;
+  } | null;
   how: {
     eyebrow: string;
     title: string;

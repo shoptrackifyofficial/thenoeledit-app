@@ -24,7 +24,7 @@ export function ProductCard({
 }) {
   return (
     <article className={cn("group relative", className)}>
-      <div className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] bg-cream ring-1 ring-line/60 transition-shadow duration-500 group-hover:shadow-lift">
+      <div className="img-skeleton relative aspect-[4/5] overflow-hidden rounded-[1.25rem] ring-1 ring-line/60 transition-shadow duration-500 group-hover:shadow-lift">
         {card.image && (
           <Image
             src={card.image.url}

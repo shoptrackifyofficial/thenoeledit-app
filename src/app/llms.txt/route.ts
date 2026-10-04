@@ -22,7 +22,6 @@ export async function GET() {
     "",
     "## Key facts",
     `- Sale: ${site.sale.headline} until ${new Date(site.sale.endsAt).toUTCString().slice(5, 16)}`,
-    "- A gift message can be added to any order before checkout",
     `- Tracked delivery in ${site.delivery.minDays}-${site.delivery.maxDays} working days; free over ${formatMoney(site.delivery.freeOver)}`,
     "- Order early for a stress-free Christmas: gifts arrive packed and tracked well before the big day",
     "- Returns and exchanges until January 31; secure checkout by Shopify",

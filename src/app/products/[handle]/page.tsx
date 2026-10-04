@@ -89,8 +89,8 @@ export default async function ProductPage({ params }: Props) {
     {
       q: `Who is the ${view.name} a good gift for?`,
       a: view.giftFor
-        ? `${view.giftFor}. Add a gift message in your bag, or send it straight to them by entering their address at checkout.`
-        : `It's a thoughtful ${view.category.title.toLowerCase()} gift, and you can add a gift message in your bag before checkout.`,
+        ? `${view.giftFor}. To send it straight to them, just enter their address at checkout.`
+        : `It's a thoughtful ${view.category.title.toLowerCase()} gift.`,
     },
     {
       q: `How much is the ${view.name} in the Christmas sale?`,
@@ -106,9 +106,9 @@ export default async function ProductPage({ params }: Props) {
   ];
 
   const trust: { icon: IconName; text: string }[] = [
-    { icon: "gift", text: "Gift message option" },
+    { icon: "shield", text: "Secure checkout" },
     { icon: "truck", text: "Early for Christmas" },
-    { icon: "refresh", text: "Returns till Jan 31" },
+    { icon: "tag", text: "Free shipping over $50" },
   ];
 
   return (
@@ -180,15 +180,6 @@ export default async function ProductPage({ params }: Props) {
                     <div className="prose-gift text-[0.92rem]" dangerouslySetInnerHTML={{ __html: view.descriptionHtml }} />
                   ) : (
                     <p>{view.summary}</p>
-                  ),
-                },
-                {
-                  title: "Sending it as a gift?",
-                  body: (
-                    <p>
-                      Enter their address at checkout and add a gift message in your bag — it is saved with your order.
-                      Need a gift receipt? Email us your order number.
-                    </p>
                   ),
                 },
                 {

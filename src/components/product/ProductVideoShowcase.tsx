@@ -278,7 +278,7 @@ function VideoCard({ video, offset = 0 }: { video: ShowcaseVideo; offset?: numbe
   }, []);
 
   return (
-    <div className="relative size-full overflow-hidden rounded-[1.4rem] bg-pine-950 shadow-lift ring-1 ring-line">
+    <div className="img-skeleton-dark relative size-full overflow-hidden rounded-[1.4rem] shadow-lift ring-1 ring-line">
       <video
         ref={ref}
         className="size-full object-cover"

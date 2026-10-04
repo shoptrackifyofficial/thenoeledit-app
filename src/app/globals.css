@@ -288,6 +288,24 @@
   background-size: 18px 18px;
 }
 
+/* Loading shimmer for remote images: a soft light sweeps across the frame
+   until the photo paints over it (images cover their box, so it simply
+   disappears once loaded). Dark variant for video tiles and dark panels. */
+@utility img-skeleton {
+  background-color: var(--color-cream);
+  background-image: linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.75) 45%, transparent 70%);
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+@utility img-skeleton-dark {
+  background-color: var(--color-pine-950);
+  background-image: linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.1) 45%, transparent 70%);
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 
 @utility btn {
@@ -621,6 +639,24 @@
   }
   100% {
     transform: translateX(320%) skewX(-18deg);
+  }
+}
+@keyframes bundle-open {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes skeleton {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
   }
 }
 @keyframes clip-in {

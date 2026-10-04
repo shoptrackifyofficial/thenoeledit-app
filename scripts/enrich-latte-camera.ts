@@ -180,7 +180,9 @@ async function main() {
     // Shopify's values say "Templates"; the cards are stencils, so the storefront renames them.
     valueLabels: { "4 Templates": "4 Stencils", "12 Templates": "12 Stencils" },
     // Camera colour becomes a "how many cameras, and which colours" picker (1–3).
-    bundle: { option: "Size", secondary: "Color", max: 3, noun: "camera", popular: 2, tags: ["", "One to gift", "Share the joy"] },
+    bundle: { option: "Size", secondary: "Color", max: 3, noun: "camera", popular: 2, tags: ["", "", "Best value"],
+      // Buy 1 / 2 / 3 → 50% / 56% / 65% off, applied at checkout by the Shopify codes XMAS50 / XMAS56 / XMAS65.
+      discounts: [50, 56, 65], codePrefix: "XMAS" },
     how: {
       eyebrow: "How it works",
       title: "Latte art in four easy steps",

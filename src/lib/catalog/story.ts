@@ -78,6 +78,8 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
           popular: Number.isInteger(Number(b.popular)) && Number(b.popular) >= 1 && Number(b.popular) <= bundleMax ? Number(b.popular) : null,
           // positional (index 0 = the 1-item offer), so empty entries must be kept
           tags: (Array.isArray(b.tags) ? b.tags : []).slice(0, 6).map((t) => text(t, 30)),
+          discounts: (Array.isArray(b.discounts) ? b.discounts : []).map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 90).slice(0, 6),
+          codePrefix: /^[A-Z0-9]{2,12}$/.test(text(b.codePrefix, 12)) ? text(b.codePrefix, 12) : "",
         }
       : null;
 

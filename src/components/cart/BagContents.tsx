@@ -15,21 +15,21 @@ import { cn } from "@/lib/utils";
  * Bag body shared by the drawer and /cart (layout follows the reference
  * store): item cards with photo, variant, price, a "Saved x%" badge from
  * Shopify's real compare-at price, a quantity stepper and a bin button; then a
- * floating summary card with free-shipping progress, an optional gift message,
+ * floating summary card with free-shipping progress,
  * subtotal / sale savings / total, the checkout button and the payment logos
  * Shopify accepts. `onNavigate` closes the drawer when a link is followed.
  */
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
-  const { lines, subtotal, savings, currency, setQuantity, remove, checkout, hydrated, loading, demo, gift, setGift, payments } =
+  const { lines, subtotal, savings, currency, setQuantity, remove, checkout, hydrated, loading, demo, payments } =
     useCart();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [noteOpen, setNoteOpen] = useState(Boolean(gift.message));
 
   const freeOver = site.delivery.freeOver;
   const remaining = Math.max(0, freeOver - subtotal);
   const progress = Math.min(1, subtotal / freeOver);
   const original = Math.round((subtotal + savings) * 100) / 100;
+  const codes = [...new Set(lines.map((l) => l.couponCode).filter((c): c is string => c !== null))];
 
   const onCheckout = async () => {
     setError(null);
@@ -79,11 +79,8 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
         className={cn("flex flex-col gap-2.5", variant === "drawer" && "min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2")}
       >
         {lines.map((line) => {
-          const savedPct =
-            line.compareAtPrice && line.compareAtPrice > line.price
-              ? Math.round(((line.compareAtPrice - line.price) / line.compareAtPrice) * 100)
-              : null;
-          const compareTotal = line.compareAtPrice ? Math.round(line.compareAtPrice * line.quantity * 100) / 100 : null;
+          const savedPct = line.savedPercent;
+          const compareTotal = line.listTotal;
           return (
             <li key={line.variantId} className="flex gap-3 rounded-[1.1rem] bg-surface p-2.5 shadow-soft ring-1 ring-line/70">
               <Link
@@ -91,7 +88,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                 onClick={onNavigate}
                 tabIndex={-1}
                 aria-hidden="true"
-                className="relative size-[4.5rem] shrink-0 overflow-hidden rounded-xl bg-cream"
+                className="img-skeleton relative size-[4.5rem] shrink-0 overflow-hidden rounded-xl"
               >
                 {line.image && <Image src={line.image} alt="" fill sizes="72px" className="object-cover" />}
               </Link>
@@ -111,17 +108,22 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                   </div>
                   <p className="flex shrink-0 flex-col items-end tabular-nums">
                     <span className="text-[0.86rem] font-bold">{formatMoney(line.lineTotal, currency)}</span>
-                    {compareTotal && compareTotal > line.lineTotal && (
+                    {compareTotal > line.lineTotal && (
                       <s className="text-[0.72rem] text-ink-faint">{formatMoney(compareTotal, currency)}</s>
                     )}
                   </p>
                 </div>
 
                 {savedPct != null && (
-                  <p className="mt-1 flex items-center gap-1 text-[0.7rem]">
+                  <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.7rem]">
                     <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
                       <Icon name="tag" className="size-3" /> Saved {savedPct}%
                     </span>
+                    {line.couponCode && (
+                      <span className="text-ink-soft">
+                        <span className="numeral font-semibold tracking-wide text-berry-600">{line.couponCode}</span> applied
+                      </span>
+                    )}
                   </p>
                 )}
                 {!line.available && <p className="mt-1 text-[0.74rem] font-semibold text-berry-600">Sold out — remove to continue</p>}
@@ -200,38 +202,6 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
           )}
         </div>
 
-        {/* Gift message — optional, saved on the Shopify order */}
-        <div className="mt-3 border-t border-line pt-3">
-          {noteOpen ? (
-            <label className="block">
-              <span className="flex items-center justify-between text-[0.8rem] font-semibold">
-                <span className="flex items-center gap-1.5">
-                  <Icon name="gift" className="size-4 text-berry-600" /> Gift message
-                </span>
-                <span className="text-[0.7rem] font-normal text-ink-faint tabular-nums">{gift.message.length}/240</span>
-              </span>
-              <textarea
-                value={gift.message}
-                onChange={(e) => setGift({ message: e.target.value })}
-                maxLength={240}
-                rows={2}
-                placeholder="Merry Christmas! Love, …"
-                className="mt-1.5 w-full resize-none rounded-xl border border-line bg-cream/60 px-3 py-2 text-[0.86rem] outline-none focus:border-berry-500"
-              />
-              <span className="text-[0.7rem] text-ink-faint">Saved with your order.</span>
-            </label>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setNoteOpen(true)}
-              className="flex w-full items-center gap-1.5 text-[0.8rem] font-semibold text-ink-soft transition-colors hover:text-berry-700"
-            >
-              <Icon name="gift" className="size-4 text-berry-600" /> Add a gift message
-              <Icon name="plus" className="ml-auto size-3.5" />
-            </button>
-          )}
-        </div>
-
         <dl className="mt-3 space-y-1.5 border-t border-line pt-3 text-[0.84rem]">
           {savings > 0.009 && (
             <>
@@ -240,11 +210,19 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                 <dd className="text-ink-soft tabular-nums">{formatMoney(original, currency)}</dd>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <dt className="flex items-center gap-1.5 text-ink-soft">
-                  Sale savings
-                  <span className="rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.7rem] leading-none font-bold text-berry-700 tabular-nums">
-                    {Math.round((savings / original) * 100)}% off
-                  </span>
+                <dt className="flex flex-wrap items-center gap-1.5 text-ink-soft">
+                  Discount
+                  {codes.length > 0 && (
+                    <span
+                      className="inline-flex items-center gap-1 rounded-md bg-cream px-1.5 py-0.5 text-[0.7rem] leading-none text-ink-soft"
+                      title={codes.join(" · ")}
+                      aria-label={`Coupon ${codes.join(", ")} applied`}
+                    >
+                      <Icon name="tag" className="size-3 text-berry-600" />
+                      <span className="numeral font-semibold tracking-wide text-berry-600">{codes.join(" · ")}</span>
+                    </span>
+                  )}
+                  <span className="text-[0.7rem] font-bold text-berry-600 tabular-nums">{Math.round((savings / original) * 100)}% off</span>
                 </dt>
                 <dd className="font-semibold text-berry-600 tabular-nums">−{formatMoney(savings, currency)}</dd>
               </div>
@@ -254,7 +232,6 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
             <dt className="font-bold">Total</dt>
             <dd className="numeral text-[1.25rem] font-semibold tabular-nums">{formatMoney(subtotal, currency)}</dd>
           </div>
-          <p className="text-[0.7rem] text-ink-faint">Taxes calculated at checkout.</p>
         </dl>
 
         {error && (

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
 import { LowStockAlert } from "@/components/product/LowStockAlert";
@@ -11,6 +11,7 @@ import type { PaymentMethod } from "@/lib/shopify/payments";
 import { site } from "@/content/site";
 import { trackCustomizeProduct, trackViewItem } from "@/lib/analytics";
 import type { ProductView, ViewVariant } from "@/lib/commerce/product-view";
+import { applyPercent, round2, tierCode, tierPercent } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -329,28 +330,52 @@ function FreeShippingStrip({ total, currency }: { total: number; currency: strin
 
 /* ── Bundle picker: how many, and which colour for each ─────────────── */
 
-/** A camera-lens swatch: the colour body with a glassy lens ring in the middle. */
-function Lens({ value, active, className }: { value: string; active?: boolean; className?: string }) {
+/** A plain colour circle. */
+function Lens({ value, className }: { value: string; active?: boolean; className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={cn("relative grid shrink-0 place-items-center rounded-full ring-1 ring-ink/20 transition-transform duration-300 ease-out-soft", active && "scale-110", className)}
+      className={cn("block shrink-0 rounded-full shadow-[inset_0_0_0_1px_rgb(14_26_51/0.18)]", className)}
       style={{ background: swatchFor(value) ?? "#d8d2c6" }}
-    >
-      <span className="size-[46%] rounded-full bg-[radial-gradient(circle_at_35%_30%,#6b7a8f,#10141c_65%)] ring-[1.5px] ring-gold-400/80" />
+    />
+  );
+}
+
+type PackChoice = { value: string; label: string; price: number; sale: number; selected: boolean };
+
+type Offer = { n: number; total: number; unit: number; compare: number | null; pct: number | null; code: string | null };
+
+const WORDS = ["", "One", "Two", "Three", "Four", "Five", "Six"];
+
+/** n photos fanned out like a hand of cards (one per camera in the set). */
+function Fan({ images, size }: { images: (string | null)[]; size: string }) {
+  const n = images.length;
+  return (
+    <span className="relative block size-full">
+      {images.map((src, i) => {
+        const turn = n === 1 ? 0 : (i - (n - 1) / 2) * 9;
+        const shift = n === 1 ? 0 : (i - (n - 1) / 2) * 16;
+        return (
+          <span
+            key={i}
+            className="img-skeleton absolute inset-[8%] overflow-hidden rounded-xl shadow-soft ring-2 ring-surface transition-transform duration-500 ease-out-soft"
+            style={{ transform: `translateX(${shift}%) rotate(${turn}deg)`, zIndex: i }}
+          >
+            {src && <Image src={src} alt="" fill sizes={size} className="object-cover" />}
+          </span>
+        );
+      })}
     </span>
   );
 }
 
-type PackChoice = { value: string; label: string; price: number; selected: boolean };
-
 /**
- * "Build your set": up to `max` camera slots in one row. A filled slot shows
- * that camera's photo with lens-style colour dots under it; an empty slot is a
- * dashed "+ Add" tile. Tap + to add a camera, × to remove one, and a small
- * segmented switch sets the template pack for the set. Every control is a
- * native radio or button, so keyboard and screen readers work for free.
- * Prices are Shopify's real per-variant prices; nothing here invents a discount.
+ * Bundle offers, modelled on the reference store's pack cards: a stacked,
+ * photo-first list on phones and three photo cards from `sm` up. Each card
+ * shows the unit price, the set total and — when Shopify has a compare-at
+ * price — the struck-through original with the real saving. Choosing a card
+ * springs open a panel to customise the set: the stencil pack and a colour for
+ * every camera. All prices are Shopify's own; nothing is invented.
  */
 function BundlePicker({
   noun,
@@ -358,13 +383,14 @@ function BundlePicker({
   values,
   count,
   picks,
-  unit,
   currency,
+  popular,
+  tags,
   packs,
+  offers,
   imageFor,
   isAvailable,
   onCount,
-  onRemove,
   onPack,
   onPick,
 }: {
@@ -373,142 +399,248 @@ function BundlePicker({
   values: string[];
   count: number;
   picks: string[];
-  unit: number;
   currency: string;
+  popular: number | null;
+  tags: string[];
   packs: PackChoice[];
+  offers: Offer[];
   imageFor: (value: string) => string | null;
   isAvailable: (value: string) => boolean;
   onCount: (n: number) => void;
-  onRemove: (index: number) => void;
   onPack: (value: string) => void;
   onPick: (index: number, value: string) => void;
 }) {
-  const packIndex = Math.max(0, packs.findIndex((p) => p.selected));
-  return (
-    <fieldset className="min-w-0">
-      <legend className="sr-only">Build your set</legend>
+  const plural = (n: number) => `${n} ${noun}${n === 1 ? "" : "s"}`;
+  const fanFor = (n: number) =>
+    Array.from({ length: n }, (_, i) => imageFor(n === count ? (picks[i] ?? values[i % values.length]!) : values[i % values.length]!));
+  const packLabel = packs.find((p) => p.selected)?.label.toLowerCase() ?? null;
+  const selectedIndex = Math.max(0, offers.findIndex((o) => o.n === count));
 
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="flex items-center gap-2 text-[0.95rem] font-semibold whitespace-nowrap">
-          Your set
-          <span className="numeral rounded-full bg-berry-600 px-2 py-0.5 text-[0.72rem] leading-none text-snow">
-            {count} × {noun}
+  const tagFor = (n: number) => (popular === n ? "Most popular" : tags[n - 1] || null);
+  const priceBlock = (o: Offer, align: "end" | "center") => (
+    <span className={cn("flex flex-col", align === "end" ? "items-end" : "items-center")}>
+      {o.n > 1 ? (
+        <>
+          <span className="numeral text-[1.2rem] leading-none font-semibold text-berry-600 tabular-nums">
+            {formatMoney(o.unit, currency)}
+            <span className="ml-1 font-sans text-[0.7rem] font-medium text-ink-soft">each</span>
           </span>
-        </p>
+          <span className="mt-1 flex items-baseline gap-1.5 text-[0.7rem] text-ink-soft tabular-nums">
+            {o.compare != null && <s className="text-ink-faint">{formatMoney(o.compare, currency)}</s>}
+            <span className="font-semibold text-ink">{formatMoney(o.total, currency)} total</span>
+          </span>
+        </>
+      ) : (
+        <>
+          {o.compare != null && <s className="text-[0.72rem] text-ink-faint tabular-nums">{formatMoney(o.compare, currency)}</s>}
+          <span className="numeral text-[1.2rem] leading-none font-semibold text-berry-600 tabular-nums">{formatMoney(o.total, currency)}</span>
+        </>
+      )}
+      {o.pct != null && o.pct > 0 && (
+        <span className="mt-1 rounded-md bg-pine-700 px-1.5 py-0.5 text-[0.66rem] leading-none font-bold text-snow">Save {o.pct}%</span>
+      )}
+    </span>
+  );
 
-        {/* Template pack: a two-way switch with a sliding thumb */}
-        {packs.length > 1 && (
-          <div
-            role="radiogroup"
-            aria-label="Stencils in each camera"
-            className="relative grid shrink-0 rounded-full bg-cream p-1 ring-1 ring-line"
-            style={{ gridTemplateColumns: `repeat(${packs.length}, minmax(0, 1fr))` }}
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-1 left-1 rounded-full bg-surface shadow-soft ring-1 ring-berry-200 transition-transform duration-300 ease-out-soft"
-              style={{ width: `calc((100% - 0.5rem) / ${packs.length})`, transform: `translateX(${packIndex * 100}%)` }}
-            />
+  const radioDot = (checked: boolean) => (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "grid size-5 shrink-0 place-items-center rounded-full border-2 transition-colors",
+        checked ? "border-berry-600 bg-berry-600" : "border-line bg-surface",
+      )}
+    >
+      {checked && <Icon name="check" className="size-3 text-snow" strokeWidth={3} />}
+    </span>
+  );
+
+  /** Little arrow joining the customise panel to the card it belongs to. */
+  const notch =
+    "absolute -top-[7px] z-10 size-3 -translate-x-1/2 rotate-45 border-t border-l border-berry-600/35 bg-cream";
+
+  /** Customise the chosen set: the stencil pack (with its own price) and a colour for every camera. */
+  const panel = (id: "m" | "d", arrow: React.ReactNode) => (
+    <div
+      key={`${id}-${count}`}
+      className={cn(
+        "relative origin-top animate-[bundle-open_0.5s_var(--ease-spring)_both] rounded-2xl border border-berry-600/35 bg-cream p-3 shadow-soft",
+        id === "m" && "sm:hidden",
+      )}
+    >
+      {arrow}
+      <span aria-hidden="true" className="pointer-events-none absolute -top-2 right-6 text-gold-500 motion-safe:animate-[pop_0.6s_var(--ease-spring)_both]">
+        <Icon name="sparkle" className="size-4" />
+      </span>
+      <p className="mb-2.5 text-[0.8rem] font-semibold">
+        Customise your {count === 1 ? noun : `${count} ${noun}s`}
+      </p>
+
+      {packs.length > 1 && (
+        <div className="mb-3">
+          <p className="mb-1.5 text-[0.7rem] font-semibold tracking-wide text-ink-soft uppercase">Stencils in each {noun}</p>
+          <div role="radiogroup" aria-label={`Stencils in each ${noun}`} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${packs.length}, minmax(0, 1fr))` }}>
             {packs.map((pk) => (
               <label
                 key={pk.value}
                 className={cn(
-                  "relative z-10 cursor-pointer rounded-full px-3 py-1.5 text-center text-[0.76rem] leading-none font-bold whitespace-nowrap transition-colors has-focus-visible:outline-2 has-focus-visible:outline-gold-500",
-                  pk.selected ? "text-berry-700" : "text-ink-soft hover:text-ink",
+                  "relative flex cursor-pointer flex-col rounded-xl border-2 px-3 py-2 transition-[border-color,background-color] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
+                  pk.selected ? "border-berry-600 bg-berry-50" : "border-line bg-surface hover:border-berry-500",
                 )}
               >
-                <input type="radio" name="bundle-pack" value={pk.value} checked={pk.selected} onChange={() => onPack(pk.value)} className="sr-only" />
-                {pk.label.replace(/\s*(stencils?|templates?)$/i, "")}
-                <span className="font-semibold opacity-70"> stencils</span>
+                <input type="radio" name={`bundle-pack-${id}`} value={pk.value} checked={pk.selected} onChange={() => onPack(pk.value)} className="sr-only" />
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-[0.84rem] font-bold">{pk.label}</span>
+                  {radioDot(pk.selected)}
+                </span>
+                <span className="mt-1 flex flex-wrap items-baseline gap-x-1.5 tabular-nums">
+                  <span className="numeral text-[1.05rem] leading-none font-semibold text-berry-600">{formatMoney(pk.sale, currency)}</span>
+                  {pk.sale < pk.price && <s className="text-[0.72rem] text-ink-faint">{formatMoney(pk.price, currency)}</s>}
+                  <span className="text-[0.68rem] text-ink-soft">each</span>
+                </span>
               </label>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <ul className="grid grid-cols-3 gap-2">
-        {Array.from({ length: max }, (_, i) => {
-          if (i >= count) {
-            return (
-              <li key={`add-${i}`}>
-                <button
-                  type="button"
-                  onClick={() => onCount(i + 1)}
-                  className="group flex aspect-[4/5] w-full flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-line bg-cream/50 text-ink-soft transition-[border-color,background-color,color] hover:border-berry-500 hover:bg-berry-50 hover:text-berry-700"
-                  aria-label={`Add a ${noun} (${formatMoney(unit, currency)})`}
-                >
-                  <span className="grid size-9 place-items-center rounded-full bg-surface shadow-soft ring-1 ring-line transition-transform duration-300 ease-out-soft group-hover:scale-110 group-hover:rotate-90">
-                    <Icon name="plus" className="size-4" strokeWidth={2.2} />
-                  </span>
-                  <span className="text-[0.74rem] leading-tight font-semibold">Add {noun}</span>
-                  <span className="numeral text-[0.72rem] opacity-80">+{formatMoney(unit, currency)}</span>
-                </button>
-              </li>
-            );
-          }
+      {packs.length > 1 && <p className="mb-1.5 text-[0.7rem] font-semibold tracking-wide text-ink-soft uppercase">Colour</p>}
+      <div className="grid gap-1.5">
+        {Array.from({ length: count }, (_, i) => {
           const colour = picks[i] ?? values[0]!;
           const img = imageFor(colour);
           return (
-            <li key={`cam-${i}`} className="animate-[pop_0.35s_var(--ease-spring)]">
-              <div
-                role="radiogroup"
-                aria-label={count === 1 ? "Colour" : `Colour for ${noun} ${i + 1}`}
-                className="relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl bg-surface shadow-soft ring-2 ring-berry-600/80"
-              >
-                <span className="relative block min-h-0 flex-1 bg-cream">
-                  {img && <Image key={img} src={img} alt="" fill sizes="120px" className="animate-[fade_0.35s_ease-out] object-cover" />}
-                  <span aria-hidden="true" className="numeral absolute top-1.5 left-1.5 grid size-5 place-items-center rounded-full bg-ink/80 text-[0.66rem] text-snow backdrop-blur">
-                    {i + 1}
-                  </span>
-                  {count > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => onRemove(i)}
-                      className="absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-full bg-surface/90 text-ink shadow-soft backdrop-blur transition-colors hover:bg-berry-600 hover:text-snow"
-                      aria-label={`Remove ${noun} ${i + 1}`}
+            <div key={i} role="radiogroup" aria-label={count === 1 ? "Colour" : `Colour for ${noun} ${i + 1}`} className="flex items-center gap-2.5 rounded-xl bg-surface p-1.5 pr-2 shadow-soft">
+              <span className="img-skeleton relative size-10 shrink-0 overflow-hidden rounded-lg">
+                {img && <Image key={img} src={img} alt="" fill sizes="40px" className="animate-[fade_0.35s_ease-out] object-cover" />}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-[0.78rem] font-semibold">
+                {count > 1 && <span className="text-ink-faint">#{i + 1} </span>}
+                {shortName(colour)}
+              </span>
+              <span className="flex items-center gap-1">
+                {values.map((value) => {
+                  const on = colour === value;
+                  const ok = isAvailable(value);
+                  return (
+                    <label
+                      key={value}
+                      title={shortName(value)}
+                      className={cn(
+                        "grid cursor-pointer place-items-center rounded-full p-0.5 ring-2 transition-[box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-gold-500",
+                        on ? "ring-berry-600" : "ring-transparent hover:ring-line",
+                        !ok && "cursor-not-allowed opacity-35",
+                      )}
                     >
-                      <Icon name="close" className="size-3.5" strokeWidth={2.2} />
-                    </button>
-                  )}
-                </span>
-                <span className="flex items-center justify-center gap-1.5 px-1 pt-2">
-                  {values.map((value) => {
-                    const on = colour === value;
-                    const ok = isAvailable(value);
-                    return (
-                      <label
-                        key={value}
-                        title={shortName(value)}
-                        className={cn(
-                          "grid cursor-pointer place-items-center rounded-full p-0.5 ring-2 transition-[box-shadow] has-focus-visible:outline-2 has-focus-visible:outline-gold-500",
-                          on ? "ring-berry-600" : "ring-transparent hover:ring-line",
-                          !ok && "cursor-not-allowed opacity-35",
-                        )}
-                      >
-                        <input
-                          type="radio"
-                          name={`bundle-colour-${i}`}
-                          value={value}
-                          checked={on}
-                          disabled={!ok}
-                          onChange={() => onPick(i, value)}
-                          className="sr-only"
-                        />
-                        <span className="sr-only">{shortName(value)}</span>
-                        <Lens value={value} active={on} className="size-5" />
-                      </label>
-                    );
-                  })}
-                </span>
-                <span className="truncate px-1 pt-1 pb-2 text-center text-[0.7rem] font-semibold text-ink-soft">{shortName(colour)}</span>
-              </div>
-            </li>
+                      <input type="radio" name={`bundle-colour-${id}-${i}`} value={value} checked={on} disabled={!ok} onChange={() => onPick(i, value)} className="sr-only" />
+                      <span className="sr-only">{shortName(value)}</span>
+                      <Lens value={value} active={on} className="size-6" />
+                    </label>
+                  );
+                })}
+              </span>
+            </div>
           );
         })}
-      </ul>
-      {count < max && (
-        <p className="mt-2 text-center text-[0.74rem] text-ink-faint">Tap + to add a {noun} — mix any colours.</p>
-      )}
+      </div>
+    </div>
+  );
+
+  return (
+    <fieldset className="min-w-0">
+      <legend className="mb-3 flex w-full items-baseline justify-between text-[0.95rem] font-semibold">
+        Choose your bundle
+        <span className="text-[0.78rem] font-normal text-ink-soft">Mix any colours</span>
+      </legend>
+
+      {/* ── Phones: stacked, photo-first rows ─────────────────────────── */}
+      <div role="radiogroup" aria-label={`How many ${noun}s`} className="grid gap-3 pt-2 sm:hidden">
+        {offers.map((o) => {
+          const checked = o.n === count;
+          const tag = tagFor(o.n);
+          const row = (
+            <label
+              key={o.n}
+              className={cn(
+                "relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 px-3 py-2.5 transition-[border-color,background-color,transform] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500 motion-safe:active:scale-[0.985]",
+                checked ? "border-berry-600 bg-berry-50/60" : "border-line bg-surface",
+                tag && "pt-3.5",
+              )}
+            >
+              <input type="radio" name="bundle-count-m" value={o.n} checked={checked} onChange={() => onCount(o.n)} className="sr-only" />
+              {tag && (
+                <span className="absolute -top-2.5 right-3 inline-flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[0.58rem] leading-none font-bold tracking-[0.1em] text-snow uppercase">
+                  <Icon name={popular === o.n ? "star" : "gift"} className="size-3" /> {tag}
+                </span>
+              )}
+              <span className="relative size-14 shrink-0">
+                <Fan images={fanFor(o.n)} size="56px" />
+                <span className="absolute -top-1.5 -left-1.5 z-10">{radioDot(checked)}</span>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[0.95rem] leading-tight font-bold">Buy {WORDS[o.n]}</span>
+                <span className="block text-[0.74rem] text-ink-soft">
+                  {plural(o.n)}
+                  {packLabel && <> · {packLabel} each</>}
+                </span>
+              </span>
+              {priceBlock(o, "end")}
+            </label>
+          );
+          return checked ? (
+            <Fragment key={o.n}>
+              {row}
+              {panel("m", <span aria-hidden="true" className={notch} style={{ left: "2.25rem" }} />)}
+            </Fragment>
+          ) : (
+            row
+          );
+        })}
+      </div>
+
+      {/* ── Tablet & desktop: three photo cards ───────────────────────── */}
+      <div role="radiogroup" aria-label={`How many ${noun}s`} className="hidden gap-3 sm:grid sm:grid-cols-3">
+        {offers.map((o) => {
+          const checked = o.n === count;
+          const tag = tagFor(o.n);
+          return (
+            <label
+              key={o.n}
+              className={cn(
+                "relative flex cursor-pointer flex-col items-center rounded-2xl border-2 px-3 pb-3 text-center transition-[border-color,background-color,transform] duration-300 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500 hover:-translate-y-0.5",
+                checked ? "border-berry-600 bg-berry-50/60 shadow-ribbon" : "border-line bg-surface hover:border-berry-500",
+                tag ? "pt-8" : "pt-6",
+              )}
+            >
+              <input type="radio" name="bundle-count-d" value={o.n} checked={checked} onChange={() => onCount(o.n)} className="sr-only" />
+              {tag && (
+                <span className="absolute -top-px -left-px rounded-tl-2xl rounded-br-lg bg-ink px-2.5 py-1.5 text-[0.6rem] leading-none font-bold tracking-[0.1em] text-snow uppercase">
+                  {tag}
+                </span>
+              )}
+              <span className="absolute top-2.5 right-2.5">{radioDot(checked)}</span>
+              <span className="block aspect-square w-full max-w-24">
+                <Fan images={fanFor(o.n)} size="96px" />
+              </span>
+              <span className="mt-2 text-[0.92rem] font-bold">Buy {WORDS[o.n]}</span>
+              <span className="text-[0.72rem] text-ink-soft">{plural(o.n)}</span>
+              <span className="mb-1 text-[0.66rem] text-ink-faint">{packLabel ? `${packLabel} each` : "\u00a0"}</span>
+              {priceBlock(o, "center")}
+            </label>
+          );
+        })}
+      </div>
+
+      {/* ── Tablet & desktop: the panel sits below, its notch slides to the chosen card ── */}
+      <div className="relative mt-4 hidden sm:block">
+        <span
+          aria-hidden="true"
+          className={cn(notch, "transition-[left] duration-500 ease-[var(--ease-spring)]")}
+          style={{
+            left: `calc((100% - ${(offers.length - 1) * 0.75}rem) * ${(selectedIndex + 0.5) / offers.length} + ${selectedIndex * 0.75}rem)`,
+          }}
+        />
+        {panel("d", null)}
+      </div>
     </fieldset>
   );
 }
@@ -529,6 +661,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
   const hasPack = view.packOptionName !== null;
 
   // Bundle mode: "how many, and which colour for each" (configured by the product's story).
+  const tiersEarly = (b: { discounts: number[]; codePrefix: string }) =>
+    b.discounts.length && b.codePrefix ? { discounts: b.discounts, codePrefix: b.codePrefix } : null;
   const cfg = view.story?.bundle ?? null;
   const bundleOption = cfg ? view.options.find((o) => o.name === cfg.option) : undefined;
   const bundle = cfg && bundleOption ? { ...cfg, label: bundleOption.label, values: bundleOption.values } : null;
@@ -554,7 +688,8 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
   }, [bundle?.option, count, selection, extraPicks, view]);
 
   const bundleQty = bundleLines.reduce((n, l) => n + l.quantity, 0);
-  const bundleTotal = Math.round(bundleLines.reduce((s, l) => s + l.variant.price * l.quantity, 0) * 100) / 100;
+  const bundleList = round2(bundleLines.reduce((s, l) => s + l.variant.price * l.quantity, 0));
+  const bundleTotal = bundle && bundleLines.length ? (tiersEarly(bundle) ? applyPercent(bundleList, tierPercent(tiersEarly(bundle)!, count)) : bundleList) : 0;
   const bundleComplete = bundle ? bundleQty === count : true;
   const canBuy = bundle
     ? bundleComplete && bundleLines.every((l) => l.variant.availableForSale)
@@ -578,6 +713,29 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
     return Boolean(v?.availableForSale);
   };
 
+  const tiers = bundle && bundle.discounts.length && bundle.codePrefix ? { discounts: bundle.discounts, codePrefix: bundle.codePrefix } : null;
+
+  /** What each offer card shows: Shopify's list prices for n cameras, less the tier discount (the checkout code gives the same). */
+  const offerFor = (n: number, colours: string[]): Offer => {
+    const vs = colours.map((c) => findVariant(view, { ...selection, [bundle!.option]: c }) ?? variant);
+    const list = round2(vs.reduce((t, v) => t + (v?.price ?? 0), 0));
+    if (tiers) {
+      const pct = tierPercent(tiers, n);
+      const total = applyPercent(list, pct);
+      return { n, total, unit: Math.floor((total / n) * 100 + 1e-6) / 100, compare: pct > 0 ? list : null, pct: pct > 0 ? pct : null, code: tierCode(tiers, n) };
+    }
+    const compareRaw = vs.every((v) => v?.compareAtPrice) ? vs.reduce((t, v) => t + (v!.compareAtPrice ?? 0), 0) : null;
+    const compare = compareRaw && compareRaw > list ? round2(compareRaw) : null;
+    return { n, total: list, unit: Math.floor((list / n) * 100 + 1e-6) / 100, compare, pct: compare ? Math.round(((compare - list) / compare) * 100) : null, code: null };
+  };
+  const bundleOffers: Offer[] = bundle
+    ? Array.from({ length: bundle.max }, (_, i) => i + 1).map((n) =>
+        offerFor(n, Array.from({ length: n }, (_, i) => (n === count ? (picks[i] ?? bundle.values[i % bundle.values.length]!) : bundle.values[i % bundle.values.length]!))),
+      )
+    : [];
+
+  const currentOffer = bundleOffers[count - 1] ?? null;
+
   /** The template-pack choices (e.g. 4 or 12), each with its per-camera price for the current colour. */
   const packChoices: PackChoice[] =
     bundle && packOption
@@ -586,6 +744,10 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
           label: view.story?.valueLabels[value] ?? value,
           selected: selection[packOption.name] === value,
           price: findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0,
+          sale: applyPercent(
+            findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0,
+            tiers ? tierPercent(tiers, count) : 0,
+          ),
         }))
       : [];
   const colourImage = (colour: string) =>
@@ -775,13 +937,14 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
                 values={option.values}
                 count={count}
                 picks={picks}
-                unit={variant?.price ?? 0}
                 currency={view.currency}
+                popular={bundle.popular}
+                tags={bundle.tags}
                 packs={packChoices}
+                offers={bundleOffers}
                 imageFor={colourImage}
                 isAvailable={colourAvailable}
                 onCount={setBundleCount}
-                onRemove={removeBundleCamera}
                 onPack={(value) => packOption && choose(packOption.name, value)}
                 onPick={setBundlePick}
               />
@@ -840,6 +1003,31 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
       </div>
 
       <div className="mt-8 space-y-3">
+        {bundle && currentOffer && (
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3 shadow-soft ring-1 ring-line" aria-live="polite">
+            <div className="min-w-0">
+              <p className="text-[0.66rem] font-bold tracking-[0.12em] text-ink-soft uppercase">Your price</p>
+              <p className="mt-1 flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 tabular-nums">
+                <span key={currentOffer.total} className="numeral text-[1.9rem] leading-none font-semibold text-berry-600 motion-safe:animate-[pop_0.5s_var(--ease-spring)_both]">
+                  {formatMoney(currentOffer.total, view.currency)}
+                </span>
+                {currentOffer.compare != null && <s className="text-[1.05rem] text-ink-faint">{formatMoney(currentOffer.compare, view.currency)}</s>}
+              </p>
+              <p className="mt-1.5 text-[0.74rem] text-ink-soft">
+                {count > 1 ? `${formatMoney(currentOffer.unit, view.currency)} each · ${count} ${bundle.noun}s` : `1 ${bundle.noun}`}
+                {currentOffer.code && <> · code <span className="numeral font-semibold tracking-wide text-berry-600">{currentOffer.code}</span> applied</>}
+              </p>
+            </div>
+            {currentOffer.pct != null && currentOffer.compare != null && (
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {currentOffer.pct}%</span>
+                <span className="text-[0.72rem] font-semibold text-pine-700 tabular-nums">
+                  You save {formatMoney(round2(currentOffer.compare - currentOffer.total), view.currency)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
         <FreeShippingStrip total={orderTotal} currency={view.currency} />
         {lowStock && <LowStockAlert left={lowStock.left} wanted={lowStock.wanted} />}
 
@@ -885,7 +1073,7 @@ export function PurchasePanel({ view, payments = [] }: { view: ProductView; paym
             ) : (
               <>
                 <Icon name="bag" className="size-4.5" /> Add to bag
-                {variant && <span className="numeral ml-1 opacity-85">· {formatMoney(orderTotal, view.currency)}</span>}
+                {variant && <span className="ml-1 tabular-nums opacity-90">· {formatMoney(orderTotal, view.currency)}</span>}
               </>
             )}
           </button>

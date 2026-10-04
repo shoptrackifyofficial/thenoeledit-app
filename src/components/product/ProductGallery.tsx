@@ -164,7 +164,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
                     onClick={() => setZoomAt(i)}
                     aria-label={`Zoom image ${i + 1}`}
                     tabIndex={i === active ? 0 : -1}
-                    className="relative block aspect-square w-full cursor-zoom-in overflow-hidden bg-cream lg:aspect-auto lg:h-(--gallery-h)"
+                    className="img-skeleton relative block aspect-square w-full cursor-zoom-in overflow-hidden lg:aspect-auto lg:h-(--gallery-h)"
                   >
                     <Image
                       src={item.url}
@@ -233,7 +233,7 @@ export function ProductGallery({ media, productName }: { media: ViewMedia[]; pro
                   aria-label={`Show ${item.type === "video" ? "video" : "image"} ${i + 1}: ${item.alt}`}
                   aria-current={i === active}
                   className={cn(
-                    "relative block size-18 overflow-hidden rounded-2xl bg-cream transition-[box-shadow,opacity] duration-300 md:size-22",
+                    "img-skeleton relative block size-18 overflow-hidden rounded-2xl transition-[box-shadow,opacity] duration-300 md:size-22",
                     i === active
                       ? "shadow-[inset_0_0_0_2px_var(--color-berry-600)]"
                       : "opacity-65 hover:opacity-100",
@@ -284,7 +284,7 @@ function VideoSlide({ video, active }: { video: ViewVideo; active: boolean }) {
   }, [active]);
   const src = video.sources.find((s) => (s.width ?? 0) >= 720) ?? video.sources[video.sources.length - 1];
   return (
-    <div className="relative aspect-square overflow-hidden bg-black lg:aspect-auto lg:h-(--gallery-h)">
+    <div className="img-skeleton-dark relative aspect-square overflow-hidden lg:aspect-auto lg:h-(--gallery-h)">
       <video
         ref={ref}
         className="absolute inset-0 size-full object-contain"

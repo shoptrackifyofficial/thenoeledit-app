@@ -124,7 +124,7 @@ export default async function CategoryPage({ params }: Props) {
             .filter((x) => x.slug !== c.slug)
             .map((x) => (
               <li key={x.slug}>
-                <Link href={`/shop/${x.slug}`} className="group relative flex aspect-[5/4] items-end overflow-hidden rounded-[1.25rem] bg-pine-900 p-3.5 text-snow">
+                <Link href={`/shop/${x.slug}`} className="img-skeleton-dark group relative flex aspect-[5/4] items-end overflow-hidden rounded-[1.25rem] p-3.5 text-snow">
                   <Image src={x.image} alt="" fill sizes="(min-width: 1024px) 18vw, 45vw" className="object-cover opacity-75 transition-transform duration-700 group-hover:scale-105" />
                   <span className="absolute inset-0 bg-linear-to-t from-pine-950/85 to-transparent" />
                   <span className="relative flex w-full items-center justify-between">

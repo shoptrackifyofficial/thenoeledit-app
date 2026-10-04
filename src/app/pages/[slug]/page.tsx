@@ -41,7 +41,7 @@ const pages: Record<string, Page> = {
   returns: {
     title: "Returns & exchanges",
     script: "no stress",
-    description: `${site.name} returns: Christmas gifts can be returned or exchanged until January 31, with gift receipts included.`,
+    description: `${site.name} returns: Christmas gifts can be returned or exchanged until January 31.`,
     body: (
       <>
         <p>
@@ -49,7 +49,6 @@ const pages: Record<string, Page> = {
           should be unused and in their original packaging.
         </p>
         <ul>
-          <li>Bought it as a gift? Email us your order number and the recipient can exchange it too.</li>
           <li>Refunds go back to the original payment method once the return is received.</li>
           <li>Damaged, faulty or wrong item? Contact us and we&apos;ll put it right.</li>
         </ul>

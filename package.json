@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "shopify:sync": "tsx --env-file=.env scripts/sync-catalog.ts",
     "meta:test-purchase": "node scripts/test-meta-purchase.mjs",
-    "shopify:register-webhooks": "tsx --env-file=.env scripts/register-webhooks.ts"
+    "shopify:register-webhooks": "tsx --env-file=.env scripts/register-webhooks.ts",
+    "shopify:check-discounts": "tsx --env-file=.env scripts/check-discounts.ts"
   },
   "engines": {
     "node": ">=20.9"

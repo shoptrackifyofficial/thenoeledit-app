@@ -56,6 +56,18 @@ src/app/             routes: /, /shop, /shop/[category], /products/[handle], /ca
 - Newsletter → Shopify `customerCreate` with email-marketing consent (needs `write_customers` scope).
 - Webhooks are not wired yet. When ready, have `products/*` webhooks call `syncCatalog()` + `revalidateTag("catalog")` (see `src/app/api/admin/sync/route.ts`).
 
+## Bundle discounts (Buy 1 / 2 / 3 → 50% / 56% / 65% off)
+
+The percentages live in the product's `custom.noel_story` metafield (`bundle.discounts: [50, 56, 65]`, `bundle.codePrefix: "XMAS"`; edit them in `scripts/enrich-latte-camera.ts`, then `--apply`). The discount itself is a **Shopify discount code per tier** that the checkout route applies for you. Create these three in Shopify admin → Discounts → Create discount → **Amount off products**:
+
+| Code | Value | Applies to | Minimum requirement |
+|---|---|---|---|
+| `XMAS50` | 50% | Specific products → the camera | Quantity ≥ 1 |
+| `XMAS56` | 56% | Specific products → the camera | Quantity ≥ 2 |
+| `XMAS65` | 65% | Specific products → the camera | Quantity ≥ 3 |
+
+Leave "Combinations" off and the usage limits empty. Then run `npm run shopify:check-discounts` — it must print ✔ for all three. Until it does, checkout refuses with "This offer is being set up" rather than charge more than the page shows. Set each variant's **price** to the list (undiscounted) price and leave **compare-at empty**: the site derives the struck-through price and "Save %" from the tiers.
+
 ## Before launch
 
 - Set `NEXT_PUBLIC_SITE_URL` to the real domain (drives canonicals, sitemap, JSON-LD).

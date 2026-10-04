@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import type { BagCatalog, BagVariant } from "@/lib/commerce/views";
+import { applyPercent, round2, tierCode, tierPercent } from "@/lib/commerce/tiers";
 import type { PaymentMethod } from "@/lib/shopify/payments";
 import {
   trackAddToCart,
@@ -30,14 +31,22 @@ import {
  */
 
 export type BagLine = { variantId: string; quantity: number };
-export type ResolvedLine = BagLine & BagVariant & { lineTotal: number };
+export type ResolvedLine = BagLine &
+  BagVariant & {
+    /** What the shopper pays for this line (after any tier / sale discount). */
+    lineTotal: number;
+    /** The same line at its list price, before discounts. */
+    listTotal: number;
+    /** Percent saved on this line, or null. */
+    savedPercent: number | null;
+    /** Shopify discount code that gives the tier discount, e.g. XMAS56. */
+    couponCode: string | null;
+  };
 
 const STORAGE_KEY = "noel.bag.v1";
-const GIFT_KEY = "noel.gift.v1";
 const MAX_QTY = 10;
 const MAX_LINES = 20;
 
-type GiftOptions = { wrap: boolean; message: string };
 
 type CartContextValue = {
   lines: ResolvedLine[];
@@ -50,8 +59,6 @@ type CartContextValue = {
   loading: boolean;
   demo: boolean;
   payments: PaymentMethod[];
-  gift: GiftOptions;
-  setGift: (next: Partial<GiftOptions>) => void;
   open: () => void;
   close: () => void;
   add: (variantId: string, quantity?: number, snapshot?: BagVariant) => void;
@@ -95,7 +102,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [stored, setStored] = useState<BagLine[]>([]);
   const [catalog, setCatalog] = useState<BagCatalog | null>(null);
   const [snapshots, setSnapshots] = useState<Record<string, BagVariant>>({});
-  const [gift, setGiftState] = useState<GiftOptions>({ wrap: true, message: "" });
   const [isOpen, setOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -122,7 +128,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const lines = sanitize(readJson(STORAGE_KEY, []));
     setStored(lines);
-    setGiftState((g) => ({ ...g, ...readJson<Partial<GiftOptions>>(GIFT_KEY, {}) }));
     setHydrated(true);
     if (lines.length > 0) void loadCatalog();
     // Keep tabs in sync.
@@ -140,28 +145,53 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const lines = useMemo<ResolvedLine[]>(() => {
-    const out: ResolvedLine[] = [];
+    const resolved: { line: BagLine; data: BagVariant }[] = [];
     for (const line of stored) {
       const data = catalog?.variants[line.variantId] ?? (catalog ? undefined : snapshots[line.variantId]);
-      if (!data) continue;
-      out.push({ ...line, ...data, lineTotal: Math.round(data.price * line.quantity * 100) / 100 });
+      if (data) resolved.push({ line, data });
     }
-    return out;
+    // A tier depends on how many units of the product are in the bag in total.
+    const unitsOf = new Map<string, number>();
+    for (const { line, data } of resolved) {
+      if (data.tiers && data.productId) unitsOf.set(data.productId, (unitsOf.get(data.productId) ?? 0) + line.quantity);
+    }
+    return resolved.map(({ line, data }) => {
+      const list = round2(data.price * line.quantity);
+      if (data.tiers && data.productId) {
+        const qty = unitsOf.get(data.productId) ?? line.quantity;
+        const pct = tierPercent(data.tiers, qty);
+        return {
+          ...line,
+          ...data,
+          lineTotal: applyPercent(list, pct),
+          listTotal: list,
+          savedPercent: pct > 0 ? pct : null,
+          couponCode: tierCode(data.tiers, qty),
+        };
+      }
+      const onSale = data.compareAtPrice != null && data.compareAtPrice > data.price;
+      return {
+        ...line,
+        ...data,
+        lineTotal: list,
+        listTotal: onSale ? round2(data.compareAtPrice! * line.quantity) : list,
+        savedPercent: onSale ? Math.round(((data.compareAtPrice! - data.price) / data.compareAtPrice!) * 100) : null,
+        couponCode: null,
+      };
+    });
   }, [stored, catalog, snapshots]);
 
   const currency = catalog?.currency ?? "USD";
   const count = lines.reduce((n, l) => n + l.quantity, 0);
   const subtotal = Math.round(lines.reduce((s, l) => s + l.lineTotal, 0) * 100) / 100;
-  const savings =
-    Math.round(
-      lines.reduce((s, l) => s + (l.compareAtPrice ? (l.compareAtPrice - l.price) * l.quantity : 0), 0) * 100,
-    ) / 100;
+  const savings = round2(lines.reduce((s, l) => s + (l.listTotal - l.lineTotal), 0));
 
   const toItem = (l: ResolvedLine | (BagVariant & { variantId: string }), quantity: number): AnalyticsItem => ({
     id: l.variantId,
     name: l.productName,
     variant: l.variantLabel || undefined,
-    price: l.price,
+    // the price actually paid per unit, when the line carries a discount
+    price: "lineTotal" in l && l.quantity > 0 ? round2(l.lineTotal / l.quantity) : l.price,
     quantity,
     productId: l.productId,
     category: l.category,
@@ -215,13 +245,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [persist, stored, lines, currency],
   );
 
-  const setGift = useCallback((next: Partial<GiftOptions>) => {
-    setGiftState((g) => {
-      const merged = { ...g, ...next, message: (next.message ?? g.message).slice(0, 240) };
-      writeJson(GIFT_KEY, merged);
-      return merged;
-    });
-  }, []);
 
   const checkout = useCallback(async (): Promise<{ ok: true } | { ok: false; error: string }> => {
     if (lines.length === 0) return { ok: false, error: "Your bag is empty." };
@@ -235,7 +258,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-          gift,
           externalId: getExternalId(),
         }),
       });
@@ -249,7 +271,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return { ok: false, error: "Network error — please check your connection and try again." };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines, gift, currency]);
+  }, [lines, currency]);
 
   const open = useCallback(() => {
     setOpen(true);
@@ -269,8 +291,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       loading,
       demo: Boolean(catalog?.demo),
       payments: catalog?.payments ?? [],
-      gift,
-      setGift,
       open,
       close,
       add,
@@ -279,7 +299,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       checkout,
       announcement,
     }),
-    [lines, count, subtotal, savings, currency, isOpen, hydrated, loading, catalog, gift, setGift, open, close, add, setQuantity, remove, checkout, announcement],
+    [lines, count, subtotal, savings, currency, isOpen, hydrated, loading, catalog, open, close, add, setQuantity, remove, checkout, announcement],
   );
 
   return (

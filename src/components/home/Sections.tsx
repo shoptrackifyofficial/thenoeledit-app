@@ -163,7 +163,7 @@ export function CategoryOrnaments({ categories }: { categories: CategoryInfo[] }
                   <span className="mx-auto block size-2.5 rounded-full border-2 border-gold-500" />
                   <span className="-mt-0.5 block h-3 w-7 rounded-t-[0.3rem] rounded-b-sm bg-linear-to-b from-gold-300 via-gold-500 to-gold-700 shadow-sm" />
                 </span>
-                <span className="relative block size-[6.25rem] overflow-hidden rounded-full bg-cream shadow-lift ring-[3px] ring-surface transition-shadow duration-500 group-hover:shadow-glow sm:size-32 lg:size-36">
+                <span className="img-skeleton relative block size-[6.25rem] overflow-hidden rounded-full shadow-lift ring-[3px] ring-surface transition-shadow duration-500 group-hover:shadow-glow sm:size-32 lg:size-36">
                   <Image
                     src={c.image}
                     alt=""
@@ -225,7 +225,7 @@ export function AdventDeals({ cards }: { cards: CardView[] }) {
                 <li key={p.handle} className="advent-cell relative aspect-[3/4]">
                   <Link
                     href={p.href}
-                    className="group absolute inset-0 overflow-hidden rounded-2xl bg-pine-950 ring-1 ring-white/10"
+                    className="img-skeleton-dark group absolute inset-0 overflow-hidden rounded-2xl ring-1 ring-white/10"
                     aria-label={`Day ${i + 1}: ${p.name}${p.percentOff ? `, ${p.percentOff}% off` : ""}, now ${formatMoney(p.price, p.currency)}`}
                   >
                     {/* Behind the door */}
@@ -382,7 +382,7 @@ export function WrappedStory() {
     <section aria-labelledby="wrap-title" className="section-y overflow-hidden bg-cream">
       <div className="container-page grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
         <div className="reveal relative mx-auto w-full max-w-[440px]">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2rem] bg-pine-900 shadow-lift ring-[6px] ring-surface">
+          <div className="img-skeleton relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2rem] shadow-lift ring-[6px] ring-surface">
             <Image
               src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?fit=crop&crop=entropy&ar=4:5"
               alt="Gifts tied with gold satin ribbon"
@@ -412,8 +412,8 @@ export function WrappedStory() {
             Every gift arrives <Accent>ready to give.</Accent>
           </h2>
           <p className="mt-4 max-w-lg text-[0.98rem] text-ink-soft">
-            Add a personal message in your bag, then send it straight to them or to you to tuck under the tree. Every
-            order ships tracked.
+            Send it straight to them, or to you to tuck under the tree. Every order ships tracked, and shipping is free
+            over $50.
           </p>
           <ul className="mt-7 grid w-full gap-2.5 text-left sm:grid-cols-2">
             {site.promises.map((p) => (

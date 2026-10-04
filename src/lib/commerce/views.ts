@@ -94,6 +94,8 @@ export type BagVariant = {
   /** Shopify product GID and category title — carried for analytics events. */
   productId?: string;
   category?: string;
+  /** Quantity-tier discount for this product (see lib/commerce/tiers.ts). */
+  tiers?: { discounts: number[]; codePrefix: string };
 };
 export type BagCatalog = { currency: string; demo: boolean; payments?: PaymentMethod[]; variants: Record<string, BagVariant> };
 
@@ -121,6 +123,9 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         available: v.availableForSale,
         productId: p.id,
         category: catOf(p).title,
+        ...(p.story?.bundle?.discounts.length && p.story.bundle.codePrefix
+          ? { tiers: { discounts: p.story.bundle.discounts, codePrefix: p.story.bundle.codePrefix } }
+          : {}),
       };
     }
   }
