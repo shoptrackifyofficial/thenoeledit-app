@@ -66,6 +66,10 @@ type CartContextValue = {
   open: () => void;
   close: () => void;
   add: (variantId: string, quantity?: number, snapshot?: BagVariant) => void;
+  /** Puts a bundle in the bag: replaces whatever of that product was already there (a new bundle size overwrites the old one). */
+  addBundle: (entries: { variantId: string; quantity: number; snapshot: BagVariant }[], replaceVariantIds: string[]) => void;
+  /** Removes several lines at once (a whole bundle). */
+  removeMany: (variantIds: string[]) => void;
   setQuantity: (variantId: string, quantity: number) => void;
   remove: (variantId: string) => void;
   checkout: () => Promise<{ ok: true } | { ok: false; error: string }>;
@@ -273,6 +277,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [persist, loadCatalog, catalog, localizedPriceFor],
   );
 
+  const addBundle = useCallback(
+    (entries: { variantId: string; quantity: number; snapshot: BagVariant }[], replaceVariantIds: string[]) => {
+      setSnapshots((s) => ({ ...s, ...Object.fromEntries(entries.map((e) => [e.variantId, e.snapshot])) }));
+      const drop = new Set(replaceVariantIds);
+      const kept = sanitize(readJson(STORAGE_KEY, [])).filter((l) => !drop.has(l.variantId));
+      persist([...kept, ...entries.map((e) => ({ variantId: e.variantId, quantity: Math.min(MAX_QTY, e.quantity) }))].slice(-MAX_LINES));
+      void loadCatalog();
+      setOpen(true);
+      const first = entries[0]?.snapshot;
+      if (first) setAnnouncement(`${first.productName} added to your bag.`);
+      for (const e of entries) {
+        const live = localizedPriceFor(e.variantId);
+        const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
+        trackAddToCart(
+          toItem({ ...e.snapshot, variantId: e.variantId, ...(Number.isFinite(liveAmount) ? { price: liveAmount } : {}) }, e.quantity),
+          (Number.isFinite(liveAmount) && live?.currencyCode) || catalog?.currency || "USD",
+        );
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [persist, loadCatalog, catalog, localizedPriceFor],
+  );
+
+  const removeMany = useCallback(
+    (variantIds: string[]) => {
+      const drop = new Set(variantIds);
+      const gone = lines.filter((l) => drop.has(l.variantId));
+      persist(stored.filter((l) => !drop.has(l.variantId)));
+      if (gone[0]) setAnnouncement(`${gone[0].productName} removed from your bag.`);
+      for (const l of gone) trackRemoveFromCart(toItem(l, l.quantity), currency);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [persist, stored, lines, currency],
+  );
+
   const setQuantity = useCallback(
     (variantId: string, quantity: number) => {
       const q = Math.max(0, Math.min(MAX_QTY, Math.floor(quantity)));
@@ -348,12 +387,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       open,
       close,
       add,
+      addBundle,
+      removeMany,
       setQuantity,
       remove,
       checkout,
       announcement,
     }),
-    [lines, count, subtotal, savings, currency, freeShipping, isOpen, hydrated, loading, catalog, open, close, add, setQuantity, remove, checkout, announcement],
+    [lines, count, subtotal, savings, currency, freeShipping, isOpen, hydrated, loading, catalog, open, close, add, addBundle, removeMany, setQuantity, remove, checkout, announcement],
   );
 
   return (

@@ -355,7 +355,8 @@ function Lens({ value, className }: { value: string; active?: boolean; className
 }
 
 /** `price` is what is charged per camera; `original` the struck-through price it is shown against. */
-type PackChoice = { value: string; label: string; price: number; original: number | null; selected: boolean };
+/** `price` is the extra charged per camera over the base pack (0 + `included` for the base pack); `original` the struck-through price it is shown against. */
+type PackChoice = { value: string; label: string; price: number; original: number | null; selected: boolean; included: boolean };
 
 type Offer = { n: number; total: number; unit: number; compare: number | null; pct: number | null; code: string | null };
 
@@ -429,7 +430,7 @@ function BundlePicker({
   const selectedIndex = Math.max(0, offers.findIndex((o) => o.n === count));
 
   /** "2 cameras · 4 stencils each" — camera count and the stencil pack on one line. */
-  const packName = packs.find((p) => p.selected)?.label.toLowerCase() ?? null;
+  const packName = packs.find((p) => p.included)?.label.toLowerCase() ?? null;
   const summary = (n: number) => (
     <>
       {n} {noun}
@@ -660,9 +661,15 @@ function BundlePicker({
                   {radioDot(pk.selected)}
                 </span>
                 <span className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 tabular-nums">
-                  <span className="numeral text-[1.1rem] leading-none font-semibold text-berry-600">{formatMoney(pk.price, currency)}</span>
-                  {pk.original != null && <s className="text-[0.74rem] text-ink-faint">{formatMoney(pk.original, currency)}</s>}
-                  {count > 1 && <span className="text-[0.7rem] text-ink-soft">each</span>}
+                  {pk.included ? (
+                    <span className="text-[0.84rem] leading-none font-semibold text-pine-700">Included with camera</span>
+                  ) : (
+                    <>
+                      <span className="numeral text-[1.1rem] leading-none font-semibold text-berry-600">+{formatMoney(pk.price, currency)}</span>
+                      {pk.original != null && <s className="text-[0.74rem] text-ink-faint">{formatMoney(pk.original, currency)}</s>}
+                      {count > 1 && <span className="text-[0.7rem] text-ink-soft">per camera</span>}
+                    </>
+                  )}
                 </span>
               </label>
             ))}
@@ -676,7 +683,7 @@ function BundlePicker({
 /* ── Panel ───────────────────────────────────────────────────────────── */
 
 export function PurchasePanel({ view: baseView, payments = [] }: { view: ProductView; payments?: PaymentMethod[] }) {
-  const { add, open } = useCart();
+  const { add, addBundle, open } = useCart();
   // Shopify's own prices for the visitor's country (Markets); the page shows the shop's currency until they land.
   const { localizedPriceFor, requestPrices, isPriceLoading } = useLocalization();
   useEffect(() => {
@@ -757,8 +764,8 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   };
 
   /** What each offer card shows: Shopify's list prices for n cameras, less the tier discount (the checkout code gives the same). */
-  const offerFor = (n: number, colours: string[]): Offer => {
-    const vs = colours.map((c) => findVariant(view, { ...selection, [bundle!.option]: c }) ?? variant);
+  const offerFor = (n: number, colours: string[], pack?: string): Offer => {
+    const vs = colours.map((c) => findVariant(view, { ...selection, [bundle!.option]: c, ...(pack && packOption ? { [packOption.name]: pack } : {}) }) ?? variant);
     const list = round2(vs.reduce((t, v) => t + (v?.price ?? 0), 0));
     if (tiers) {
       // The original is n × (Shopify price ÷ (1 − first%)); each step's percentage is off that.
@@ -770,13 +777,20 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
     const compare = compareRaw && compareRaw > list ? round2(compareRaw) : null;
     return { n, total: list, unit: Math.floor((list / n) * 100 + 1e-6) / 100, compare, pct: compare ? Math.round(((compare - list) / compare) * 100) : null, code: null };
   };
+  /** The base stencil pack (the cheapest, included with the camera): the bundle cards show the camera price at this pack. */
+  const basePack = packOption
+    ? [...packOption.values].sort(
+        (a, b) =>
+          (findVariant(view, { ...selection, [packOption.name]: a })?.price ?? 0) - (findVariant(view, { ...selection, [packOption.name]: b })?.price ?? 0),
+      )[0]
+    : undefined;
+  const coloursFor = (n: number) =>
+    Array.from({ length: n }, (_, i) => (n === count ? (picks[i] ?? bundle!.values[i % bundle!.values.length]!) : bundle!.values[i % bundle!.values.length]!));
   const bundleOffers: Offer[] = bundle
-    ? Array.from({ length: bundle.max }, (_, i) => i + 1).map((n) =>
-        offerFor(n, Array.from({ length: n }, (_, i) => (n === count ? (picks[i] ?? bundle.values[i % bundle.values.length]!) : bundle.values[i % bundle.values.length]!))),
-      )
+    ? Array.from({ length: bundle.max }, (_, i) => i + 1).map((n) => offerFor(n, coloursFor(n), basePack))
     : [];
-
-  const currentOffer = bundleOffers[count - 1] ?? null;
+  /** What the shopper actually pays: the camera(s) plus the chosen stencil pack. */
+  const currentOffer = bundle ? offerFor(count, coloursFor(count)) : null;
 
   /** Struck-through value and saving shown in the floating bar. */
   const stickyCompare = bundle ? (currentOffer?.compare ?? null) : (variant?.compareAtPrice ?? null);
@@ -785,18 +799,19 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   /** The template-pack choices (e.g. 4 or 12), each with its per-camera price for the current colour. */
   const packChoices: PackChoice[] =
     bundle && packOption
-      ? packOption.values.map((value) => ({
-          value,
-          label: view.story?.valueLabels[value] ?? value,
-          selected: selection[packOption.name] === value,
-          // Per camera, at the bundle size chosen.
-          price: tiers
-            ? tierPrice(findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0, tiers, count)
-            : (findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0),
-          original: tiers
-            ? originalPrice(findVariant(view, { ...selection, [packOption.name]: value })?.price ?? variant?.price ?? 0, tiers.discounts[0]!)
-            : null,
-        }))
+      ? packOption.values.map((value) => {
+          const priceOf = (v: string) => findVariant(view, { ...selection, [packOption.name]: v })?.price ?? variant?.price ?? 0;
+          const extra = Math.max(0, round2(priceOf(value) - priceOf(basePack!)));
+          return {
+            value,
+            label: view.story?.valueLabels[value] ?? value,
+            selected: selection[packOption.name] === value,
+            included: value === basePack || extra === 0,
+            // Only the stencil part of the price, per camera, at the bundle size chosen.
+            price: tiers ? tierPrice(extra, tiers, count) : extra,
+            original: tiers && extra > 0 ? originalPrice(extra, tiers.discounts[0]!) : null,
+          };
+        })
       : [];
   const colourImage = (colour: string) =>
     (bundle && findVariant(view, { ...selection, [bundle.option]: colour })?.image) || view.cardImage?.url || null;
@@ -906,19 +921,25 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   const onAdd = () => {
     if (bundle) {
       if (!canBuy) return;
-      for (const { variant: v, quantity } of bundleLines) {
-        add(v.id, quantity, {
-          productName: view.name,
-          variantLabel: v.label,
-          price: baseVariant(v.id)?.price ?? v.price,
-          compareAtPrice: baseVariant(v.id)?.compareAtPrice ?? v.compareAtPrice,
-          image: v.image ?? view.cardImage?.url ?? null,
-          href: `${view.href}?variant=${numericId(v.id)}`,
-          available: true,
-          productId: view.productId,
-          category: view.category.title,
-        });
-      }
+      // One bundle per product: a new size or colours replaces the one already in the bag.
+      addBundle(
+        bundleLines.map(({ variant: v, quantity }) => ({
+          variantId: v.id,
+          quantity,
+          snapshot: {
+            productName: view.name,
+            variantLabel: v.label,
+            price: baseVariant(v.id)?.price ?? v.price,
+            compareAtPrice: baseVariant(v.id)?.compareAtPrice ?? v.compareAtPrice,
+            image: v.image ?? view.cardImage?.url ?? null,
+            href: `${view.href}?variant=${numericId(v.id)}`,
+            available: true,
+            productId: view.productId,
+            category: view.category.title,
+          },
+        })),
+        view.variants.map((v) => v.id),
+      );
       setAdded(true);
       window.setTimeout(() => setAdded(false), 2200);
       return;

@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
  * Shopify accepts. `onNavigate` closes the drawer when a link is followed.
  */
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
-  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, checkout, hydrated, loading, demo, payments } =
+  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, removeMany, checkout, hydrated, loading, demo, payments } =
     useCart();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +30,17 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
   const noMinimum = site.delivery.freeOver <= 0;
   const remaining = freeShipping.unlocked ? 0 : Math.max(0.01, freeShipping.remaining);
   const progress = freeShipping.unlocked ? 1 : Math.min(1, subtotal / Math.max(1, freeShipping.threshold));
+  // A product with a bundle offer is one card ("3 cameras"), however many colours it holds.
+  const groups = (() => {
+    const out: { key: string; bundle: boolean; lines: typeof lines }[] = [];
+    for (const line of lines) {
+      const bundle = Boolean(line.tiers && line.productId);
+      const existing = bundle ? out.find((g) => g.bundle && g.lines[0]!.productId === line.productId) : undefined;
+      if (existing) existing.lines.push(line);
+      else out.push({ key: bundle ? `bundle:${line.productId}` : line.variantId, bundle, lines: [line] });
+    }
+    return out;
+  })();
   const codes = [...new Set(lines.map((l) => l.couponCode).filter((c): c is string => c !== null))];
   const original = Math.round((subtotal + savings) * 100) / 100;
 
@@ -80,7 +91,84 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
         aria-label="Items in your bag"
         className={cn("flex flex-col gap-2.5", variant === "drawer" && "min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2")}
       >
-        {lines.map((line) => {
+        {groups.map((group) => {
+          if (group.bundle) {
+            const first = group.lines[0]!;
+            const units = group.lines.reduce((n, l) => n + l.quantity, 0);
+            const total = group.lines.reduce((n, l) => n + l.lineTotal, 0);
+            const original = group.lines.reduce((n, l) => n + l.listTotal, 0);
+            const noun = first.bundleNoun ?? "item";
+            const pct = first.savedPercent;
+            // One thumbnail per unit, fanned like the bundle card on the product page.
+            const photos = group.lines.flatMap((l) => Array.from({ length: l.quantity }, () => l.image)).slice(0, 3);
+            return (
+              <li key={group.key} className="flex gap-3 rounded-[1.1rem] bg-surface p-2.5 shadow-soft ring-1 ring-line/70">
+                <Link href={first.href} onClick={onNavigate} tabIndex={-1} aria-hidden="true" className="relative size-[4.5rem] shrink-0">
+                  {photos.map((src, i) => {
+                    const turn = photos.length === 1 ? 0 : (i - (photos.length - 1) / 2) * 9;
+                    const shift = photos.length === 1 ? 0 : (i - (photos.length - 1) / 2) * 16;
+                    return (
+                      <span
+                        key={i}
+                        className="img-skeleton absolute inset-[8%] overflow-hidden rounded-xl shadow-soft ring-2 ring-surface"
+                        style={{ transform: `translateX(${shift}%) rotate(${turn}deg)`, zIndex: i }}
+                      >
+                        {src && <Image src={src} alt="" fill sizes="72px" className="object-cover" />}
+                      </span>
+                    );
+                  })}
+                </Link>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <Link href={first.href} onClick={onNavigate} title={first.productName} className="line-clamp-2 text-[0.84rem] leading-snug font-semibold hover:underline">
+                        {first.productName}
+                      </Link>
+                      <p className="mt-0.5 text-[0.74rem] font-semibold text-ink">
+                        {units} {noun}
+                        {units === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                    <p className="flex shrink-0 flex-col items-end tabular-nums">
+                      <span className="text-[0.86rem] font-bold">{formatMoney(total, currency)}</span>
+                      {original > total && <s className="text-[0.72rem] text-ink-faint">{formatMoney(original, currency)}</s>}
+                    </p>
+                  </div>
+                  <ul className="mt-1 space-y-0.5 text-[0.72rem] text-ink-soft">
+                    {group.lines.map((l) => (
+                      <li key={l.variantId} className="flex items-center gap-1.5">
+                        <span className="size-1 shrink-0 rounded-full bg-berry-600/60" aria-hidden="true" />
+                        <span className="min-w-0 truncate">{l.variantLabel}</span>
+                        {l.quantity > 1 && <span className="shrink-0 font-semibold text-ink">× {l.quantity}</span>}
+                        {!l.available && <span className="shrink-0 font-semibold text-berry-600">Sold out</span>}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-1.5 flex items-center gap-x-1.5 text-[0.7rem]">
+                    {pct != null && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
+                        <Icon name="tag" className="size-3" /> Saved {pct}%
+                      </span>
+                    )}
+                    {first.couponCode && (
+                      <span className="text-ink-soft">
+                        <span className="numeral font-semibold tracking-wide text-berry-600">{first.couponCode}</span> applied
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => removeMany(group.lines.map((l) => l.variantId))}
+                      className="-my-1.5 ml-auto grid size-8 shrink-0 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-berry-50 hover:text-berry-600"
+                    >
+                      <Icon name="trash" className="size-4" />
+                      <span className="sr-only">Remove {first.productName}</span>
+                    </button>
+                  </p>
+                </div>
+              </li>
+            );
+          }
+          const line = group.lines[0]!;
           const savedPct = line.savedPercent;
           const compareTotal = line.listTotal;
           return (

@@ -98,6 +98,8 @@ export type BagVariant = {
   tiers?: { discounts: number[]; codePrefix: string };
   /** The product's "Offer ends at" deadline (future only), for the bag's offer timer. */
   offerEndsAt?: string | null;
+  /** What a bundle is made of ("camera"), for "3 cameras" in the bag. */
+  bundleNoun?: string;
 };
 export type BagCatalog = { currency: string; demo: boolean; payments?: PaymentMethod[]; variants: Record<string, BagVariant> };
 
@@ -132,6 +134,7 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         productId: p.id,
         category: catOf(p).title,
         offerEndsAt: p.offerEndsAt,
+        ...(p.story?.bundle ? { bundleNoun: p.story.bundle.noun } : {}),
         ...(p.story?.bundle?.discounts.length
           ? { tiers: { discounts: p.story.bundle.discounts, codePrefix: p.story.bundle.codePrefix } }
           : {}),
