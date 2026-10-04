@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { TrackViewCategory } from "@/components/analytics/TrackViewCategory";
 import { ShopGrid } from "@/components/shop/ShopGrid";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -109,6 +110,7 @@ export default async function CategoryPage({ params }: Props) {
         </ul>
       </nav>
 
+      <TrackViewCategory category={c.title} cards={cards} />
       <div className="container-page py-4 lg:py-8">
         <ShopGrid cards={cards} priorityCount={2} />
       </div>

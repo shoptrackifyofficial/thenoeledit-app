@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { Countdown } from "@/components/home/Countdown";
 import { Icon } from "@/components/ui/Icon";
-import { trackViewItem } from "@/lib/analytics";
+import { trackCustomizeProduct, trackViewItem } from "@/lib/analytics";
 import type { ProductView, ViewVariant } from "@/lib/commerce/product-view";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -293,12 +293,18 @@ export function PurchasePanel({ view }: { view: ProductView }) {
   const hasPack = view.packOptionName !== null;
 
   // Restore a shared ?variant= link, and record the product view.
+  const viewed = useRef(false);
   useEffect(() => {
+    if (viewed.current) return; // one ViewContent per page, even under React dev double-effects
+    viewed.current = true;
     const param = new URLSearchParams(window.location.search).get("variant");
     const fromUrl = param ? view.variants.find((v) => numericId(v.id) === param) : undefined;
     if (fromUrl) setSelection(fromUrl.options);
     const v = fromUrl ?? initial;
-    trackViewItem({ id: v.id, name: view.name, variant: v.label, price: v.price }, view.currency);
+    trackViewItem(
+      { id: v.id, productId: view.productId, name: view.name, variant: v.label, price: v.price, category: view.category.title },
+      view.currency,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -325,6 +331,12 @@ export function PurchasePanel({ view }: { view: ProductView }) {
     setAdded(false);
     const v = findVariant(view, next);
     if (!v) return;
+    trackCustomizeProduct(
+      { id: v.id, productId: view.productId, name: view.name, variant: v.label, price: v.price, category: view.category.title },
+      view.currency,
+      name,
+      value,
+    );
     startTransition(() => {
       const url = new URL(window.location.href);
       url.searchParams.set("variant", numericId(v.id));
@@ -351,6 +363,8 @@ export function PurchasePanel({ view }: { view: ProductView }) {
       image: variant.image ?? view.cardImage?.url ?? null,
       href: `${view.href}?variant=${numericId(variant.id)}`,
       available: true,
+      productId: view.productId,
+      category: view.category.title,
     });
     setAdded(true);
     window.setTimeout(() => setAdded(false), 2200);

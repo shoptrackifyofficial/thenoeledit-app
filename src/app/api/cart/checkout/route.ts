@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { isDemoCatalog, variantIndex } from "@/lib/catalog";
+import { gaClientIdFromCookie, gaSessionIdFromCookie } from "@/lib/ga/mp";
 import { clientIp, rateLimit } from "@/lib/security/rate-limit";
 import { isStorefrontConfigured } from "@/lib/shopify/config";
 import { createCheckout } from "@/lib/shopify/storefront";
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   const raw = await request.text();
   if (raw.length > 8_000) return json({ error: "Request too large." }, 413);
-  let body: { lines?: unknown; gift?: { wrap?: unknown; message?: unknown } };
+  let body: { lines?: unknown; gift?: { wrap?: unknown; message?: unknown }; externalId?: unknown };
   try {
     body = JSON.parse(raw);
   } catch {
@@ -70,6 +71,22 @@ export async function POST(request: NextRequest) {
       : "";
   const attributes = [{ key: "Gift wrap", value: wrap ? "Yes" : "No" }];
   if (message) attributes.push({ key: "Gift message", value: message });
+
+  // Ad identity for the server-side Purchase event (the orders/paid webhook
+  // reads these back). "_"-prefixed attributes are hidden from the shopper.
+  const fbp = request.cookies.get("_fbp")?.value;
+  const fbc = request.cookies.get("_fbc")?.value;
+  if (fbp && /^fb\.\d\.\d{10,13}\.\d{5,20}$/.test(fbp)) attributes.push({ key: "_fbp", value: fbp });
+  if (fbc && /^fb\.\d\.\d{10,13}\.[\w-]{10,500}$/.test(fbc)) attributes.push({ key: "_fbc", value: fbc });
+  // GA4: the browser's client + session id, so the server-side purchase joins the visit that led to it.
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.replace(/^G-/, "");
+  const gaClient = gaClientIdFromCookie(request.cookies.get("_ga")?.value);
+  const gaSession = gaId ? gaSessionIdFromCookie(request.cookies.get(`_ga_${gaId}`)?.value) : null;
+  if (gaClient) attributes.push({ key: "_ga_cid", value: gaClient });
+  if (gaSession) attributes.push({ key: "_ga_sid", value: gaSession });
+  if (typeof body.externalId === "string" && /^[a-f0-9]{64}$/.test(body.externalId)) {
+    attributes.push({ key: "_eid", value: body.externalId });
+  }
 
   try {
     const cart = await createCheckout(

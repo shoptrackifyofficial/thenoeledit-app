@@ -90,11 +90,14 @@ export type BagVariant = {
   image: string | null;
   href: string;
   available: boolean;
+  /** Shopify product GID and category title — carried for analytics events. */
+  productId?: string;
+  category?: string;
 };
 export type BagCatalog = { currency: string; demo: boolean; variants: Record<string, BagVariant> };
 
 export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
-  const [products, currency] = await Promise.all([getProducts(), storeCurrency()]);
+  const [products, currency, catOf] = await Promise.all([getProducts(), storeCurrency(), categoryLookup()]);
   const variants: BagCatalog["variants"] = {};
   for (const p of products) {
     const fallback = p.media.find((m) => m.type === "image")?.url ?? null;
@@ -112,6 +115,8 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         image: v.image ?? fallback,
         href: `/products/${p.handle}?variant=${v.id.split("/").pop()}`,
         available: v.availableForSale,
+        productId: p.id,
+        category: catOf(p).title,
       };
     }
   }

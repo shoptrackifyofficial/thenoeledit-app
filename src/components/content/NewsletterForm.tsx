@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { subscribe, type NewsletterState } from "@/app/actions/newsletter";
 import { Icon } from "@/components/ui/Icon";
+import { trackLead } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
@@ -11,6 +12,15 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
     status: "idle",
     message: "",
   });
+  const email = useRef("");
+
+  // One Lead per successful sign-up; the email goes to our server only, which hashes it for Meta.
+  useEffect(() => {
+    if (state.status === "ok" && email.current) {
+      trackLead(email.current);
+      email.current = "";
+    }
+  }, [state]);
 
   if (state.status === "ok") {
     return (
@@ -21,7 +31,13 @@ export function NewsletterForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
   }
 
   return (
-    <form action={action} className="w-full">
+    <form
+      action={action}
+      onSubmit={(e) => {
+        email.current = String(new FormData(e.currentTarget).get("email") ?? "");
+      }}
+      className="w-full"
+    >
       <div
         className={cn(
           "flex items-center gap-2 rounded-full p-1.5 ring-1",

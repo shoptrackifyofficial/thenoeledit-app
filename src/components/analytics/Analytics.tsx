@@ -1,9 +1,16 @@
 import Script from "next/script";
 
+import { MetaTracker } from "@/components/analytics/MetaTracker";
+
 /**
  * Marketing + analytics tags. Each loads only when its env id is set, and
  * only after the page is idle (`lazyOnload`), so none of them can touch FCP,
  * LCP or interaction latency. Commerce events are sent from lib/analytics.ts.
+ *
+ * Meta Pixel: initialised with the anonymous external_id (advanced matching),
+ * without an automatic PageView — <MetaTracker> sends every PageView with an
+ * event_id so it de-duplicates against the Conversions API copy. Events fired
+ * before the Pixel finishes loading wait in window.__fbqPending.
  *
  * Add a consent banner before enabling these for EU/UK traffic.
  */
@@ -17,6 +24,7 @@ export function Analytics() {
 
   return (
     <>
+      {safe(meta) && <MetaTracker />}
       {safe(gtm) && (
         <Script id="gtm" strategy="lazyOnload">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${safe(gtm)}');`}
@@ -32,7 +40,7 @@ export function Analytics() {
       )}
       {safe(meta) && (
         <Script id="meta-pixel" strategy="lazyOnload">
-          {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${safe(meta)}');fbq('track','PageView');`}
+          {`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');var eid=null;try{eid=localStorage.getItem('noel.eid.v1')}catch(x){}fbq('init','${safe(meta)}',eid?{external_id:eid}:{});var q=window.__fbqPending||[];window.__fbqPending=[];for(var k=0;k<q.length;k++)fbq.apply(null,q[k]);`}
         </Script>
       )}
       {safe(tiktok) && (

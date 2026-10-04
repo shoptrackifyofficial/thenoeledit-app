@@ -15,6 +15,7 @@ import type { BagCatalog, BagVariant } from "@/lib/commerce/views";
 import {
   trackAddToCart,
   trackBeginCheckout,
+  getExternalId,
   trackRemoveFromCart,
   type AnalyticsItem,
 } from "@/lib/analytics";
@@ -160,6 +161,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     variant: l.variantLabel || undefined,
     price: l.price,
     quantity,
+    productId: l.productId,
+    category: l.category,
   });
 
   const add = useCallback(
@@ -231,6 +234,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
           gift,
+          externalId: getExternalId(),
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { checkoutUrl?: string; error?: string };

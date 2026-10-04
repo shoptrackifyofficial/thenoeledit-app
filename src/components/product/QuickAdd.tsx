@@ -24,6 +24,8 @@ export function QuickAdd({ card, className }: { card: CardView; className?: stri
           image: card.image?.url ?? null,
           href: card.href,
           available: true,
+          productId: card.productId,
+          category: card.category.title,
         });
         setDone(true);
         window.setTimeout(() => setDone(false), 1800);

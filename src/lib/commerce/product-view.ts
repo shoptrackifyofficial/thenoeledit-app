@@ -42,6 +42,8 @@ export type ViewVariant = {
 export type ViewOption = { name: string; values: string[] };
 
 export type ProductView = {
+  /** Shopify product GID — used for catalog-matched ad events. */
+  productId: string;
   handle: string;
   href: string;
   name: string;
@@ -65,6 +67,7 @@ export type ProductView = {
 
 /** The light shape product cards, the menu and search need. */
 export type CardView = {
+  productId: string;
   handle: string;
   href: string;
   name: string;
@@ -78,6 +81,8 @@ export type CardView = {
   available: boolean;
   /** Set when the product has exactly one buyable variant — the card can add it straight to the bag. */
   quickAddVariantId: string | null;
+  /** The variant whose price the card shows — used as the item id in analytics. */
+  leadVariantId: string | null;
   createdAt: string;
   tags: string[];
 };
@@ -165,6 +170,7 @@ export function buildProductView(
   const firstImage = media.find((m): m is Extract<ViewMedia, { type: "image" }> => m.type === "image");
 
   return {
+    productId: record.id,
     handle: record.handle,
     href: `/products/${record.handle}`,
     name: record.title,
@@ -208,6 +214,7 @@ export function buildCardView(
   const price = lead?.price ?? 0;
   const compareAt = lead?.compareAtPrice ?? null;
   return {
+    productId: record.id,
     handle: record.handle,
     href: `/products/${record.handle}`,
     name: record.title,
@@ -220,6 +227,7 @@ export function buildCardView(
     hoverImage: toImage(1),
     available: record.availableForSale,
     quickAddVariantId: record.variants.length === 1 && buyable.length === 1 ? buyable[0]!.id : null,
+    leadVariantId: lead?.id ?? null,
     createdAt: record.createdAt,
     tags: record.tags,
   };

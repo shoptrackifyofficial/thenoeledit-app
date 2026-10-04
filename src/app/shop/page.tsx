@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { TrackViewCategory } from "@/components/analytics/TrackViewCategory";
 import { ShopGrid } from "@/components/shop/ShopGrid";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -68,6 +69,7 @@ export default async function ShopPage() {
         </div>
       </section>
 
+      <TrackViewCategory category="All gifts" cards={cards} />
       <div className="container-page py-6 lg:py-10">
         <ShopGrid cards={cards} />
       </div>

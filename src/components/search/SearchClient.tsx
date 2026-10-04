@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ProductCard } from "@/components/product/ProductCard";
 import { Icon } from "@/components/ui/Icon";
+import { cardItem, trackSearch } from "@/lib/analytics";
 import type { CardView } from "@/lib/commerce/product-view";
 
 /**
@@ -36,6 +37,19 @@ export function SearchClient({ cards, suggestions }: { cards: CardView[]; sugges
   );
   const words = norm(q).split(/\s+/).filter(Boolean);
   const results = words.length ? index.filter(({ text }) => words.every((w) => text.includes(w))).map(({ c }) => c) : [];
+
+  // One Search event once typing settles (not per keystroke), and never twice for the same query.
+  const lastSent = useRef("");
+  useEffect(() => {
+    const term = q.trim().toLowerCase();
+    if (term.length < 2 || term === lastSent.current) return;
+    const t = window.setTimeout(() => {
+      lastSent.current = term;
+      trackSearch(term, results.map(cardItem), cards[0]?.currency ?? "USD");
+    }, 1000);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
 
   return (
     <div>
