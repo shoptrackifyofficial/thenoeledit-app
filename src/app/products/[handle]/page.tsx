@@ -51,13 +51,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = record.seo.title || `${view.name} — ${price} in the Christmas Sale`;
   const description = record.seo.description || `${view.summary} Free shipping on every order and tracked delivery before Christmas.`.slice(0, 300);
   return {
-    title,
+    // A title set in Shopify (SEO title) is used exactly as written, brand included; otherwise the site template adds the brand.
+    title: record.seo.title ? { absolute: record.seo.title } : title,
     description,
     alternates: { canonical: view.href },
     openGraph: {
       type: "website",
       url: view.href,
-      title: `${view.name} · ${site.name}`,
+      title: record.seo.title ?? `${view.name} · ${site.name}`,
       description,
       images: view.cardImage ? [{ url: view.cardImage.url, alt: view.name }] : undefined,
     },

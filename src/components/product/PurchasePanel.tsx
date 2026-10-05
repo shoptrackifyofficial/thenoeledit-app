@@ -1247,7 +1247,8 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="grid size-12 place-items-center rounded-full hover:bg-cream"
+                disabled={qty <= 1}
+                className="grid size-12 place-items-center rounded-full hover:bg-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent"
                 aria-label="Decrease quantity"
               >
                 <Icon name="minus" className="size-4" />
@@ -1258,7 +1259,8 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.min(10, q + 1))}
-                className="grid size-12 place-items-center rounded-full hover:bg-cream"
+                disabled={qty >= 10}
+                className="grid size-12 place-items-center rounded-full hover:bg-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent"
                 aria-label="Increase quantity"
               >
                 <Icon name="plus" className="size-4" />

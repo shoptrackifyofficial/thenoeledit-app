@@ -43,7 +43,7 @@ export const productVideos: ShowcaseVideo[] = [];
 
 /** Per-product lists, keyed by product handle. */
 export const productVideosByHandle: Record<string, ShowcaseVideo[]> = {
-  "christmas-mini-nfc-music-box-refrigerator-magnet-cute-record-player-style-ambient-night-light-for-teen-gifts": nfc,
-  "phomemo-p15-label-printer-gift-label-printer-ribbon-label-printer-bluetooth-enabled-printing-rechargeable-for-name-tag": p15,
-  "one-touch-3d-printed-latte-art-cameras-coffee-stencil-printers-handheld-tools-templates-cappuccino-interchangeable-mold-christmas-gift": latteCamera,
+  "christmas-mini-nfc-music-box": nfc,
+  "label-printer-gift": p15,
+  "latte-art-camera-coffee-stencil-printer": latteCamera,
 };
