@@ -62,8 +62,8 @@ type ProductNode = {
   descriptionHtml: string;
   seo: { title: string | null; description: string | null } | null;
   options: { name: string; values: string[] }[];
-  variants: { nodes: AdminVariantNode[] };
-  media: { nodes: MediaNode[] };
+  variants: { pageInfo: { hasNextPage: boolean }; nodes: AdminVariantNode[] };
+  media: { pageInfo: { hasNextPage: boolean }; nodes: MediaNode[] };
   perks: { value: string } | null;
   offerEndsAt: { value: string } | null;
   giftFor: { value: string } | null;
@@ -72,15 +72,27 @@ type ProductNode = {
 
 const SHOP_QUERY = `query { shop { name currencyCode } }`;
 
+/**
+ * Products per request. Each product pulls up to 100 variants + 30 media, so
+ * pages stay small to remain under Shopify's per-query cost limit; any number of
+ * products is read by following the cursor page after page.
+ */
+const PAGE_SIZE = 25;
+/** Safety net against a cursor that never ends (PAGE_SIZE × this = 5,000 products). */
+const MAX_PAGES = 200;
+const VARIANT_LIMIT = 100;
+const MEDIA_LIMIT = 30;
+
 const PRODUCTS_QUERY = `
-query Products($query: String!, $after: String) {
-  products(first: 25, after: $after, query: $query, sortKey: CREATED_AT, reverse: true) {
+query Products($query: String!, $after: String, $first: Int!) {
+  products(first: $first, after: $after, query: $query, sortKey: CREATED_AT, reverse: true) {
     pageInfo { hasNextPage endCursor }
     nodes {
       id handle title vendor productType tags status createdAt updatedAt descriptionHtml
       seo { title description }
       options { name values }
-      variants(first: 100) {
+      variants(first: ${VARIANT_LIMIT}) {
+        pageInfo { hasNextPage }
         nodes {
           id title sku price compareAtPrice availableForSale
           inventoryQuantity inventoryPolicy inventoryItem { tracked }
@@ -88,7 +100,8 @@ query Products($query: String!, $after: String) {
           image { url }
         }
       }
-      media(first: 30) {
+      media(first: ${MEDIA_LIMIT}) {
+        pageInfo { hasNextPage }
         nodes {
           __typename
           alt
@@ -183,6 +196,8 @@ function futureIso(field: { value: string } | null): string | null {
 }
 
 function toRecord(p: ProductNode): ProductRecord {
+  if (p.variants.pageInfo.hasNextPage) console.warn(`[sync] ${p.handle}: more than ${VARIANT_LIMIT} variants, the rest are not synced`);
+  if (p.media.pageInfo.hasNextPage) console.warn(`[sync] ${p.handle}: more than ${MEDIA_LIMIT} media, the rest are not synced`);
   const variants = normalizeVariants(p.variants.nodes);
   return {
     id: p.id,
@@ -217,14 +232,18 @@ export async function syncCatalog(): Promise<SyncResult> {
 
   const products: Record<string, ProductRecord> = {};
   let after: string | null = null;
-  for (let page = 0; page < 40; page++) {
+  let done = false;
+  for (let page = 0; page < MAX_PAGES && !done; page++) {
+    // Extra retries: a big shop drains Shopify's query-cost bucket between pages (THROTTLED).
     const data: {
       products: { pageInfo: { hasNextPage: boolean; endCursor: string | null }; nodes: ProductNode[] };
-    } = await adminRequest(PRODUCTS_QUERY, { query: cfg.productQuery, after });
+    } = await adminRequest(PRODUCTS_QUERY, { query: cfg.productQuery, after, first: PAGE_SIZE }, { retries: 6 });
     for (const node of data.products.nodes) products[node.handle] = toRecord(node);
-    if (!data.products.pageInfo.hasNextPage) break;
+    done = !data.products.pageInfo.hasNextPage;
     after = data.products.pageInfo.endCursor;
   }
+  // A truncated list would replace the live catalog and silently delist products — fail instead.
+  if (!done) throw new Error(`Catalog sync stopped after ${MAX_PAGES} pages; raise MAX_PAGES`);
 
   const count = Object.keys(products).length;
   // No matching vendor products yet: keep whatever is live (or the demo seed) rather than
@@ -283,6 +302,7 @@ export async function syncProduct(ref: { id: number | string; handle?: string | 
         const data: { products: { nodes: ProductNode[] } } = await adminRequest(PRODUCTS_QUERY, {
           query: `(${cfg.productQuery}) AND handle:${ref.handle.replace(/[^A-Za-z0-9_-]/g, "")}`,
           after: null,
+          first: 1,
         });
         const node = data.products.nodes.find((n) => n.id.endsWith(idSuffix));
         if (node) fresh = toRecord(node);
