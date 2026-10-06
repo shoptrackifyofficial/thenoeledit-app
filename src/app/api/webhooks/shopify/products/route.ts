@@ -60,9 +60,10 @@ export async function POST(request: NextRequest) {
 
     const result = await syncProduct({ id: payload.id, handle: payload.handle, deleted: topic === "products/delete" });
     // Purge the new handle's page and the old one (a rename or a removal).
-    revalidateCatalog(result.handle, payload.handle, known?.handle);
-    console.log(`[webhook/products] ${topic} id=${webhookId} ${payload.handle ?? payload.id} → ${result.action}, ${result.products} product(s) live`);
-    return ack({ topic, synced: true, action: result.action, products: result.products });
+    // Only a real change touches Blob, so only a real change purges the page cache.
+    if (result.changed) revalidateCatalog(result.handle, payload.handle, known?.handle);
+    console.log(`[webhook/products] ${topic} id=${webhookId} ${payload.handle ?? payload.id} → ${result.action}${result.changed ? "" : " (no change)"}, ${result.products} product(s) live`);
+    return ack({ topic, synced: true, action: result.action, changed: result.changed, products: result.products });
   } catch (error) {
     console.error(`[webhook/products] ${topic} id=${webhookId} failed:`, error instanceof Error ? error.message : error);
     return NextResponse.json({ error: "Sync failed" }, { status: 500 }); // 500 → Shopify retries

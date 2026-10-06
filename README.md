@@ -24,7 +24,7 @@ node scripts/make-demo-catalog.mjs   # regenerate the placeholder catalog
 5. Sale price = Shopify `price`; struck-through price = `compare at price`.
 6. Run `npm run shopify:sync` (or `POST /api/admin/sync` with `Authorization: Bearer $ADMIN_API_KEY`).
 
-Until a sync finds vendor products, the site serves `data/demo-catalog.json` (placeholder products, checkout disabled).
+**How the catalog reaches the site:** `data/catalog.json` is bundled into every build (static import in `src/lib/catalog/live.ts`, same as Belurae). Production also keeps a live copy in Vercel Blob, written only when the `products/*` webhook or `POST /api/admin/sync` finds a real change. The copy with the newer `syncedAt` is served, so a deploy with a fresher JSON overrides a stale Blob, and a later webhook overrides the JSON. After `npm run shopify:sync`, commit `data/catalog.json` so the next deploy ships it.
 
 ## Where to change things
 

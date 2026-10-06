@@ -9,4 +9,5 @@ data/.sync.lock
 data/*.tmp
 .vercel
 reference
+reference2
 .gstack/

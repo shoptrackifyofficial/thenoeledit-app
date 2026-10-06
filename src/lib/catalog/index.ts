@@ -2,8 +2,7 @@ import "server-only";
 
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
-import seed from "../../../data/demo-catalog.json";
-import { CATALOG_PATH, readJsonFile } from "@/lib/catalog/storage";
+import { bundledCatalog, readLiveCatalog } from "@/lib/catalog/live";
 import type { CatalogDocument, ProductRecord } from "@/lib/catalog/types";
 import { categories, FALLBACK_CATEGORY, type CategoryContent } from "@/content/categories";
 import { originalPrice } from "@/lib/commerce/tiers";
@@ -12,11 +11,12 @@ import { slugify } from "@/lib/utils";
 /**
  * Server-side catalog reads.
  *
- * Source order: the live synced document (private Vercel Blob in production,
- * data/catalog.json on disk in dev — written by `npm run shopify:sync` or
- * POST /api/admin/sync) → the bundled demo seed (data/demo-catalog.json). Wrapped in `unstable_cache`
- * under the `catalog` tag so every page stays static/ISR, and one
- * `revalidateTag("catalog")` refreshes home, shop, PDPs and the sitemap.
+ * Source: data/catalog.json bundled into the build, or the live copy in private
+ * Vercel Blob (written only when the products/* webhook or POST /api/admin/sync
+ * changed something), whichever was synced last (see catalog/live.ts). Wrapped in
+ * `unstable_cache` under the `catalog` tag so every page stays static/ISR, and one
+ * `revalidateTag("catalog")` after a sync that changed something refreshes home,
+ * shop, PDPs and the sitemap.
  */
 
 export const CATALOG_TAG = "catalog";
@@ -27,22 +27,22 @@ export function revalidateCatalog(...handles: (string | null | undefined)[]): vo
   for (const h of new Set(handles)) if (h) revalidatePath(`/products/${h}`);
   revalidatePath("/", "layout");
 }
-const seedDoc = seed as unknown as CatalogDocument;
 
 const readCatalog = unstable_cache(
   async (): Promise<CatalogDocument> => {
     try {
-      const live = await readJsonFile<CatalogDocument>(CATALOG_PATH);
-      if (live?.products && Object.keys(live.products).length > 0) return live;
+      return await readLiveCatalog();
     } catch (error) {
       console.error(
-        "[catalog] live read failed, serving the seed:",
+        "[catalog] live read failed, serving the bundled catalog:",
         error instanceof Error ? error.message : error,
       );
+      return bundledCatalog;
     }
-    return seedDoc;
   },
-  ["noel-catalog-v1"],
+  // The deployment id is part of the key: Vercel's data cache outlives deploys, and a new
+  // build ships a (possibly newer) data/catalog.json that must be served straight away.
+  ["noel-catalog-v1", process.env.VERCEL_DEPLOYMENT_ID ?? ""],
   { tags: [CATALOG_TAG], revalidate: 3600 },
 );
 

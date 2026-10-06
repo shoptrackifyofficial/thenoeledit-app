@@ -1,7 +1,8 @@
 import { parseStory } from "@/lib/catalog/story";
 import { adminRequest } from "@/lib/shopify/admin";
 import { shopifyConfig } from "@/lib/shopify/config";
-import { CATALOG_PATH, acquireLock, readJsonFile, writeJsonFileAtomic } from "@/lib/catalog/storage";
+import { readLiveCatalog } from "@/lib/catalog/live";
+import { CATALOG_PATH, acquireLock, writeJsonFileAtomic } from "@/lib/catalog/storage";
 import type { CatalogDocument, MediaRecord, ProductRecord, VariantRecord } from "@/lib/catalog/types";
 
 /**
@@ -222,7 +223,18 @@ function toRecord(p: ProductNode): ProductRecord {
   };
 }
 
-export type SyncResult = { products: number; syncedAt: string; query: string };
+/** Same shop and products. `syncedAt` alone never counts as a change. */
+function sameCatalog(a: CatalogDocument, b: CatalogDocument): boolean {
+  return (
+    a.shop?.domain === b.shop.domain &&
+    a.shop?.name === b.shop.name &&
+    a.shop?.currencyCode === b.shop.currencyCode &&
+    JSON.stringify(a.products) === JSON.stringify(b.products)
+  );
+}
+
+/** `changed: false` means Shopify already matches the live catalog, so nothing was written. */
+export type SyncResult = { products: number; syncedAt: string; query: string; changed: boolean };
 
 export async function syncCatalog(): Promise<SyncResult> {
   const cfg = shopifyConfig();
@@ -248,7 +260,7 @@ export async function syncCatalog(): Promise<SyncResult> {
   const count = Object.keys(products).length;
   // No matching vendor products yet: keep whatever is live (or the demo seed) rather than
   // publishing an empty shop.
-  if (count === 0) return { products: 0, syncedAt: new Date().toISOString(), query: cfg.productQuery };
+  if (count === 0) return { products: 0, syncedAt: new Date().toISOString(), query: cfg.productQuery, changed: false };
 
   const doc: CatalogDocument = {
     version: 1,
@@ -259,11 +271,16 @@ export async function syncCatalog(): Promise<SyncResult> {
 
   const lock = await acquireLock();
   try {
+    // Write only when Shopify differs from what is live: no Blob churn, no needless diff in the committed file.
+    const live = await readLiveCatalog();
+    if (sameCatalog(live, doc)) {
+      return { products: count, syncedAt: live.syncedAt, query: cfg.productQuery, changed: false };
+    }
     await writeJsonFileAtomic(CATALOG_PATH, doc);
   } finally {
     await lock.release();
   }
-  return { products: count, syncedAt: doc.syncedAt, query: cfg.productQuery };
+  return { products: count, syncedAt: doc.syncedAt, query: cfg.productQuery, changed: true };
 }
 
 export type ProductSyncResult = {
@@ -272,10 +289,16 @@ export type ProductSyncResult = {
   handle: string | null;
   products: number;
   syncedAt: string;
+  /** false when the product already matched the live catalog, so nothing was written. */
+  changed: boolean;
 };
 
 /**
  * Webhook entry point: re-syncs one product into the live catalog document.
+ *
+ * The base is the newer of the Blob copy and the catalog bundled with the build
+ * (readLiveCatalog), so a webhook never merges onto a stale copy. Blob is written
+ * only when the product really changed, and the caller purges the page cache then.
  *
  * `id` (the numeric Shopify id from the webhook payload) identifies the product,
  * so a renamed handle or a delete (which carries only an id) still finds its old
@@ -290,8 +313,8 @@ export async function syncProduct(ref: { id: number | string; handle?: string | 
   const lock = await acquireLock();
   let result: ProductSyncResult | null = null;
   try {
-    const existing = await readJsonFile<CatalogDocument>(CATALOG_PATH);
-    if (existing?.products && Object.keys(existing.products).length > 0) {
+    const existing = await readLiveCatalog();
+    if (Object.keys(existing.products).length > 0) {
       let products = { ...existing.products };
       // Drop the old entry first: covers a renamed handle, an untag/archive and a delete.
       for (const [key, p] of Object.entries(products)) if (p.id.endsWith(idSuffix)) delete products[key];
@@ -324,12 +347,15 @@ export async function syncProduct(ref: { id: number | string; handle?: string | 
         products,
       };
       delete doc.demo;
-      await writeJsonFileAtomic(CATALOG_PATH, doc);
+      // Webhooks fire for every edit (stock, tags, unrelated fields): write only if the catalog differs.
+      const changed = !sameCatalog(existing, doc);
+      if (changed) await writeJsonFileAtomic(CATALOG_PATH, doc);
       result = {
         action: fresh ? "synced" : "removed",
         handle: fresh?.handle ?? ref.handle ?? null,
         products: Object.keys(products).length,
-        syncedAt: doc.syncedAt,
+        syncedAt: changed ? doc.syncedAt : existing.syncedAt,
+        changed,
       };
     }
   } finally {
@@ -339,5 +365,5 @@ export async function syncProduct(ref: { id: number | string; handle?: string | 
 
   // Nothing live to merge into yet: do the full sync (it takes the lock itself, so ours is released first).
   const full = await syncCatalog();
-  return { action: "full", handle: ref.handle ?? null, products: full.products, syncedAt: full.syncedAt };
+  return { action: "full", handle: ref.handle ?? null, products: full.products, syncedAt: full.syncedAt, changed: full.changed };
 }
