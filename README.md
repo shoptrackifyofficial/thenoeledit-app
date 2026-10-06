@@ -14,7 +14,7 @@ node scripts/make-demo-catalog.mjs   # regenerate the placeholder catalog
 
 ## Adding products
 
-1. In Shopify, tag each product `noel-edit` (or change `SHOPIFY_PRODUCT_QUERY`).
+1. In Shopify, set each product's vendor to `TheNoelEdit` and make it Active. The sync fetches exactly `vendor:"TheNoelEdit" status:active` and nothing else (override with `SHOPIFY_PRODUCT_VENDOR` or `SHOPIFY_PRODUCT_QUERY`).
 2. Give it a category: a tag `category:for-her` (any slug), or a Product type listed in `src/content/categories.ts`. Unknown product types become categories automatically.
 3. Optional metafields (namespace `custom`):
    - `perks` — list of short benefit lines (shown as bullets on the PDP)
@@ -24,7 +24,7 @@ node scripts/make-demo-catalog.mjs   # regenerate the placeholder catalog
 5. Sale price = Shopify `price`; struck-through price = `compare at price`.
 6. Run `npm run shopify:sync` (or `POST /api/admin/sync` with `Authorization: Bearer $ADMIN_API_KEY`).
 
-Until a sync finds tagged products, the site serves `data/demo-catalog.json` (placeholder products, checkout disabled).
+Until a sync finds vendor products, the site serves `data/demo-catalog.json` (placeholder products, checkout disabled).
 
 ## Where to change things
 

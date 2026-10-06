@@ -140,7 +140,7 @@ async function main() {
   let after: string | null = null;
   for (;;) {
     const d: any = await adminRequest(
-      `query($a:String){ products(first:50, after:$a, query:"tag:noel-edit"){ pageInfo{hasNextPage endCursor} nodes{ id handle title } } }`,
+      `query($a:String){ products(first:50, after:$a, query:"vendor:TheNoelEdit"){ pageInfo{hasNextPage endCursor} nodes{ id handle title } } }`,
       { a: after },
     );
     all.push(...d.products.nodes);

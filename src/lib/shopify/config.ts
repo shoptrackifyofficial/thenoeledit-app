@@ -15,18 +15,24 @@ export type ShopifyConfig = {
   adminClientId: string | null;
   adminClientSecret: string | null;
   customerAccountShopId: string;
+  /** Shopify product vendor that marks a product as ours (the store is shared). */
+  productVendor: string;
   /**
    * Admin product search that decides which products belong to this store
-   * front (the Shopify store is shared). Default: everything tagged `noel-edit`.
+   * front. Default: every active product whose vendor is `productVendor`.
    */
   productQuery: string;
 };
+
+/** Vendor name every storefront product carries in Shopify. */
+export const DEFAULT_PRODUCT_VENDOR = "TheNoelEdit";
 
 function env(name: string, fallback = ""): string {
   return (process.env[name] ?? fallback).trim();
 }
 
 export function shopifyConfig(): ShopifyConfig {
+  const productVendor = env("SHOPIFY_PRODUCT_VENDOR", DEFAULT_PRODUCT_VENDOR);
   return {
     storeDomain: env("SHOPIFY_STORE_DOMAIN").replace(/^https?:\/\//, "").replace(/\/+$/, ""),
     apiVersion: env("SHOPIFY_API_VERSION", "2025-10"),
@@ -35,7 +41,8 @@ export function shopifyConfig(): ShopifyConfig {
     adminClientId: env("SHOPIFY_ADMIN_CLIENT_ID") || null,
     adminClientSecret: env("SHOPIFY_ADMIN_CLIENT_SECRET") || null,
     customerAccountShopId: env("SHOPIFY_CUSTOMER_ACCOUNT_SHOP_ID"),
-    productQuery: env("SHOPIFY_PRODUCT_QUERY", "tag:noel-edit status:active"),
+    productVendor,
+    productQuery: env("SHOPIFY_PRODUCT_QUERY", `vendor:"${productVendor.replace(/"/g, "")}" status:active`),
   };
 }
 

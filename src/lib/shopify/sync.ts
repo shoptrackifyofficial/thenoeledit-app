@@ -7,8 +7,8 @@ import type { CatalogDocument, MediaRecord, ProductRecord, VariantRecord } from 
 /**
  * Shopify Admin API → data/catalog.json sync engine.
  *
- * Reads every product matching `SHOPIFY_PRODUCT_QUERY` (default: tagged
- * `noel-edit`, active) page by page, normalises it into a small read model and
+ * Reads every product matching `SHOPIFY_PRODUCT_QUERY` (default: vendor
+ * `TheNoelEdit`, active) page by page, normalises it into a small read model and
  * writes it through `lib/catalog/storage.ts` (filesystem in dev, private
  * Vercel Blob in production). The site never queries Shopify per request —
  * pages are static/ISR off this document, which is why they are fast.
@@ -227,7 +227,7 @@ export async function syncCatalog(): Promise<SyncResult> {
   }
 
   const count = Object.keys(products).length;
-  // Nothing tagged yet: keep whatever is live (or the demo seed) rather than
+  // No matching vendor products yet: keep whatever is live (or the demo seed) rather than
   // publishing an empty shop.
   if (count === 0) return { products: 0, syncedAt: new Date().toISOString(), query: cfg.productQuery };
 
@@ -248,7 +248,7 @@ export async function syncCatalog(): Promise<SyncResult> {
 }
 
 export type ProductSyncResult = {
-  /** "synced": re-read from Shopify; "removed": no longer ours (deleted, untagged, archived); "full": no live document yet, so everything was synced. */
+  /** "synced": re-read from Shopify; "removed": no longer ours (deleted, other vendor, archived); "full": no live document yet, so everything was synced. */
   action: "synced" | "removed" | "full";
   handle: string | null;
   products: number;

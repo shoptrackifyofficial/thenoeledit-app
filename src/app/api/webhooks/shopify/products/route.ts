@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getAllProducts as getProducts, revalidateCatalog } from "@/lib/catalog";
-import { isAdminConfigured } from "@/lib/shopify/config";
+import { isAdminConfigured, shopifyConfig } from "@/lib/shopify/config";
 import { syncProduct } from "@/lib/shopify/sync";
 import { isDuplicateWebhook, verifyShopifyWebhook, wrongShop } from "@/lib/shopify/webhook";
 
@@ -16,12 +16,11 @@ export const maxDuration = 60;
  * media changes show up on every page without a redeploy.
  *
  * The Shopify store is shared with other brands, so a product only triggers a
- * sync when it carries the `noel-edit` tag, or is already in our catalog (an
- * update that removes the tag, or a delete, must drop it from the site).
+ * sync when its vendor is `TheNoelEdit`, or is already in our catalog (an
+ * update that changes the vendor, or a delete, must drop it from the site).
  */
 
 const TOPICS = new Set(["products/create", "products/update", "products/delete"]);
-const OUR_TAG = (process.env.SHOPIFY_PRODUCT_TAG || "noel-edit").toLowerCase();
 
 const ack = (extra: Record<string, unknown> = {}) =>
   NextResponse.json({ received: true, ...extra }, { headers: { "Cache-Control": "no-store" } });
@@ -39,20 +38,18 @@ export async function POST(request: NextRequest) {
     if (!TOPICS.has(topic)) return ack({ topic, ignored: true });
     if (isDuplicateWebhook(webhookId)) return ack({ topic, deduped: true });
 
-    let payload: { id?: number | string; handle?: string; tags?: string };
+    let payload: { id?: number | string; handle?: string; vendor?: string };
     try {
       payload = JSON.parse(raw);
     } catch {
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    const tagged = String(payload.tags ?? "")
-      .split(",")
-      .some((t) => t.trim().toLowerCase() === OUR_TAG);
+    const ours = String(payload.vendor ?? "").trim().toLowerCase() === shopifyConfig().productVendor.toLowerCase();
     const known = (await getProducts()).find(
       (p) => p.id.endsWith(`/${payload.id}`) || (payload.handle && p.handle === payload.handle),
     );
-    if (!tagged && !known) return ack({ topic, matched: false });
+    if (!ours && !known) return ack({ topic, matched: false });
 
     if (!isAdminConfigured()) {
       console.error("[webhook/products] Admin API not configured — skipping sync");
