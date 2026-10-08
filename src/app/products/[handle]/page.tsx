@@ -10,8 +10,7 @@ import { ProductStory, StoryInfo, infoGroups } from "@/components/product/Produc
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { PurchasePanel } from "@/components/product/PurchasePanel";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { originalPrice } from "@/lib/commerce/tiers";
+import { originalPrice, tierBase } from "@/lib/commerce/tiers";
 import { productVideos, productVideosByHandle } from "@/content/product-videos";
 import { Accordion } from "@/components/ui/Accordion";
 import { DeliveryEstimate } from "@/components/product/DeliveryEstimate";
@@ -121,7 +120,7 @@ export default async function ProductPage({ params }: Props) {
     ...siteFaqs.slice(3, 5),
   ];
 
-  const bundleOff = view.story?.bundle?.discounts[0] ?? 0;
+  const bundleOff = view.story?.bundle ? Math.round(tierBase(view.story.bundle)) : 0;
 
   const videos = productVideosByHandle[view.handle] ?? productVideos;
 
@@ -143,7 +142,6 @@ export default async function ProductPage({ params }: Props) {
 
       {/* ── Section 1: gallery + buy box ─────────────────────────────── */}
       <div className="container-page pt-4 pb-12 md:pt-6 lg:pb-16">
-        <Breadcrumbs items={crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label } : c))} className="mb-4 lg:mb-6" />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
           <ProductGallery media={view.gallery} productName={view.name} />
 
@@ -225,7 +223,7 @@ export default async function ProductPage({ params }: Props) {
                 [
                   "Price",
                   bundleOff
-                    ? `${formatMoney(view.fromPrice, view.currency)} (−${bundleOff}% off ${formatMoney(originalPrice(view.fromPrice, bundleOff), view.currency)})`
+                    ? `${formatMoney(view.fromPrice, view.currency)} (−${bundleOff}% off ${formatMoney(originalPrice(view.fromPrice, tierBase(view.story!.bundle!)), view.currency)})`
                     : `${formatMoney(view.fromPrice, view.currency)}${lead?.compareAtPercent ? ` (−${lead.compareAtPercent}%)` : ""}`,
                 ],
                 ...(offerEnds ? [["Offer ends", offerEnds]] : []),

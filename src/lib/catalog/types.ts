@@ -72,6 +72,8 @@ export type ProductStory = {
     noun: string;
     discounts: number[];
     codePrefix: string;
+    /** First step's real percent from Shopify's compare-at price (set when loading the catalog; see tiers.ts). */
+    basePct?: number;
   } | null;
   /** Turns one option (e.g. camera colour) into a "how many, and which colours" picker. */
   bundle: {
@@ -85,6 +87,8 @@ export type ProductStory = {
     discounts: number[];
     /** Coupon label shown with the offer, e.g. "XMAS" → XMAS50 / XMAS56 / XMAS65 (a label only — not sent to Shopify). */
     codePrefix: string;
+    /** First step's real percent from Shopify's compare-at price (set when loading the catalog; see tiers.ts). */
+    basePct?: number;
   } | null;
   how: {
     eyebrow: string;

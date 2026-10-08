@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import type { ViewAddon, ViewAddonVariant } from "@/lib/commerce/addon";
-import { round2 } from "@/lib/commerce/tiers";
+import { round2, tierPercent } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +59,7 @@ export function RibbonPicker({
   optional: boolean;
   onChange: (id: string, quantity: number) => void;
 }) {
-  const maxPct = addon.discounts.length ? Math.max(...addon.discounts) : 0;
+  const maxPct = addon.discounts.length ? tierPercent(addon, addon.discounts.length) : 0;
   // Tap the magnifier on a photo to see that ribbon big (swipe through all of them).
   const [zoomAt, setZoomAt] = useState<number | null>(null);
   const withPhoto = addon.variants.filter((v) => v.image);

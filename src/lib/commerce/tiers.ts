@@ -13,19 +13,38 @@
  * for the difference — 12% and 30% off the actual price here (`tierOff`). Create
  * those as XMAS56 / XMAS65 (see README); the checkout route applies the right one
  * and refuses to continue if it isn't live, rather than charge more than shown.
- * The code *names* (`codePrefix` + the displayed percent) are what shoppers see.
+ * The code *names* (`codePrefix` + the configured percent) are what shoppers see.
+ *
+ * If the variants carry a Shopify compare-at price, the percentages shown follow it instead of the
+ * configured 50: the original is the compare-at, Buy 1 is price ÷ compare-at, and Buy 2 / Buy 3 keep the
+ * same extra 12% / 30% off the shop price (`basePct`, set in lib/catalog/index.ts).
  *
  * Shared by the product page, the catalog and the bag (no server-only imports).
  */
 
-export type TierConfig = { discounts: number[]; codePrefix: string };
+/**
+ * `discounts` is the offer's shape (the first step and how much each later step takes off the shop price).
+ * `basePct` is the first step's real percent worked out from Shopify's compare-at price; when it is set the
+ * shown percentages follow it, while the price paid and the checkout codes stay exactly as `discounts` say.
+ */
+export type TierConfig = { discounts: number[]; codePrefix: string; basePct?: number };
 
 export const round2 = (n: number) => Math.round(n * 100) / 100;
 
-/** Percent shown for `qty` units: the tier for 1, 2, 3… units, the last tier for more. */
-export function tierPercent(cfg: TierConfig, qty: number): number {
+/** The configured step for `qty` units (1, 2, 3… units, the last step for more) - names the checkout code. */
+function configuredPercent(cfg: TierConfig, qty: number): number {
   if (qty < 1 || cfg.discounts.length === 0) return 0;
   return cfg.discounts[Math.min(qty, cfg.discounts.length) - 1] ?? 0;
+}
+
+/** First step's percent: from the compare-at price when there is one, else the configured 50-ish. */
+export const tierBase = (cfg: TierConfig) => cfg.basePct ?? cfg.discounts[0] ?? 0;
+
+/** Percent shown for `qty` units, measured against the compare-at price (so it follows Shopify). */
+export function tierPercent(cfg: TierConfig, qty: number): number {
+  const pct = configuredPercent(cfg, qty);
+  if (pct <= 0 || cfg.basePct == null) return pct;
+  return Math.round((1 - tierFactor(cfg, qty) * (1 - cfg.basePct / 100)) * 100);
 }
 
 /** The "original" price that makes `price` exactly `pct`% off. */
@@ -34,7 +53,7 @@ export const originalPrice = (price: number, pct: number) => (pct > 0 && pct < 1
 /** Share of Shopify's own price a shopper pays for `qty` units (1 for the first tier). */
 export function tierFactor(cfg: TierConfig, qty: number): number {
   const first = cfg.discounts[0] ?? 0;
-  const pct = tierPercent(cfg, qty);
+  const pct = configuredPercent(cfg, qty);
   if (first <= 0 || first >= 100 || pct <= 0) return 1;
   return Math.min(1, (1 - pct / 100) / (1 - first / 100));
 }
@@ -47,7 +66,7 @@ export const tierPrice = (list: number, cfg: TierConfig, qty: number) => round2(
 
 /** The coupon label for `qty` units, e.g. XMAS56 — what the shopper sees. */
 export function tierCode(cfg: TierConfig, qty: number): string | null {
-  const pct = tierPercent(cfg, qty);
+  const pct = configuredPercent(cfg, qty);
   return pct > 0 && cfg.codePrefix ? `${cfg.codePrefix}${pct}` : null;
 }
 

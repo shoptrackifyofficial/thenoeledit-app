@@ -109,7 +109,7 @@ export type BagVariant = {
   productId?: string;
   category?: string;
   /** Quantity-tier discount for this product (see lib/commerce/tiers.ts). */
-  tiers?: { discounts: number[]; codePrefix: string };
+  tiers?: { discounts: number[]; codePrefix: string; basePct?: number };
   /** The product's "Offer ends at" deadline (future only), for the bag's offer timer. */
   offerEndsAt?: string | null;
   /** What a bundle is made of ("camera"), for "3 cameras" in the bag. */
@@ -150,7 +150,7 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         category: catOf(p).title,
         offerEndsAt: p.offerEndsAt,
         ...(tiered ? { bundleNoun: tiered.noun } : {}),
-        ...(tiered?.discounts.length ? { tiers: { discounts: tiered.discounts, codePrefix: tiered.codePrefix } } : {}),
+        ...(tiered?.discounts.length ? { tiers: { discounts: tiered.discounts, codePrefix: tiered.codePrefix, ...(tiered.basePct != null ? { basePct: tiered.basePct } : {}) } } : {}),
       };
     }
   }

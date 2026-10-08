@@ -13,7 +13,7 @@ import {
 
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import type { BagCatalog, BagVariant } from "@/lib/commerce/views";
-import { originalPrice, round2, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
+import { originalPrice, round2, tierBase, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
 import { site } from "@/content/site";
 import type { PaymentMethod } from "@/lib/shopify/payments";
 import {
@@ -193,7 +193,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           ...data,
           price,
           lineTotal: tierPrice(list, data.tiers, qty),
-          listTotal: originalPrice(list, data.tiers.discounts[0] ?? 0),
+          listTotal: originalPrice(list, tierBase(data.tiers)),
           savedPercent: pct > 0 ? pct : null,
           couponCode: tierCode(data.tiers, qty),
         };

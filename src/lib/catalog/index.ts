@@ -49,7 +49,9 @@ const readCatalog = unstable_cache(
 /**
  * Products with a bundle offer (story.bundle.discounts) show their strike-through
  * "original" worked back from the real price (price ÷ (1 − pct)), using the
- * percentage for one unit. A compare-at price set in Shopify is kept as is.
+ * percentage for one unit - but only where Shopify has no compare-at price. A compare-at
+ * price set in Shopify is kept as is, and the offer's percentages (Buy 1 / 2 / 3) are then
+ * worked out from it (`basePct`, see lib/commerce/tiers.ts), so editing it in Shopify is enough.
  */
 const priced = new WeakMap<CatalogDocument, CatalogDocument>();
 function withOfferPrices(doc: CatalogDocument): CatalogDocument {
@@ -57,16 +59,27 @@ function withOfferPrices(doc: CatalogDocument): CatalogDocument {
   if (cached) return cached;
   const products: CatalogDocument["products"] = {};
   for (const [handle, p] of Object.entries(doc.products)) {
-    const pct = p.story?.bundle?.discounts[0] ?? p.story?.multi?.discounts[0] ?? 0;
-    products[handle] =
-      pct > 0
-        ? {
-            ...p,
-            variants: p.variants.map((v) =>
-              v.compareAtPrice != null && v.compareAtPrice > v.price ? v : { ...v, compareAtPrice: originalPrice(v.price, pct) },
-            ),
-          }
-        : p;
+    const story = p.story;
+    const pct = story?.bundle?.discounts[0] ?? story?.multi?.discounts[0] ?? 0;
+    if (!(pct > 0) || !story) {
+      products[handle] = p;
+      continue;
+    }
+    const shopVariant = p.variants.find((v) => v.compareAtPrice != null && v.compareAtPrice > v.price);
+    // Real first-step percent from Shopify's compare-at (unrounded, so the original comes back exactly).
+    const real = shopVariant ? (1 - shopVariant.price / shopVariant.compareAtPrice!) * 100 : pct;
+    const basePct = Math.abs(real - pct) > 0.05 ? real : undefined;
+    products[handle] = {
+      ...p,
+      story: {
+        ...story,
+        bundle: story.bundle && basePct != null ? { ...story.bundle, basePct } : story.bundle,
+        multi: story.multi && basePct != null ? { ...story.multi, basePct } : story.multi,
+      },
+      variants: p.variants.map((v) =>
+        v.compareAtPrice != null && v.compareAtPrice > v.price ? v : { ...v, compareAtPrice: originalPrice(v.price, basePct ?? pct) },
+      ),
+    };
   }
   const out = { ...doc, products };
   priced.set(doc, out);

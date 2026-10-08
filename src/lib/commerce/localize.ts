@@ -1,5 +1,5 @@
 import type { ProductView } from "@/lib/commerce/product-view";
-import { originalPrice, round2 } from "@/lib/commerce/tiers";
+import { originalPrice, round2, tierBase } from "@/lib/commerce/tiers";
 
 /** A variant price as Shopify reports it for the visitor's country (see /api/localization/prices). */
 export type LivePrice = { amount: string; currencyCode: string; compareAtAmount: string | null };
@@ -23,7 +23,8 @@ export function localizeProductView(view: ProductView, live: (variantId: string)
   // One product never mixes currencies: wait until every variant (and every add-on variant) has its local price.
   if (!first || [...prices, ...addonPrices, ...multiPrices].some((p) => !p || p.currencyCode !== first.currencyCode)) return view;
 
-  const pct = view.story?.bundle?.discounts[0] ?? view.story?.multi?.discounts[0] ?? 0;
+  const offer = view.story?.bundle ?? view.story?.multi;
+  const pct = offer ? tierBase(offer) : 0;
   const variants = view.variants.map((v, i) => {
     const amount = Number.parseFloat(prices[i]!.amount);
     if (!Number.isFinite(amount)) return v;

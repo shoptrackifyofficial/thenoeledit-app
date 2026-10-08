@@ -216,6 +216,7 @@ export function buildProductView(
           intro: "",
           discounts: record.story.multi.discounts,
           codePrefix: record.story.multi.codePrefix,
+          basePct: record.story.multi.basePct,
         })
       : null,
     addon:
@@ -224,6 +225,7 @@ export function buildProductView(
             ...record.story.addon,
             discounts: addonRecord.story?.multi?.discounts ?? [],
             codePrefix: addonRecord.story?.multi?.codePrefix ?? "",
+            basePct: addonRecord.story?.multi?.basePct,
           })
         : null,
   };

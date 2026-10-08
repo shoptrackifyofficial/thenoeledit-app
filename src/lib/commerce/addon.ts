@@ -26,6 +26,8 @@ export type ViewAddon = {
   /** Percent shown for 1, 2, 3… units across all ribbons (same ladder as the bundle offer), and its coupon label prefix. */
   discounts: number[];
   codePrefix: string;
+  /** First step's real percent from the ribbons' Shopify compare-at price (see lib/commerce/tiers.ts). */
+  basePct?: number;
   productId: string;
   /** Hero image of the add-on product. */
   image: string | null;
@@ -58,7 +60,7 @@ export function parseRibbonLabel(label: string): { ink: string | null; tape: str
 
 export function buildAddonView(
   record: ProductRecord,
-  config: { name: string; intro: string; discounts: number[]; codePrefix: string },
+  config: { name: string; intro: string; discounts: number[]; codePrefix: string; basePct?: number },
 ): ViewAddon {
   const image = record.media.find((m) => m.type === "image");
   return {
@@ -68,6 +70,7 @@ export function buildAddonView(
     href: `/products/${record.handle}`,
     discounts: config.discounts,
     codePrefix: config.codePrefix,
+    ...(config.basePct != null ? { basePct: config.basePct } : {}),
     productId: record.id,
     image: image && image.type === "image" ? image.url : null,
     variants: record.variants.map((v) => {

@@ -16,7 +16,7 @@ import { site } from "@/content/site";
 import { trackCustomizeProduct, trackViewItem } from "@/lib/analytics";
 import type { ProductView, ViewVariant } from "@/lib/commerce/product-view";
 import { localizeProductView } from "@/lib/commerce/localize";
-import { originalPrice, round2, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
+import { originalPrice, round2, tierBase, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
@@ -704,7 +704,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   const ribbonView = view.multi ?? view.addon;
   const ribbonOnly = Boolean(view.multi);
   const [ribbonQty, setRibbonQty] = useState<Record<string, number>>({});
-  const ribbonTiers = ribbonView && ribbonView.discounts.length ? { discounts: ribbonView.discounts, codePrefix: ribbonView.codePrefix } : null;
+  const ribbonTiers = ribbonView && ribbonView.discounts.length ? { discounts: ribbonView.discounts, codePrefix: ribbonView.codePrefix, basePct: ribbonView.basePct } : null;
   const ribbonUnits = ribbonView ? ribbonView.variants.reduce((n, v) => n + (ribbonQty[v.id] ?? 0), 0) : 0;
   const ribbonList = round2(ribbonView ? ribbonView.variants.reduce((n, v) => n + v.price * (ribbonQty[v.id] ?? 0), 0) : 0);
   const ribbonOffer: RibbonOffer = (() => {
@@ -715,7 +715,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
     return {
       units: ribbonUnits,
       total: tierPrice(ribbonList, ribbonTiers, ribbonUnits),
-      compare: pct > 0 ? originalPrice(ribbonList, ribbonTiers.discounts[0]!) : null,
+      compare: pct > 0 ? originalPrice(ribbonList, tierBase(ribbonTiers)) : null,
       pct: pct > 0 ? pct : null,
       code: tierCode(ribbonTiers, ribbonUnits),
     };
@@ -768,7 +768,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bundle?.option, count, selection, extraPicks, view]);
 
-  const tiers = bundle && bundle.discounts.length ? { discounts: bundle.discounts, codePrefix: bundle.codePrefix } : null;
+  const tiers = bundle && bundle.discounts.length ? { discounts: bundle.discounts, codePrefix: bundle.codePrefix, basePct: bundle.basePct } : null;
   const bundleQty = bundleLines.reduce((n, l) => n + l.quantity, 0);
   const bundleList = round2(bundleLines.reduce((s, l) => s + l.variant.price * l.quantity, 0));
   /** What the shopper pays: Shopify's price × quantity, less the bundle step (checkout applies the matching code). */
@@ -812,7 +812,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
       // The original is n × (Shopify price ÷ (1 − first%)); each step's percentage is off that.
       const pct = tierPercent(tiers, n);
       const total = tierPrice(list, tiers, n);
-      return { n, total, unit: Math.floor((total / n) * 100 + 1e-6) / 100, compare: pct > 0 ? originalPrice(list, tiers.discounts[0]!) : null, pct: pct > 0 ? pct : null, code: tierCode(tiers, n) };
+      return { n, total, unit: Math.floor((total / n) * 100 + 1e-6) / 100, compare: pct > 0 ? originalPrice(list, tierBase(tiers)) : null, pct: pct > 0 ? pct : null, code: tierCode(tiers, n) };
     }
     const compareRaw = vs.every((v) => v?.compareAtPrice) ? vs.reduce((t, v) => t + (v!.compareAtPrice ?? 0), 0) : null;
     const compare = compareRaw && compareRaw > list ? round2(compareRaw) : null;
@@ -850,7 +850,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             included: value === basePack || extra === 0,
             // Only the stencil part of the price, per camera, at the bundle size chosen.
             price: tiers ? tierPrice(extra, tiers, count) : extra,
-            original: tiers && extra > 0 ? originalPrice(extra, tiers.discounts[0]!) : null,
+            original: tiers && extra > 0 ? originalPrice(extra, tierBase(tiers)) : null,
           };
         })
       : [];
