@@ -162,7 +162,7 @@ function PackCards({
             <span className="flex min-w-0 flex-1 flex-col">
               <span className="text-[0.95rem] font-semibold">{c.label}</span>
               {c.combo?.compareAtPercent ? (
-                <span className="numeral text-[0.75rem] font-semibold text-berry-600">Save {c.combo.compareAtPercent}%</span>
+                <span className="numeral text-[0.75rem] font-semibold text-berry-600">Save {formatMoney(round2((c.combo.compareAtPrice ?? c.combo.price) - c.combo.price), view.currency)}</span>
               ) : null}
               {c.combo && !c.combo.availableForSale && <span className="text-[0.72rem] text-ink-soft">Sold out</span>}
             </span>
@@ -230,7 +230,7 @@ function PackCards({
                 </span>
                 {c.combo.compareAtPercent ? (
                   <span className="numeral mt-1.5 rounded-md bg-pine-900 px-2 py-0.5 text-[0.7rem] text-snow">
-                    Save {c.combo.compareAtPercent}%
+                    Save {formatMoney(round2((c.combo.compareAtPrice ?? c.combo.price) - c.combo.price), view.currency)}
                   </span>
                 ) : null}
                 {!c.combo.availableForSale && <span className="mt-1 text-[0.72rem] text-ink-soft">Sold out</span>}
@@ -321,15 +321,8 @@ function FreeShippingStrip({ total, currency, ratio = 1 }: { total: number; curr
         <p className="min-w-0 leading-tight">
           {unlocked ? (
             <>
-              <span className="block text-[0.82rem] font-semibold">Free shipping unlocked</span>
-              <span className="block text-[0.7rem] text-ink-soft">{threshold <= 0 ? (
-                  <>
-                    {site.delivery.rate > 0 && <s className="mr-1 text-ink-faint">{formatMoney(round2(site.delivery.rate * ratio), currency)}</s>}
-                    on every order — limited-time offer
-                  </>
-                ) : (
-                  "Applied to this order"
-                )}</span>
+              <span className="block text-[0.82rem] font-semibold">Yah! Free Shipping Unlocked</span>
+              <span className="block text-[0.7rem] text-ink-soft">Applied to this order</span>
             </>
           ) : (
             <>
@@ -466,8 +459,8 @@ function BundlePicker({
           <span className="numeral text-[1.2rem] leading-none font-semibold text-berry-600 tabular-nums">{formatMoney(o.total, currency)}</span>
         </>
       )}
-      {o.pct != null && o.pct > 0 && (
-        <span className="mt-1 rounded-md bg-pine-700 px-1.5 py-0.5 text-[0.66rem] leading-none font-bold text-snow">Save {o.pct}%</span>
+      {o.pct != null && o.pct > 0 && o.compare != null && o.compare > o.total && (
+        <span className="mt-1 rounded-md bg-pine-700 px-1.5 py-0.5 text-[0.66rem] leading-none font-bold text-snow">Save {formatMoney(round2(o.compare - o.total), currency)}</span>
       )}
     </span>
   );
@@ -1174,10 +1167,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             </div>
             {plainOffer.pct != null && plainOffer.compare != null && (
               <div className="flex shrink-0 flex-col items-end gap-1">
-                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {plainOffer.pct}%</span>
-                <span className="text-[0.72rem] font-semibold text-pine-700 tabular-nums">
-                  You save {formatMoney(round2(plainOffer.compare - plainOffer.total), view.currency)}
-                </span>
+                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {formatMoney(round2(plainOffer.compare - plainOffer.total), view.currency)}</span>
               </div>
             )}
           </div>
@@ -1200,10 +1190,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             </div>
             {ribbonOffer.pct != null && ribbonOffer.compare != null && (
               <div className="flex shrink-0 flex-col items-end gap-1">
-                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {ribbonOffer.pct}%</span>
-                <span className="text-[0.72rem] font-semibold text-pine-700 tabular-nums">
-                  You save {formatMoney(round2(ribbonOffer.compare - ribbonOffer.total), view.currency)}
-                </span>
+                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {formatMoney(round2(ribbonOffer.compare - ribbonOffer.total), view.currency)}</span>
               </div>
             )}
           </div>
@@ -1226,10 +1213,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             </div>
             {currentOffer.pct != null && currentOffer.compare != null && (
               <div className="flex shrink-0 flex-col items-end gap-1">
-                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {currentOffer.pct}%</span>
-                <span className="text-[0.72rem] font-semibold text-pine-700 tabular-nums">
-                  You save {formatMoney(round2(currentOffer.compare - currentOffer.total), view.currency)}
-                </span>
+                <span className="numeral rounded-md bg-berry-600 px-2.5 py-1 text-[0.8rem] leading-none font-bold text-snow">Save {formatMoney(round2(currentOffer.compare - currentOffer.total), view.currency)}</span>
               </div>
             )}
           </div>

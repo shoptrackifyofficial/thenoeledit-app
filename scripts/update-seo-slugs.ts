@@ -133,6 +133,11 @@ const SEO: Record<string, { handle?: string; title: string; desc: string }> = {
     title: "Crystal Drop Necklace & Earrings Set",
     desc: `Necklace and earrings set with pink, yellow and green cubic zirconia drops on a copper base. A dressy gift for parties. ${SHIP}`,
   },
+  "15420596912355": {
+    handle: "heated-neck-shoulder-massager",
+    title: "Wireless Heated Neck & Shoulder Massager",
+    desc: `Cordless heated neck and shoulder massager with 3 kneading modes and 2 heat settings. For home or office, a gift for adults. ${SHIP}`,
+  },
 };
 
 async function main() {

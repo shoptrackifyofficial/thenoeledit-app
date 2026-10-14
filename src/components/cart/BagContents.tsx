@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Bag body shared by the drawer and /cart (layout follows the reference
- * store): item cards with photo, variant, price, a "Saved x%" badge from
+ * store): item cards with photo, variant, price, a "Saved $x" badge from
  * Shopify's real compare-at price, a quantity stepper and a bin button; then a
  * floating summary card with free-shipping progress,
  * subtotal / sale savings / total, the checkout button and the payment logos
@@ -149,9 +149,9 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                     ))}
                   </ul>
                   <p className="mt-1.5 flex items-center gap-x-1.5 text-[0.7rem]">
-                    {pct != null && (
+                    {pct != null && original > total && (
                       <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
-                        <Icon name="tag" className="size-3" /> Saved {pct}%
+                        <Icon name="tag" className="size-3" /> Saved {formatMoney(Math.round((original - total) * 100) / 100, currency)}
                       </span>
                     )}
                     {first.couponCode && (
@@ -213,10 +213,10 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                   </p>
                 </div>
 
-                {savedPct != null && (
+                {savedPct != null && compareTotal > line.lineTotal && (
                   <p className="mt-1 flex items-center gap-x-1.5 gap-y-1 text-[0.7rem]">
                     <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
-                      <Icon name="tag" className="size-3" /> Saved {savedPct}%
+                      <Icon name="tag" className="size-3" /> Saved {formatMoney(Math.round((compareTotal - line.lineTotal) * 100) / 100, currency)}
                     </span>
                     {line.couponCode && (
                       <span className="text-ink-soft">
@@ -315,7 +315,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
               )}
               {savings > 0.009 && (
                 <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.68rem] leading-none font-bold text-berry-700 ring-1 ring-berry-100">
-                  <Icon name="tag" className="size-3" /> Saved {Math.round((savings / original) * 100)}%
+                  <Icon name="tag" className="size-3" /> Saved {formatMoney(Math.round(savings * 100) / 100, currency)}
                 </span>
               )}
             </span>

@@ -7,6 +7,56 @@ import { originalPrice } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
+/** The price, compare-at and currency a visitor should see: Shopify's own local price once loaded, the shop price until then. */
+export function useLocalPrice({
+  price: basePrice,
+  compareAtPrice: baseCompare,
+  currency: baseCurrency,
+  variantId,
+  percentOff,
+}: {
+  price: number;
+  compareAtPrice: number | null;
+  currency: string;
+  variantId?: string | null;
+  percentOff?: number | null;
+}) {
+  const { localizedPriceFor, requestPrices, registerBasePrice } = useLocalization();
+  if (variantId) registerBasePrice(variantId, basePrice);
+  useEffect(() => {
+    if (variantId) requestPrices([variantId]);
+  }, [variantId, requestPrices]);
+
+  let price = basePrice;
+  let compareAtPrice = baseCompare;
+  let currency = baseCurrency;
+  const live = variantId ? localizedPriceFor(variantId) : null;
+  const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
+  if (live && Number.isFinite(liveAmount)) {
+    price = liveAmount;
+    currency = live.currencyCode;
+    const liveCompare = live.compareAtAmount != null ? Number.parseFloat(live.compareAtAmount) : NaN;
+    compareAtPrice = Number.isFinite(liveCompare) && liveCompare > liveAmount
+      ? liveCompare
+      : baseCompare != null && percentOff
+        ? originalPrice(liveAmount, percentOff)
+        : null;
+  }
+  return { price, compareAtPrice, currency };
+}
+
+/** The money-off amount ("Save $12.00") in the visitor's currency; renders nothing when the item is not on sale. */
+export function SaveAmount({ prefix = "Save ", ...input }: Parameters<typeof useLocalPrice>[0] & { prefix?: string }) {
+  const { price, compareAtPrice, currency } = useLocalPrice(input);
+  if (compareAtPrice == null || compareAtPrice <= price) return null;
+  return (
+    <>
+      {prefix}
+      {formatMoney(Math.round((compareAtPrice - price) * 100) / 100, currency)}
+    </>
+  );
+}
+
 /**
  * Sale price + compare-at price, struck through, with a screen-reader sentence.
  * Given a `variantId`, it swaps in Shopify's own price for the visitor's country
@@ -33,30 +83,10 @@ export function Price({
   className?: string;
   size?: "xs" | "sm" | "md" | "lg";
   from?: boolean;
-  /** Adds a "Save 33%" chip after the prices (worked out from the price and compare-at, so it follows the visitor's currency). */
+  /** Adds a "Save $12.00" chip after the prices (worked out from the price and compare-at, so it follows the visitor's currency). */
   showSave?: boolean;
 }) {
-  const { localizedPriceFor, requestPrices, registerBasePrice } = useLocalization();
-  if (variantId) registerBasePrice(variantId, basePrice);
-  useEffect(() => {
-    if (variantId) requestPrices([variantId]);
-  }, [variantId, requestPrices]);
-
-  let price = basePrice;
-  let compareAtPrice = baseCompare;
-  let currency = baseCurrency;
-  const live = variantId ? localizedPriceFor(variantId) : null;
-  const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
-  if (live && Number.isFinite(liveAmount)) {
-    price = liveAmount;
-    currency = live.currencyCode;
-    const liveCompare = live.compareAtAmount != null ? Number.parseFloat(live.compareAtAmount) : NaN;
-    compareAtPrice = Number.isFinite(liveCompare) && liveCompare > liveAmount
-      ? liveCompare
-      : baseCompare != null && percentOff
-        ? originalPrice(liveAmount, percentOff)
-        : null;
-  }
+  const { price, compareAtPrice, currency } = useLocalPrice({ price: basePrice, compareAtPrice: baseCompare, currency: baseCurrency, variantId, percentOff });
   const onSale = compareAtPrice != null && compareAtPrice > price;
   return (
     <p className={cn("flex flex-wrap items-baseline gap-x-2 gap-y-0.5", className)}>
@@ -92,7 +122,7 @@ export function Price({
       )}
       {showSave && onSale && (
         <span className="rounded-md bg-berry-50 px-1.5 py-0.5 text-[0.7rem] leading-none font-bold whitespace-nowrap text-berry-700 ring-1 ring-berry-100 tabular-nums">
-          Save {Math.round((1 - price / compareAtPrice!) * 100)}%
+          Save {formatMoney(Math.round((compareAtPrice! - price) * 100) / 100, currency)}
         </span>
       )}
     </p>

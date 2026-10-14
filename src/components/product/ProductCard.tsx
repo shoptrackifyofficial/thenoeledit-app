@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { QuickAdd } from "@/components/product/QuickAdd";
-import { Price } from "@/components/ui/Price";
+import { Price, SaveAmount } from "@/components/ui/Price";
 import type { CardView } from "@/lib/commerce/product-view";
 import { cn } from "@/lib/utils";
 
@@ -49,10 +49,10 @@ export function ProductCard({
           />
         )}
 
-        {card.percentOff != null && card.percentOff > 0 && (
+        {card.percentOff != null && card.percentOff > 0 && card.compareAtPrice != null && (
           <span className="absolute top-2.5 left-2.5 inline-flex -rotate-3 items-center gap-1.5 rounded-[0.35rem_999px_999px_0.35rem] bg-berry-600 py-1.5 pr-3 pl-2 text-[0.74rem] leading-none font-bold text-snow shadow-ribbon">
             {/* gift-tag hole */}
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-surface/85" />Save {card.percentOff}%
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-surface/85" /><SaveAmount price={card.price} compareAtPrice={card.compareAtPrice} currency={card.currency} variantId={card.leadVariantId} percentOff={card.percentOff} />
           </span>
         )}
         {!card.available && (

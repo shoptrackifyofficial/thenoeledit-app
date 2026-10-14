@@ -8,7 +8,7 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { ContentGuard } from "@/components/layout/ContentGuard";
 import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
-import { FlyingSleigh, SnowSky } from "@/components/decor/NightScene";
+import { SnowSky } from "@/components/decor/NightScene";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
@@ -69,7 +69,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <SnowSky />
-        <FlyingSleigh />
+        {/* <FlyingSleigh /> — Santa scroll flight, switched off for now */}
         <LocalizationProvider>
         <CartProvider>
           <Header />
