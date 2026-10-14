@@ -25,18 +25,18 @@ const APPLY = process.argv.includes("--apply");
 const OFFER_DAYS = 4;
 
 const HANDLE = "heated-neck-shoulder-massager";
-const TITLE = "Wireless Heated Neck & Shoulder Massager, Real-Hand Kneading";
+const TITLE = "Wireless Heated 5-Finger Body Massager for Neck, Shoulders, Arms & Legs";
 const BRAND = "The Noel Edit";
-const SEO_TITLE = `Wireless Heated Neck & Shoulder Massager | ${BRAND}`;
+const SEO_TITLE = `5-Finger Body Massager for Neck, Arms & Legs | ${BRAND}`;
 const SEO_DESC =
-  "Cordless heated neck and shoulder massager with 3 kneading modes and 2 heat settings. For home or office, a gift for adults. Free shipping on every order.";
+  "Cordless heated 5-finger body massager for neck, shoulders, arms and legs, with 3 kneading modes and 2 heat settings. Free shipping on every order.";
 
 /** Supplier lifestyle shot (no text overlay) that is not in the Shopify gallery yet. */
 const DESK_SRC = "https://oss.teemdrop.com/goods-admin/2026/05/09/bb7f2358-95e1-48d9-8f1f-e980f175efa3.jpg";
 const DESK_ALT = "Neck massager worn on the shoulders while working at a laptop";
 
 const DESCRIPTION_HTML = [
-  "<p>A proper shoulder rub, on demand. This wireless, rechargeable neck and shoulder massager with heat rests on your shoulders and kneads with soft five-finger silicone hands, the way a real hand would, while a gentle heat settles in. Strap it on, press power and let it work through a long day at the office or a slow evening at home. A thoughtful gift for any adult who carries their day on their shoulders.</p>",
+  "<p>A proper shoulder rub, on demand. This wireless, rechargeable 5-finger body massager with heat rests on your neck and shoulders, moves to your arms and legs, and kneads with soft five-finger silicone hands, the way a real hand would, while a gentle heat settles in. Strap it on, press power and let it work through a long day at the office or a slow evening at home. A thoughtful gift for any adult who carries their day on their shoulders.</p>",
   "<h3>Why you will love it</h3>",
   "<ul>",
   "<li><strong>Real-hand kneading.</strong> Silicone fingers knead and press the way a person would, with a powerful motor behind them.</li>",
@@ -44,7 +44,7 @@ const DESCRIPTION_HTML = [
   "<li><strong>2 heat settings.</strong> Red-light heat pads in the palms add a warming, soothing touch.</li>",
   "<li><strong>Hands-free.</strong> An adjustable strap holds it in place, so your hands stay free to read, type or stir the cocoa.</li>",
   "<li><strong>Cordless.</strong> 2000 mAh rechargeable battery, charged by USB.</li>",
-  "<li><strong>More than a neck massager.</strong> Move it to your arms and other areas for a quick treat.</li>",
+  "<li><strong>A full-body massager.</strong> Move it from your neck and shoulders to your arms, legs and other tired spots.</li>",
   "</ul>",
   "<h3>Specifications</h3>",
   "<ul>",
@@ -65,7 +65,7 @@ const INFO = [
   { label: "Massage modes", value: "3: multi-kneading, pinch massage and deep massage" },
   { label: "Intensity", value: "3 adjustable levels" },
   { label: "Heat", value: "2 settings, with red-light heat pads in the palms" },
-  { label: "Use on", value: "Shoulders and neck. Also works on the arms" },
+  { label: "Use on", value: "Neck and shoulders, arms and legs" },
   { label: "Controls", value: "Power button and heat button. Hold power for 3 seconds to start" },
   { label: "Battery", value: "2000 mAh, rechargeable over USB" },
   { label: "Power", value: "10 W" },
@@ -86,10 +86,11 @@ const INFO = [
 ];
 
 const PERKS = [
-  "Real-hand kneading with 3 massage modes",
-  "2 heat settings for a warming, soothing feel",
-  "Hands-free strap: wear it at home or at your desk",
-  "Rechargeable 2000 mAh battery, charges by USB",
+  "4D kneading massage",
+  "Palm red-light hot compress",
+  "Lightweight and portable",
+  "Imitation manual massage",
+  "Three comfortable massage modes",
 ];
 const GIFT_FOR = "Anyone who carries stress in their neck and shoulders: desk workers, parents, grandparents and gamers";
 

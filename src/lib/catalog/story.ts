@@ -129,7 +129,7 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
   const story: ProductStory = {
     box,
     delivery,
-    shortName: text(j.shortName, 60),
+    shortName: text(j.shortName, 80),
     addon,
     multi,
     optionLabels: labels,

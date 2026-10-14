@@ -1,12 +1,12 @@
 import { Stars } from "@/components/ui/Stars";
 import type { ReviewSummary } from "@/lib/judgeme/types";
 
-/** Stars, the average and the review count in one line (above the product title); links to the full reviews. */
+/** Stars, the average and the review count in one line (on the right of the category line, above the product title); links to the full reviews. */
 export function ReviewRating({ summary }: { summary: ReviewSummary }) {
   return (
     <a
       href="#reviews"
-      className="mt-2 flex w-fit items-center gap-2 text-[0.84rem] text-ink-soft transition-colors hover:text-ink"
+      className="flex w-fit items-center gap-2 text-[0.84rem] text-ink-soft transition-colors hover:text-ink"
       aria-label={`Rated ${summary.average} out of 5 from ${summary.count} review${summary.count === 1 ? "" : "s"}. See reviews`}
     >
       <Stars value={summary.average} starClassName="size-4" />

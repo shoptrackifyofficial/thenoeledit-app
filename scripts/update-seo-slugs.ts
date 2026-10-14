@@ -135,8 +135,8 @@ const SEO: Record<string, { handle?: string; title: string; desc: string }> = {
   },
   "15420596912355": {
     handle: "heated-neck-shoulder-massager",
-    title: "Wireless Heated Neck & Shoulder Massager",
-    desc: `Cordless heated neck and shoulder massager with 3 kneading modes and 2 heat settings. For home or office, a gift for adults. ${SHIP}`,
+    title: "5-Finger Body Massager for Neck, Arms & Legs",
+    desc: `Cordless heated 5-finger body massager for neck, shoulders, arms and legs, with 3 kneading modes and 2 heat settings. ${SHIP}`,
   },
 };
 
