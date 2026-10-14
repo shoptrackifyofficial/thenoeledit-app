@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1600, 1920, 2400],
     imageSizes: [64, 96, 128, 200, 320],
   },
+  // Review pages are read from disk at request time (lib/reviews/local.ts), so ship them with the functions.
+  outputFileTracingIncludes: {
+    "/products/[handle]": ["./data/reviews/**/*"],
+    "/api/reviews": ["./data/reviews/**/*"],
+  },
   experimental: {
     optimizePackageImports: ["yet-another-react-lightbox"],
   },

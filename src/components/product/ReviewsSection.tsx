@@ -100,7 +100,7 @@ export function ReviewsSection({
     ...(photoCount > 0
       ? [{ id: "photo" as const, label: "With photos", count: photoCount }]
       : []),
-    // Every star level is listed, even at 0, so shoppers see the full spread (a 0 chip is disabled).
+    // Every star level is listed, even at 0, and styled like the rest so the spread reads evenly (a 0 chip opens a friendly message instead of being disabled).
     ...STAR_ORDER.map((s) => ({
       id: s as FeedFilter,
       label: `${s} star${s === 1 ? "" : "s"}`,
@@ -160,12 +160,11 @@ export function ReviewsSection({
                   <li key={s}>
                     <button
                       type="button"
-                      disabled={n === 0}
                       onClick={() => chooseFilter(filter === s ? "all" : s)}
                       aria-pressed={filter === s}
                       aria-label={`Show ${s} star reviews, ${n} of ${summary.count}`}
                       className={cn(
-                        "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-[0.8rem] transition-colors disabled:opacity-40",
+                        "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-[0.8rem] transition-colors",
                         filter === s
                           ? "bg-berry-50 font-semibold"
                           : "hover:bg-cream",
@@ -215,10 +214,9 @@ export function ReviewsSection({
                   key={String(c.id)}
                   type="button"
                   onClick={() => chooseFilter(c.id)}
-                  disabled={c.count === 0}
                   aria-pressed={filter === c.id}
                   className={cn(
-                    "rounded-full px-3.5 py-1.5 text-[0.8rem] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-45",
+                    "rounded-full px-3.5 py-1.5 text-[0.8rem] font-semibold transition-colors",
                     filter === c.id
                       ? "bg-berry-600 text-snow shadow-ribbon"
                       : "bg-surface ring-1 ring-line hover:bg-cream",
@@ -229,16 +227,24 @@ export function ReviewsSection({
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-[0.8rem] text-ink-faint tabular-nums">
-              {current.total === 0
-                ? "No reviews match this filter."
-                : `Showing ${from}–${to} of ${current.total} review${current.total === 1 ? "" : "s"}`}
-            </p>
+            {current.total > 0 && (
+              <p className="mt-4 text-[0.8rem] text-ink-faint tabular-nums">
+                {`Showing ${from}–${to} of ${current.total} review${current.total === 1 ? "" : "s"}`}
+              </p>
+            )}
 
             {failed && (
               <p className="mt-3 rounded-xl bg-berry-50 p-4 text-center text-[0.86rem] text-berry-700">
                 We couldn&apos;t load more reviews. Please try again.
               </p>
+            )}
+            {current.total === 0 && !loading && !failed && (
+              <EmptyStars
+                filter={filter}
+                liked={liked}
+                count={summary.count}
+                onSeeBest={() => chooseFilter(5)}
+              />
             )}
             <ul
               className={cn(
@@ -285,15 +291,65 @@ export function ReviewsSection({
   );
 }
 
+/**
+ * What a star filter with no reviews shows instead of a dead button: a short, honest, upbeat note
+ * built from the real spread, and a way to jump straight to the best reviews.
+ */
+function EmptyStars({
+  filter,
+  liked,
+  count,
+  onSeeBest,
+}: {
+  filter: FeedFilter;
+  liked: number;
+  count: number;
+  onSeeBest: () => void;
+}) {
+  const star = typeof filter === "number" ? filter : null;
+  return (
+    <div className="mt-4 rounded-[1.4rem] bg-surface p-6 text-center shadow-soft ring-1 ring-line sm:p-8">
+      <span
+        aria-hidden="true"
+        className="mx-auto grid size-12 place-items-center rounded-full bg-gold-100 text-gold-700"
+      >
+        <Icon name="star" className="size-6 fill-current" strokeWidth={1} />
+      </span>
+      <p className="mt-4 font-display text-[1.25rem] leading-snug">
+        {star ? `No ${star}-star reviews yet` : "No reviews here yet"}
+      </p>
+      <p className="mx-auto mt-2 max-w-md text-[0.92rem] leading-relaxed text-ink-soft">
+        {liked > 0 ? (
+          <>See what they loved about it.</>
+        ) : (
+          "Be one of the first to share what you think."
+        )}
+      </p>
+      {liked > 0 && (
+        <button
+          type="button"
+          onClick={onSeeBest}
+          className="btn btn-outline mt-5 min-h-11 px-5"
+        >
+          Read the 5-star reviews
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ReviewCard({ review: r }: { review: Review }) {
   const [more, setMore] = useState(false);
   const long = r.body.length > 280;
   return (
     <li className="rounded-[1.4rem] bg-surface p-4 shadow-soft ring-1 ring-line sm:p-5">
       <header className="flex items-center gap-3">
-        <ReviewAvatar name={r.author} />
+        <ReviewAvatar name={r.author} src={r.avatar} />
         <div className="min-w-0 flex-1">
-          <ReviewByline review={r} className="flex min-w-0 items-center gap-1.5 text-[0.9rem] leading-none font-semibold" />
+          <ReviewByline
+            review={r}
+            className="flex min-w-0 items-center gap-1.5 text-[0.9rem] leading-none font-semibold"
+          />
           <p className="mt-0.5 leading-none">
             <Stars value={r.rating} starClassName="size-3.5" />
             <span className="sr-only">{r.rating} out of 5 stars</span>

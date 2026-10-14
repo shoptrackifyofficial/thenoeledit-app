@@ -127,7 +127,7 @@ function ReviewSheet({
 
         <div className="overflow-y-auto overscroll-contain px-6 pt-1 pb-8 md:px-8 md:pt-8">
           <header className="flex items-center gap-3 md:pr-10">
-            <ReviewAvatar name={review.author} className="size-11" />
+            <ReviewAvatar name={review.author} src={review.avatar} className="size-11" />
             <div className="min-w-0 flex-1">
               <ReviewByline review={review} className="flex min-w-0 items-center gap-1.5 text-[0.95rem] leading-none font-semibold" />
               <p className="mt-0.5 flex items-center gap-2 leading-none">

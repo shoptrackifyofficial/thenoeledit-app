@@ -76,7 +76,7 @@ export default async function CategoryPage({ params }: Props) {
             </dl>
           </div>
           <div className="order-1 lg:order-2">
-            <div className="relative mx-auto aspect-[16/10] w-full max-w-[520px] overflow-hidden rounded-[1.5rem] shadow-lift ring-[5px] ring-surface lg:aspect-[5/4] lg:rounded-t-full lg:rounded-b-[2rem]">
+            <div className="img-skeleton relative mx-auto aspect-[16/10] w-full max-w-[520px] overflow-hidden rounded-[1.5rem] shadow-lift ring-[5px] ring-surface lg:aspect-[5/4] lg:rounded-t-full lg:rounded-b-[2rem]">
               <Image src={c.image} alt="" fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
             </div>
           </div>

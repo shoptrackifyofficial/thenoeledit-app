@@ -115,7 +115,7 @@ export function PurchaseFeedback({ reviews, className }: { reviews: Review[]; cl
           {slides.map((r, i) => (
             <li key={r.id} aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`} className="relative w-full shrink-0 snap-center snap-always pr-1">
               <div className="flex items-center gap-2.5">
-                <ReviewAvatar name={r.author} className="size-8 text-[0.9rem]" />
+                <ReviewAvatar name={r.author} src={r.avatar} className="size-8 text-[0.9rem]" />
                 <div className="min-w-0">
                   <ReviewByline review={r} />
                   <p className="mt-0.5 leading-none">

@@ -21,8 +21,7 @@ import { getProducts } from "@/lib/catalog";
 import { PurchaseFeedback } from "@/components/product/PurchaseFeedback";
 import { ReviewRating } from "@/components/product/ReviewRating";
 import { ReviewsSection } from "@/components/product/ReviewsSection";
-import { feedPage, photoCount, reviewSetFor } from "@/lib/reviews/feed";
-import { verifiedOnly } from "@/lib/judgeme/reviews";
+import { reviewOverviewFor, reviewPageFor } from "@/lib/reviews/feed";
 import { byDiscount, getCardViews, getProductView } from "@/lib/commerce/views";
 import { formatMoney } from "@/lib/money";
 import { breadcrumbSchema, faqSchema, graph, productSchema } from "@/lib/seo/schema";
@@ -80,10 +79,11 @@ export default async function ProductPage({ params }: Props) {
   if (!data) notFound();
   const { view } = data;
   const payments = await getPaymentMethods();
-  // Judge.me reviews (null when there are none): the same set feeds the three places below.
-  const reviewSet = await reviewSetFor(view.handle);
-  const verified = verifiedOnly(reviewSet);
-  const fiveStar = reviewSet?.reviews.filter((r) => r.rating === 5) ?? [];
+  // Reviews (null when there are none): only the summary, a few featured ones and page one are loaded here;
+  // every other page comes from /api/reviews.
+  const reviewOverview = await reviewOverviewFor(view.handle);
+  const firstReviewPage = reviewOverview ? await reviewPageFor(view.handle, "all", 1) : null;
+  const fiveStar = reviewOverview?.featured ?? [];
 
   const allCards = await getCardViews((r) => r.handle !== view.handle && r.availableForSale);
   const related = allCards.filter((c) => c.category.slug === view.category.slug).slice(0, 4);
@@ -134,7 +134,7 @@ export default async function ProductPage({ params }: Props) {
     <>
       <JsonLd
         data={graph(
-          productSchema(view, verified ? { average: verified.summary.average, count: verified.summary.count } : null),
+          productSchema(view, reviewOverview?.verified ?? null),
           breadcrumbSchema(crumbs),
           faqSchema(productFaqs),
         )}
@@ -161,7 +161,7 @@ export default async function ProductPage({ params }: Props) {
             <Link href={`/shop/${view.category.slug}`} className="eyebrow text-gold-700 hover:text-berry-600">
               {view.category.title}
             </Link>
-            {reviewSet && <ReviewRating summary={reviewSet.summary} />}
+            {reviewOverview && <ReviewRating summary={reviewOverview.summary} />}
             <h1 className="display-lg mt-2 text-wrap text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)]">
               {view.name}
             </h1>
@@ -268,7 +268,7 @@ export default async function ProductPage({ params }: Props) {
       <section aria-labelledby="story-title" className="px-2 sm:px-4">
         <div className="grain relative mx-auto max-w-[1600px] overflow-hidden rounded-[1.75rem] bg-pine-900 py-12 text-snow sm:rounded-[2.25rem] lg:py-16">
         <div className="container-page grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-[420px] overflow-hidden rounded-t-full rounded-b-[2rem] ring-[5px] ring-white/10">
+          <div className="img-skeleton-dark relative mx-auto aspect-[4/5] w-full max-w-[420px] overflow-hidden rounded-t-full rounded-b-[2rem] ring-[5px] ring-white/10">
             {(() => {
               const img = view.gallery.filter((m) => m.type === "image")[1] ?? view.gallery.find((m) => m.type === "image");
               return img && img.type === "image" ? (
@@ -307,8 +307,8 @@ export default async function ProductPage({ params }: Props) {
       />
 
       {/* ── The full review system ── */}
-      {reviewSet && (
-        <ReviewsSection summary={reviewSet.summary} photoCount={photoCount(reviewSet)} initial={feedPage(reviewSet, "all", 1)} handle={view.handle} />
+      {reviewOverview && firstReviewPage && (
+        <ReviewsSection summary={reviewOverview.summary} photoCount={reviewOverview.photoCount} initial={firstReviewPage} handle={view.handle} />
       )}
 
       <DeliveryTimeline />

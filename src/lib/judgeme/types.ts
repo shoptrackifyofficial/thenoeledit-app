@@ -14,6 +14,8 @@ export type Review = {
   /** ISO instant. */
   createdAt: string;
   images: string[];
+  /** Profile picture on our own host (imported reviews only); absent means show the reviewer's initial. */
+  avatar?: string;
   /** Two-letter country code of the reviewer, when Judge.me sends one (it usually does not for imported reviews). */
   country?: string;
   /** Judge.me marked the reviewer as a verified buyer of this store. */

@@ -56,7 +56,7 @@ export default async function ShopPage() {
                   href={`/shop/${c.slug}`}
                   className="group flex items-center gap-2.5 rounded-full bg-surface py-1 pr-4 pl-1 shadow-soft ring-1 ring-line transition-colors hover:bg-berry-600 hover:text-snow"
                 >
-                  <span className="relative size-9 overflow-hidden rounded-full">
+                  <span className="img-skeleton relative size-9 overflow-hidden rounded-full">
                     <Image src={c.image} alt="" fill sizes="40px" className="object-cover" />
                   </span>
                   <span className="text-[0.84rem] font-semibold whitespace-nowrap">{c.title}</span>

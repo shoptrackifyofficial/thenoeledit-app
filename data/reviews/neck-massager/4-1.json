@@ -1,0 +1,111 @@
+{
+  "items": [
+    {
+      "id": "nm-015",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "B**A",
+      "avatar": "/avatars/nm-82a0ffd5.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-13T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-016",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "😍**💯",
+      "avatar": "/avatars/nm-0ef627a8.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-13T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-027",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "a**1",
+      "avatar": "/avatars/nm-e9b4a384.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-12T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-077",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "A**a",
+      "avatar": "/avatars/nm-89c18889.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-08T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-102",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "G**a S**n",
+      "avatar": "/avatars/nm-6f2470bb.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-07T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-121",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "E**n",
+      "avatar": "/avatars/nm-0195142a.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-06T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-137",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "E**c C**a",
+      "avatar": "/avatars/nm-b8133a94.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-05T12:00:00.000Z",
+      "images": ["/reviews/neck-massager/nm-b8133a94-1.webp"],
+      "source": "tiktok"
+    },
+    {
+      "id": "nm-162",
+      "rating": 4,
+      "title": null,
+      "body": "",
+      "author": "A**i",
+      "avatar": "/avatars/nm-891f8683.jpg",
+      "country": "US",
+      "verified": false,
+      "createdAt": "2026-10-03T12:00:00.000Z",
+      "images": [],
+      "source": "tiktok"
+    }
+  ],
+  "total": 28,
+  "page": 1,
+  "pages": 4
+}
