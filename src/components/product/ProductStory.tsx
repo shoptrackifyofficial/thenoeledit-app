@@ -222,7 +222,7 @@ const INFO_GROUPS: { title: string; labels: string[] }[] = [
   { title: "Connect & charge", labels: ["Connection", "Charging", "Resolution"] },
   { title: "Labels & library", labels: ["Labels", "Library", "Durability"] },
   { title: "Ribbon", labels: ["Ribbon"] },
-  { title: "Massage & heat", labels: ["Massage modes", "Intensity", "Heat", "Use on", "Controls"] },
+  { title: "Massage & heat", labels: ["Massage modes", "Intensity", "Heat", "Use on", "Controls", "Design", "Fit"] },
   { title: "Power & battery", labels: ["Battery", "Power", "Input"] },
   { title: "Size, weight & finish", labels: ["Product size", "Weight", "Colour", "Finish"] },
   { title: "Care & safety", labels: ["Care & safety"] },

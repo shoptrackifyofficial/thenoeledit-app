@@ -48,7 +48,7 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
       imageAlt: text(obj(f).imageAlt, 200),
     }))
     .filter((f) => f.image && f.title)
-    .slice(0, 8);
+    .slice(0, 10);
 
   const info = (Array.isArray(j.info) ? j.info : [])
     .map((s) => ({ label: text(obj(s).label, 60), value: text(obj(s).value, 500) }))

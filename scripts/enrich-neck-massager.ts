@@ -8,11 +8,15 @@
  *   - title, handle, SEO title + meta description, clean description HTML
  *   - custom.noel_story (json), custom.perks, custom.gift_for, custom.sale_ends_at
  *   - one extra gallery photo (the "worn at a desk" shot from the supplier description)
+ *   - the DESCRIPTION_IMAGE/ pictures, hosted as Shopify Files and used as creative feature sections
  *   - prices, once only (same rule as import-vendor-products.ts: supplier + 2.99 + 30, round99, compare-at x2;
  *     the `noel-priced` tag stops a re-run from adding the markup again)
  *   - tags noel-edit, category:cosy-home, noel-priced; published to the "TheNoelEdit Headless" channel
  * Idempotent: safe to re-run. Run `npm run shopify:sync` afterwards.
  */
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+
 import { adminRequest } from "../src/lib/shopify/admin";
 
 const ID = "gid://shopify/Product/15420596912355";
@@ -69,6 +73,8 @@ const INFO = [
   { label: "Material", value: "Soft silicone hands and a textured body, with an adjustable strap" },
   { label: "Product size", value: "20 x 17 x 14.3 cm" },
   { label: "Weight", value: "760 g" },
+  { label: "Design", value: "Multi-node massage structure with hand-like silicone fingers and a heat dissipation design" },
+  { label: "Fit", value: "Adjustable strap, suits different body shapes. Wear it at home, at your desk or in a favourite chair" },
   { label: "Colour", value: "Green" },
   { label: "Finish", value: "Glossy (unpainted) or matte (sprayed)" },
   { label: "In the box", value: "Shoulder and neck massager, USB charging cable" },
@@ -146,6 +152,71 @@ async function ensureDeskPhoto(product: Fetched["product"]): Promise<string | nu
   throw new Error("The desk photo did not finish processing in Shopify; re-run to pick it up.");
 }
 
+/**
+ * The supplier "description" pictures kept in DESCRIPTION_IMAGE/, picked by the start of the file name.
+ * Left out on purpose: S840219e7 ("Home / Office / Driving / Exercise"), because it promotes using a
+ * heated massager while driving.
+ */
+const DESC = {
+  masseuse: "S08b1fd6f",
+  compare: "S134ce3b0",
+  controls: "S3f22b0da",
+  adapts: "Scbfbfa9e",
+  lounge: "Sae1d0a88",
+  humanTouch: "Sb9c2507f",
+  heat: "Se5fe8540",
+  product: "S8d472b5c", // clean product shot, used for the "how to use" section
+} as const;
+
+/** Shopify's hosted copy of a DESCRIPTION_IMAGE file, uploading it (as a File, not gallery media) if needed. */
+async function hostDescriptionImage(prefix: string, preview: boolean): Promise<string | null> {
+  // The local folder is only needed for the first upload; once the picture is a Shopify File it is found by name.
+  const file = existsSync("DESCRIPTION_IMAGE") ? readdirSync("DESCRIPTION_IMAGE").find((f) => f.startsWith(prefix)) : undefined;
+  const stem = file ? file.replace(/\.jpe?g$/i, "") : prefix;
+  const find = async () => {
+    const r = await adminRequest<{ files: { nodes: { fileStatus?: string; image?: { url: string } | null }[] } }>(
+      `query($q: String!) { files(first: 5, query: $q) { nodes { ... on MediaImage { fileStatus image { url } } } } }`,
+      { q: `filename:${stem}*` },
+    );
+    const hit = r.files.nodes.find((n) => n.fileStatus === "READY" && n.image?.url);
+    return hit ? hit.image!.url.split("?")[0]! : null;
+  };
+  const existing = await find();
+  if (existing || preview) return existing;
+  if (!file) throw new Error(`${prefix} is not on Shopify yet and DESCRIPTION_IMAGE/ is missing, so it cannot be uploaded`);
+
+  const path = join("DESCRIPTION_IMAGE", file);
+  const staged = await adminRequest<{
+    stagedUploadsCreate: { stagedTargets: { url: string; resourceUrl: string; parameters: { name: string; value: string }[] }[]; userErrors: { message: string }[] };
+  }>(
+    `mutation($input: [StagedUploadInput!]!) {
+      stagedUploadsCreate(input: $input) { stagedTargets { url resourceUrl parameters { name value } } userErrors { message } }
+    }`,
+    { input: [{ filename: file, mimeType: "image/jpeg", resource: "IMAGE", fileSize: String(statSync(path).size), httpMethod: "POST" }] },
+  );
+  const serr = staged.stagedUploadsCreate.userErrors[0]?.message;
+  if (serr) throw new Error(`stagedUploadsCreate: ${serr}`);
+  const target = staged.stagedUploadsCreate.stagedTargets[0]!;
+  const form = new FormData();
+  for (const p of target.parameters) form.append(p.name, p.value);
+  form.append("file", new Blob([readFileSync(path)], { type: "image/jpeg" }), file);
+  const up = await fetch(target.url, { method: "POST", body: form });
+  if (!up.ok) throw new Error(`upload failed: ${up.status} ${(await up.text()).slice(0, 200)}`);
+
+  const created = await adminRequest<{ fileCreate: { files: { id: string }[]; userErrors: { message: string }[] } }>(
+    `mutation($files: [FileCreateInput!]!) { fileCreate(files: $files) { files { id } userErrors { message } } }`,
+    { files: [{ originalSource: target.resourceUrl, contentType: "IMAGE", alt: "Neck massager" }] },
+  );
+  const cerr = created.fileCreate.userErrors[0]?.message;
+  if (cerr) throw new Error(`fileCreate: ${cerr}`);
+  for (let i = 0; i < 40; i++) {
+    await new Promise((r) => setTimeout(r, 1500));
+    const url = await find();
+    if (url) return url;
+  }
+  throw new Error(`Timed out waiting for Shopify to process ${file}`);
+}
+
 async function main() {
   const product = await fetchProduct();
   const media = toMedia(product);
@@ -153,6 +224,9 @@ async function main() {
   const allMedia = desk ? toMedia(await fetchProduct()) : media;
   const img = (k: keyof typeof FILE) => pickByFile(allMedia, FILE[k]);
 
+  // Creative sections, each matching its photo. Photos come from the product's own Shopify media or from the
+  // supplier "description" pictures in DESCRIPTION_IMAGE/, hosted as Shopify Files so the page loads them from Shopify.
+  const hosted = async (prefix: keyof typeof DESC) => (await hostDescriptionImage(DESC[prefix], !APPLY)) ?? "";
   const candidates = [
     {
       eyebrow: "Real kneading",
@@ -162,18 +236,39 @@ async function main() {
       imageAlt: "A woman relaxing with the massager's silicone hands kneading either side of her neck",
     },
     {
+      eyebrow: "The human touch, reinvented",
+      title: "A multi-node massage structure",
+      text: "Several massage points work together like real hands, with a built-in heat dissipation design that keeps the body comfortable to wear.",
+      image: await hosted("humanTouch"),
+      imageAlt: "A silicone massage hand pressing on a shoulder, with icons for multi-node structure, hand-like touch and smart heat",
+    },
+    {
       eyebrow: "Warm and soothing",
       title: "Heat in the palms",
-      text: "Red-light heat pads sit in the palms and warm the area as it kneads. Choose between 2 heat settings to suit the evening.",
-      image: img("closeup") ?? "",
-      imageAlt: "Close-up of the massager on a shoulder with the two glowing palm heat pads",
+      text: "Glowing heat pads sit in the palms and warm the area as it kneads. Choose between 2 heat settings to suit the evening.",
+      image: await hosted("heat"),
+      imageAlt: "A woman holding the massager against her neck with the two palm heat pads glowing",
+    },
+    {
+      eyebrow: "Lighter, livelier",
+      title: "Lighter than a shawl-style massager",
+      text: "At 760 g it sits lightly on the shoulders, with moving hands and palm heat instead of a heavy single-pad wrap.",
+      image: await hosted("compare"),
+      imageAlt: "New hand-style massager next to a heavier shawl-style massager, with vigorous massage and palm heat labels",
+    },
+    {
+      eyebrow: "Adapts to you",
+      title: "Fits your shape, finds your spot",
+      text: "An adjustable strap and soft silicone hands suit different body shapes. Shift it to the spot that needs attention.",
+      image: await hosted("adapts"),
+      imageAlt: "Two close-ups of the massager worn on the neck and shoulder with universal fit and targeted relief labels",
     },
     {
       eyebrow: "Easy controls",
       title: "Two buttons, nothing to learn",
-      text: "One button for power, one for heat, with the charging port between them. Hold power for 3 seconds to start.",
-      image: img("controls") ?? "",
-      imageAlt: "Collage of the massager's heat pads, textured body, control buttons and silicone hand",
+      text: "One touch button for power, one for heat, with the charging port between them. Hold power for 3 seconds to start.",
+      image: await hosted("controls"),
+      imageAlt: "The massager worn on the shoulder with its strap, and the power and heat touch buttons",
     },
     ...(desk
       ? [
@@ -186,11 +281,25 @@ async function main() {
           },
         ]
       : []),
+    {
+      eyebrow: "At home",
+      title: "Your personal masseuse",
+      text: "Keep it on the bedside table, ready for the end of a long day or the first stiff morning.",
+      image: await hosted("masseuse"),
+      imageAlt: "The massager on a bedside table beside a mug and a book, with a person looking out of the window",
+    },
+    {
+      eyebrow: "Unwind",
+      title: "Recline, close your eyes, let it work",
+      text: "Cordless, so you can settle into your favourite chair and let the kneading and warmth do the rest.",
+      image: await hosted("lounge"),
+      imageAlt: "A woman reclining in a lounge chair with the massager on her neck and shoulders",
+    },
   ];
   // A photo taken out of the gallery in Shopify drops its section instead of leaving a broken image.
   const features = candidates.filter((f): f is typeof f & { image: string } => Boolean(f.image));
-  for (const f of candidates) if (!f.image) console.warn(`! skipped feature "${f.title}": its photo is no longer on the product`);
-  const howImage = img("product") ?? pickByFile(allMedia, "162856e7");
+  for (const f of candidates) if (!f.image) console.warn(`! skipped feature "${f.title}": its photo is not available (removed from the gallery, or not uploaded yet: run with --apply)`);
+  const howImage = (await hosted("product")) || img("product") || pickByFile(allMedia, "162856e7");
 
   const story = {
     version: 2,

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "syncedAt": "2026-10-14T09:08:54.590Z",
+  "syncedAt": "2026-10-14T09:40:53.782Z",
   "shop": {
     "domain": "trackify-com.myshopify.com",
     "name": "Trackify",
@@ -20,7 +20,7 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-10-14T06:09:40Z",
-      "updatedAt": "2026-10-14T09:08:50Z",
+      "updatedAt": "2026-10-14T09:40:42Z",
       "descriptionHtml": "<p>A proper shoulder rub, on demand. This wireless, rechargeable neck and shoulder massager with heat rests on your shoulders and kneads with soft five-finger silicone hands, the way a real hand would, while a gentle heat settles in. Strap it on, press power and let it work through a long day at the office or a slow evening at home. A thoughtful gift for any adult who carries their day on their shoulders.</p>\n<h3>Why you will love it</h3>\n<ul>\n<li>\n<strong>Real-hand kneading.</strong> Silicone fingers knead and press the way a person would, with a powerful motor behind them.</li>\n<li>\n<strong>3 massage modes.</strong> Multi-kneading, pinch massage and deep massage, each with 3 adjustable intensity levels.</li>\n<li>\n<strong>2 heat settings.</strong> Red-light heat pads in the palms add a warming, soothing touch.</li>\n<li>\n<strong>Hands-free.</strong> An adjustable strap holds it in place, so your hands stay free to read, type or stir the cocoa.</li>\n<li>\n<strong>Cordless.</strong> 2000 mAh rechargeable battery, charged by USB.</li>\n<li>\n<strong>More than a neck massager.</strong> Move it to your arms and other areas for a quick treat.</li>\n</ul>\n<h3>Specifications</h3>\n<ul>\n<li>Power: 10 W, input 5 V / 2 A</li>\n<li>Battery: 2000 mAh, rechargeable</li>\n<li>Massage: 3 modes, 3 intensity levels</li>\n<li>Heat: 2 settings</li>\n<li>Size: 20 x 17 x 14.3 cm</li>\n<li>Weight: 760 g</li>\n<li>Finish: glossy or matte</li>\n</ul>\n<h3>In the box</h3>\n<ul>\n<li>Shoulder and neck massager x 1</li>\n<li>USB charging cable x 1</li>\n</ul>\n<p><em>A wellness product, not a medical device. Do not use on broken skin or while asleep. If you are pregnant, have a pacemaker or a medical condition, check with your doctor first.</em></p>",
       "seo": {
         "title": "Wireless Heated Neck & Shoulder Massager | The Noel Edit",
@@ -180,7 +180,7 @@
           "title": "Strap on, press, unwind",
           "accent": "unwind",
           "intro": "No app, no setup. Put it on your shoulders and let it work.",
-          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/162856e7-d4bc-4fe0-b81a-789cce8168bc.jpg",
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S8d472b5ce74f4362ba695320e82661b5G.jpg",
           "imageAlt": "The green shoulder and neck massager with its silicone hands",
           "steps": [
             {
@@ -211,11 +211,39 @@
             "imageAlt": "A woman relaxing with the massager's silicone hands kneading either side of her neck"
           },
           {
+            "eyebrow": "The human touch, reinvented",
+            "title": "A multi-node massage structure",
+            "text": "Several massage points work together like real hands, with a built-in heat dissipation design that keeps the body comfortable to wear.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sb9c2507f2ee34d459651be2d59e85153T.jpg",
+            "imageAlt": "A silicone massage hand pressing on a shoulder, with icons for multi-node structure, hand-like touch and smart heat"
+          },
+          {
             "eyebrow": "Warm and soothing",
             "title": "Heat in the palms",
-            "text": "Red-light heat pads sit in the palms and warm the area as it kneads. Choose between 2 heat settings to suit the evening.",
-            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/cd44b8da-8639-4787-89ba-d58221bea726.jpg",
-            "imageAlt": "Close-up of the massager on a shoulder with the two glowing palm heat pads"
+            "text": "Glowing heat pads sit in the palms and warm the area as it kneads. Choose between 2 heat settings to suit the evening.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se5fe854060d240c68212a8ce9088e955k.jpg",
+            "imageAlt": "A woman holding the massager against her neck with the two palm heat pads glowing"
+          },
+          {
+            "eyebrow": "Lighter, livelier",
+            "title": "Lighter than a shawl-style massager",
+            "text": "At 760 g it sits lightly on the shoulders, with moving hands and palm heat instead of a heavy single-pad wrap.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S134ce3b019954bb8bbdb9b89e99b11ba2.jpg",
+            "imageAlt": "New hand-style massager next to a heavier shawl-style massager, with vigorous massage and palm heat labels"
+          },
+          {
+            "eyebrow": "Adapts to you",
+            "title": "Fits your shape, finds your spot",
+            "text": "An adjustable strap and soft silicone hands suit different body shapes. Shift it to the spot that needs attention.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Scbfbfa9e95f1486dbd2c2647a1eab1ca1.jpg",
+            "imageAlt": "Two close-ups of the massager worn on the neck and shoulder with universal fit and targeted relief labels"
+          },
+          {
+            "eyebrow": "Easy controls",
+            "title": "Two buttons, nothing to learn",
+            "text": "One touch button for power, one for heat, with the charging port between them. Hold power for 3 seconds to start.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S3f22b0da7bac45c1801401f8255b05739.jpg",
+            "imageAlt": "The massager worn on the shoulder with its strap, and the power and heat touch buttons"
           },
           {
             "eyebrow": "Hands-free",
@@ -223,6 +251,20 @@
             "text": "An adjustable strap holds it on your shoulders, so you can type, read or watch a film while it works. Cordless, with a 2000 mAh battery.",
             "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/bb7f2358-95e1-48d9-8f1f-e980f175efa3.jpg",
             "imageAlt": "Neck massager worn on the shoulders while working at a laptop"
+          },
+          {
+            "eyebrow": "At home",
+            "title": "Your personal masseuse",
+            "text": "Keep it on the bedside table, ready for the end of a long day or the first stiff morning.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/S08b1fd6fdde74bddbcb0aaad01497e26M.jpg",
+            "imageAlt": "The massager on a bedside table beside a mug and a book, with a person looking out of the window"
+          },
+          {
+            "eyebrow": "Unwind",
+            "title": "Recline, close your eyes, let it work",
+            "text": "Cordless, so you can settle into your favourite chair and let the kneading and warmth do the rest.",
+            "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sae1d0a885ec64b9094350a06bbb0ff44O.jpg",
+            "imageAlt": "A woman reclining in a lounge chair with the massager on her neck and shoulders"
           }
         ],
         "info": [
@@ -269,6 +311,14 @@
           {
             "label": "Weight",
             "value": "760 g"
+          },
+          {
+            "label": "Design",
+            "value": "Multi-node massage structure with hand-like silicone fingers and a heat dissipation design"
+          },
+          {
+            "label": "Fit",
+            "value": "Adjustable strap, suits different body shapes. Wear it at home, at your desk or in a favourite chair"
           },
           {
             "label": "Colour",
