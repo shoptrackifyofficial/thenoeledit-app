@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
     loaderFile: "./src/lib/image-loader.ts",
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1600, 1920, 2400],
     imageSizes: [64, 96, 128, 200, 320],
+    // Next 16 requires every `quality` prop value to be listed. 75 is the default; 70 is the hero poster.
+    qualities: [70, 75],
   },
   // Review pages are read from disk at request time (lib/reviews/local.ts), so ship them with the functions.
   outputFileTracingIncludes: {
