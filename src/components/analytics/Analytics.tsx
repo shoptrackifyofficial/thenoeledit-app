@@ -1,5 +1,6 @@
 import Script from "next/script";
 
+import { ClarityAnalytics } from "@/components/analytics/ClarityAnalytics";
 import { MetaTracker } from "@/components/analytics/MetaTracker";
 
 /**
@@ -19,7 +20,6 @@ export function Analytics() {
   const ga = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const meta = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const tiktok = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
-  const clarity = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
   const safe = (v: string | undefined) => (v && /^[A-Za-z0-9_-]{4,40}$/.test(v) ? v : null);
 
   return (
@@ -48,11 +48,7 @@ export function Analytics() {
           {`!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;var o=d.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load('${safe(tiktok)}');ttq.page();}(window,document,'ttq');`}
         </Script>
       )}
-      {safe(clarity) && (
-        <Script id="clarity" strategy="lazyOnload">
-          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${safe(clarity)}");`}
-        </Script>
-      )}
+      <ClarityAnalytics />
     </>
   );
 }
