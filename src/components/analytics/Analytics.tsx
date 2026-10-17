@@ -1,5 +1,6 @@
 import Script from "next/script";
 
+import { AttributionCapture } from "@/components/analytics/AttributionCapture";
 import { ClarityAnalytics } from "@/components/analytics/ClarityAnalytics";
 import { MetaTracker } from "@/components/analytics/MetaTracker";
 
@@ -24,6 +25,7 @@ export function Analytics() {
 
   return (
     <>
+      <AttributionCapture />
       {safe(meta) && <MetaTracker />}
       {safe(gtm) && (
         <Script id="gtm" strategy="lazyOnload">

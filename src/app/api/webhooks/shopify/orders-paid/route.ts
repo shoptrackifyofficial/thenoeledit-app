@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { site } from "@/content/site";
+import { attributionFromAttributes, eventParams } from "@/lib/attribution";
 import { categories } from "@/content/categories";
 import { categorySlugOf, getAllProducts as getProducts } from "@/lib/catalog";
 import { gaConfig, sendGaPurchase, type GaItem } from "@/lib/ga/mp";
@@ -125,6 +126,7 @@ export async function POST(request: NextRequest) {
   const fbp = attrs.get("_fbp");
   const fbc = attrs.get("_fbc");
   const eid = attrs.get("_eid");
+  const utm = attributionFromAttributes(attrs);
 
   const bill = order.billing_address ?? {};
   const ship = order.shipping_address ?? {};
@@ -177,6 +179,8 @@ export async function POST(request: NextRequest) {
     discount: num(order.total_discounts),
     coupon: order.discount_codes?.[0]?.code || undefined,
     categories: cats,
+    // Ad attribution carried from the landing page (campaign / ad set / ad ids from the Meta URL parameters).
+    ...eventParams(utm),
   };
 
   // ── GA4 purchase: same order, GA's own field names ────────────────────────────
@@ -233,6 +237,15 @@ export async function POST(request: NextRequest) {
           coupon,
           items: gaItems,
           userData: Object.keys(gaUser).length ? gaUser : undefined,
+          extra: Object.fromEntries(
+            Object.entries({
+              source: utm.utm_source,
+              medium: utm.utm_medium,
+              campaign: utm.utm_campaign,
+              term: utm.utm_term,
+              content: utm.utm_content,
+            }).filter(([, v]) => v),
+          ),
         },
         testMode, // test mode: validate against GA's debug endpoint instead of recording a real purchase
       ).catch((error: unknown) => ({ ok: false as const, error: error instanceof Error ? error.message : String(error) }))

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { ATTRIBUTION_COOKIE, attributeName, parseAttribution } from "@/lib/attribution";
 import { getProducts, isDemoCatalog, variantIndex } from "@/lib/catalog";
 import { site } from "@/content/site";
 import { checkoutCode } from "@/lib/commerce/tiers";
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest) {
   if (typeof body.externalId === "string" && /^[a-f0-9]{64}$/.test(body.externalId)) {
     attributes.push({ key: "_eid", value: body.externalId });
   }
+  // Ad UTMs saved on landing (components/analytics/AttributionCapture). Re-validated here: cookies are untrusted.
+  const attribution = parseAttribution(request.cookies.get(ATTRIBUTION_COOKIE)?.value);
+  for (const [key, value] of Object.entries(attribution)) attributes.push({ key: attributeName(key), value });
 
   // Bundle step: shoppers pay Shopify's price less the step's share (see lib/commerce/tiers.ts), which
   // Shopify applies through a discount code. The code is chosen here from the validated quantities —
@@ -115,7 +119,11 @@ export async function POST(request: NextRequest) {
     }
     const url = new URL(cart.checkoutUrl);
     if (url.protocol !== "https:") throw new Error("Unexpected checkout URL");
-    return json({ checkoutUrl: cart.checkoutUrl });
+    // Also put the UTMs on the checkout URL so Shopify's own session/visit tracking sees them.
+    for (const [key, value] of Object.entries(attribution)) {
+      if (!url.searchParams.has(key)) url.searchParams.set(key, value);
+    }
+    return json({ checkoutUrl: url.toString() });
   } catch (error) {
     console.error("[cart/checkout] cartCreate failed:", (error as Error).message);
     return json({ error: "We couldn't start checkout. Please try again." }, 502);
