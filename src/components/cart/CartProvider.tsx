@@ -34,6 +34,21 @@ import {
  */
 
 export type BagLine = { variantId: string; quantity: number };
+type CheckoutResult = { ok: true; checkoutUrl: string } | { ok: false; error: string };
+
+/** Lets the browser open the connection to Shopify's checkout before the redirect. */
+function preconnect(url: string) {
+  try {
+    const origin = new URL(url).origin;
+    if (document.head.querySelector(`link[rel="preconnect"][href="${origin}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "preconnect";
+    link.href = origin;
+    document.head.appendChild(link);
+  } catch {
+    /* only costs the head start */
+  }
+}
 export type ResolvedLine = BagLine &
   BagVariant & {
     /** What the shopper pays for this line (after any tier / sale discount). */
@@ -74,6 +89,8 @@ type CartContextValue = {
   setQuantity: (variantId: string, quantity: number) => void;
   remove: (variantId: string) => void;
   checkout: () => Promise<{ ok: true } | { ok: false; error: string }>;
+  /** Creates the Shopify checkout for the bag as it is now, ahead of the Checkout click (see `checkout`). */
+  prepareCheckout: () => void;
   announcement: string;
 };
 
@@ -371,32 +388,63 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
 
+  // The Shopify checkout is created while the shopper looks at the bag (see BagContents), so the Checkout
+  // click is only a redirect instead of a wait on our API route and Shopify. A prepared checkout belongs to
+  // one exact bag (variant and quantity per line); any change prepares a new one, and a click on a bag whose
+  // checkout is not ready yet joins the request already in flight.
+  const bagKey = lines.map((l) => `${l.variantId}*${l.quantity}`).join("|");
+  const linesRef = useRef(lines);
+  linesRef.current = lines;
+  const prepared = useRef<{ key: string; promise: Promise<CheckoutResult> } | null>(null);
+
+  const createCart = useCallback(async (): Promise<CheckoutResult> => {
+    try {
+      const res = await fetch("/api/cart/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lines: linesRef.current.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
+          externalId: getExternalId(),
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { checkoutUrl?: string; error?: string };
+      if (!res.ok || !data.checkoutUrl) return { ok: false, error: data.error ?? "We couldn't start checkout. Please try again." };
+      return { ok: true, checkoutUrl: data.checkoutUrl };
+    } catch {
+      return { ok: false, error: "Network error — please check your connection and try again." };
+    }
+  }, []);
+
+  const prepareCheckout = useCallback(() => {
+    if (!bagKey || prepared.current?.key === bagKey) return;
+    const promise = createCart();
+    prepared.current = { key: bagKey, promise };
+    void promise.then((result) => {
+      if (result.ok) preconnect(result.checkoutUrl);
+      else if (prepared.current?.promise === promise) prepared.current = null;
+    });
+  }, [bagKey, createCart]);
+
   const checkout = useCallback(async (): Promise<{ ok: true } | { ok: false; error: string }> => {
     if (lines.length === 0) return { ok: false, error: "Your bag is empty." };
     trackBeginCheckout(
       lines.map((l) => toItem(l, l.quantity)),
       currency,
     );
-    try {
-      const res = await fetch("/api/cart/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lines: lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
-          externalId: getExternalId(),
-        }),
-      });
-      const data = (await res.json().catch(() => ({}))) as { checkoutUrl?: string; error?: string };
-      if (!res.ok || !data.checkoutUrl) {
-        return { ok: false, error: data.error ?? "We couldn't start checkout. Please try again." };
-      }
-      window.location.assign(data.checkoutUrl);
-      return { ok: true };
-    } catch {
-      return { ok: false, error: "Network error — please check your connection and try again." };
+    // The checkout made ahead for this exact bag; a failed one is retried once, live.
+    const ahead = prepared.current?.key === bagKey ? prepared.current.promise : null;
+    let result = ahead ? await ahead : null;
+    if (!result?.ok) {
+      const fresh = createCart();
+      prepared.current = { key: bagKey, promise: fresh };
+      result = await fresh;
+      if (!result.ok && prepared.current?.promise === fresh) prepared.current = null;
     }
+    if (!result.ok) return result;
+    window.location.assign(result.checkoutUrl);
+    return { ok: true };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines, currency]);
+  }, [lines, currency, bagKey, createCart]);
 
   const open = useCallback(() => {
     setOpen(true);
@@ -425,9 +473,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setQuantity,
       remove,
       checkout,
+      prepareCheckout,
       announcement,
     }),
-    [lines, count, subtotal, savings, currency, freeShipping, isOpen, hydrated, loading, catalog, open, close, add, addBundle, removeMany, setQuantity, remove, checkout, announcement],
+    [lines, count, subtotal, savings, currency, freeShipping, isOpen, hydrated, loading, catalog, open, close, add, addBundle, removeMany, setQuantity, remove, checkout, prepareCheckout, announcement],
   );
 
   return (

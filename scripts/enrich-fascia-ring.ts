@@ -99,11 +99,11 @@ const INFO = [
 ];
 
 const PERKS = [
-  "5 vibration levels, one button",
-  "Handheld or wearable with the belt",
-  "Rechargeable over USB-C",
-  "Compact 13 x 13 cm ring",
-  "Waist, arms, legs and back",
+  "Turbo-Vibe Technology: Visible Shaping Faster",
+  "9 Vibration Modes – 6 Steady + 3 Rhythmic Patterns",
+  "Hands-Free All-Zone Toning",
+  "Portable & Travel-Ready",
+  "Perfect Gift For Anyone",
 ];
 const GIFT_FOR =
   "Anyone who sits a lot or loves a workout: gym-goers, desk workers, new year fitness starters and self-care fans";

@@ -21,6 +21,7 @@ import { getProducts } from "@/lib/catalog";
 import { PurchaseFeedback } from "@/components/product/PurchaseFeedback";
 import { ReviewRating } from "@/components/product/ReviewRating";
 import { TrustedBy } from "@/components/product/TrustedBy";
+import { SaleCountdown } from "@/components/product/SaleCountdown";
 import { ReviewsSection } from "@/components/product/ReviewsSection";
 import { reviewOverviewFor, reviewPageFor } from "@/lib/reviews/feed";
 import { byDiscount, getCardViews, getProductView } from "@/lib/commerce/views";
@@ -63,16 +64,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   };
 }
-
-/** Keyword → icon for perk bullets (perks come from the Shopify `custom.perks` metafield). */
-const PERK_ICONS: [RegExp, IconName][] = [
-  [/wrap|box|gift|ribbon|tin|case/i, "gift"],
-  [/hour|battery|charge|last|warm|cold/i, "clock"],
-  [/safe|tested|hypoallergenic|warranty|resistan/i, "shield"],
-  [/soft|plush|cashmere|silk|velvet/i, "heart"],
-  [/scent|fir|clove|cocoa|flavour|flavor|baked/i, "sparkle"],
-];
-const perkIcon = (perk: string): IconName => PERK_ICONS.find(([re]) => re.test(perk))?.[1] ?? "check";
 
 export default async function ProductPage({ params }: Props) {
   const { handle } = await params;
@@ -141,6 +132,9 @@ export default async function ProductPage({ params }: Props) {
         )}
       />
 
+      {/* Offer countdown under the navbar: the merchant's real deadline (custom.sale_ends_at), shown first, as on HimVolt. */}
+      {view.offerEndsAt && <SaleCountdown endsAt={view.offerEndsAt} variant="strip" />}
+
       {/* ── Section 1: gallery + buy box ─────────────────────────────── */}
       <div className="container-page pt-4 pb-12 md:pt-6 lg:pb-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
@@ -178,11 +172,11 @@ export default async function ProductPage({ params }: Props) {
             )}
 
             {view.perks.length > 0 && (
-              <ul className="mt-6 grid grid-cols-1 gap-x-4 gap-y-2.5 sm:grid-cols-2">
+              <ul className="mt-6 grid grid-cols-1 gap-y-2.5">
                 {view.perks.map((perk) => (
                   <li key={perk} className="flex items-start gap-2.5 text-[0.9rem]">
-                    <span aria-hidden="true" className="mt-px grid size-5.5 shrink-0 place-items-center rounded-full bg-berry-50 text-berry-600">
-                      <Icon name={perkIcon(perk)} className="size-3" strokeWidth={2} />
+                    <span aria-hidden="true" className="mt-px grid size-5.5 shrink-0 place-items-center rounded-full bg-berry-600 text-snow">
+                      <Icon name="check" className="size-3" strokeWidth={3} />
                     </span>
                     {perk}
                   </li>

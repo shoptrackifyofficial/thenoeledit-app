@@ -43,7 +43,7 @@ function headline(totalHours: number): string {
  * bar under the shipping strip; from `sm` a two-line box beside it. `compact` is
  * a one-line version for the bag.
  */
-export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { endsAt: string; compact?: boolean; variant?: "box" | "banner" }) {
+export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { endsAt: string; compact?: boolean; variant?: "box" | "banner" | "strip" }) {
   const target = Date.parse(endsAt);
   const [left, setLeft] = useState<ReturnType<typeof remaining>>(null);
 
@@ -57,11 +57,6 @@ export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { en
 
   const clock = [left.hours, left.minutes, left.seconds];
   const label = headline(left.totalHours);
-  const days = left.days > 0 && (
-    <span className="rounded bg-berry-600 px-1.5 py-[0.2rem] text-[0.6rem] leading-none font-bold tracking-[0.08em] text-snow uppercase">
-      {left.days}d
-    </span>
-  );
   const digits = (
     <span className="numeral flex items-center gap-0.5 font-bold tabular-nums" aria-hidden="true">
       {clock.map((v, i) => (
@@ -93,6 +88,31 @@ export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { en
     );
   }
 
+  if (variant === "strip") {
+    // A full-width strip right under the navbar at the top of the product page (the top announcement bar is
+    // hidden there), so the deadline is the first thing seen. Same layout as HimVolt's: clock, "Offer ends in",
+    // then the digits in small boxes. Screen readers get one plain sentence instead of the ticking digits.
+    return (
+      <div className="bg-berry-600 text-snow" role="timer" aria-live="off">
+        <p className="container-page flex items-center justify-center gap-3 py-2.5 text-[0.9rem] font-medium">
+          <Icon name="clock" className="size-4 shrink-0" />
+          <span>Offer ends in</span>
+          <span className="numeral flex items-center gap-1 font-semibold tabular-nums" aria-hidden="true">
+            {/* Days are not shown: the hours run past 24 instead (HH:MM:SS), as asked.
+            {left.days > 0 && <span>{left.days}d</span>} */}
+            {[Math.floor(left.totalHours), left.minutes, left.seconds].map((v, i) => (
+              <span key={i} className="flex items-center gap-1">
+                {i > 0 && <span className="opacity-70">:</span>}
+                <span className="min-w-8 rounded-md bg-snow/15 px-1.5 py-0.5 text-center">{pad(v)}</span>
+              </span>
+            ))}
+          </span>
+          {spoken}
+        </p>
+      </div>
+    );
+  }
+
   if (variant === "banner") {
     // Inline, for the announcement bar at the very top of every page.
     return (
@@ -112,6 +132,18 @@ export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { en
     );
   }
 
+  // The box above the Add to bag button counts plain hours too (HH:MM:SS), with no days pill.
+  const hoursDigits = (
+    <span className="numeral flex items-center gap-0.5 font-bold tabular-nums" aria-hidden="true">
+      {[Math.floor(left.totalHours), left.minutes, left.seconds].map((v, i) => (
+        <span key={i} className="flex items-center gap-0.5">
+          {i > 0 && <span className="opacity-60">:</span>}
+          <span className="min-w-5 text-center">{pad(v)}</span>
+        </span>
+      ))}
+    </span>
+  );
+
   return (
     <div className="w-full sm:flex sm:w-auto sm:shrink-0" role="timer" aria-live="off">
       <p
@@ -125,8 +157,8 @@ export function SaleCountdown({ endsAt, compact = false, variant = "box" }: { en
           <span>{label}</span>
         </span>
         <span className="inline-flex items-center gap-2 sm:pl-6">
-          {days}
-          <span className="text-[0.95rem]">{digits}</span>
+          {/* No days pill here: the hours run past 24 instead (HH:MM:SS). */}
+          <span className="text-[0.95rem]">{hoursDigits}</span>
         </span>
       </p>
       {spoken}

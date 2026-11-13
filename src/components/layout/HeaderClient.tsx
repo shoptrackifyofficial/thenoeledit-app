@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
  *  - Home: fixed and fully transparent over the full-height hero (white type,
  *    no announcement bar), so the hero and nav read as one surface. After a
  *    little scroll it firms up into the white pill.
+ *  - Product pages: sticky pill with no announcement bar (the page shows its own countdown strip under it).
  *  - Everywhere else: sticky pill under an announcement bar that scrolls away.
  * The decision comes from the pathname, which the server also knows, so
  * there is no flash or hydration mismatch.
@@ -24,6 +25,8 @@ import { cn } from "@/lib/utils";
 export function HeaderShell({ announcement, children }: { announcement: ReactNode; children: ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  // Product pages show the offer countdown strip under the navbar instead of the top announcement bar.
+  const isProduct = pathname.startsWith("/products/");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -37,10 +40,10 @@ export function HeaderShell({ announcement, children }: { announcement: ReactNod
     <header
       className={cn(
         "z-40 w-full",
-        isHome ? "fixed inset-x-0 top-0" : "sticky top-[calc(-1*var(--announce-h))]",
+        isHome ? "fixed inset-x-0 top-0" : isProduct ? "sticky top-0" : "sticky top-[calc(-1*var(--announce-h))]",
       )}
     >
-      {!isHome && announcement}
+      {!isHome && !isProduct && announcement}
       {isHome && (
         <div
           aria-hidden="true"

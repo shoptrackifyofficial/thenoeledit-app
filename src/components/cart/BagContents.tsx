@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
 import { Icon } from "@/components/ui/Icon";
@@ -22,8 +22,15 @@ import { cn } from "@/lib/utils";
  * Shopify accepts. `onNavigate` closes the drawer when a link is followed.
  */
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
-  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, removeMany, add, checkout, hydrated, loading, demo, payments } =
+  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, removeMany, add, checkout, prepareCheckout, hydrated, loading, demo, payments } =
     useCart();
+  // Create the Shopify checkout while the bag is on screen, so the Checkout click is just a redirect.
+  const bagKey = lines.map((l) => `${l.variantId}*${l.quantity}`).join("|");
+  useEffect(() => {
+    if (!hydrated || loading || !bagKey || demo) return;
+    const timer = window.setTimeout(prepareCheckout, 250); // let quick changes settle first
+    return () => window.clearTimeout(timer);
+  }, [bagKey, hydrated, loading, demo, prepareCheckout]);
   const budget50 = useLocalBand(50, currency);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
