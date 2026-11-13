@@ -215,18 +215,20 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                   </p>
                 </div>
 
-                {savedPct != null && compareTotal > line.lineTotal && (
+                {((savedPct != null && compareTotal > line.lineTotal) || line.fixedQty) && (
                   <p className="mt-1 flex items-center gap-x-1.5 gap-y-1 text-[0.7rem]">
-                    <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
-                      <Icon name="tag" className="size-3" /> Saved {formatMoney(Math.round((compareTotal - line.lineTotal) * 100) / 100, currency)}
-                    </span>
+                    {savedPct != null && compareTotal > line.lineTotal && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-berry-50 px-1.5 py-0.5 font-bold text-berry-700 ring-1 ring-berry-100">
+                        <Icon name="tag" className="size-3" /> Saved {formatMoney(Math.round((compareTotal - line.lineTotal) * 100) / 100, currency)}
+                      </span>
+                    )}
                     {line.couponCode && (
                       <span className="text-ink-soft">
                         <span className="numeral font-semibold tracking-wide text-berry-600">{line.couponCode}</span> applied
                       </span>
                     )}
-                    {line.tiers && (
-                      // Bundle lines have no stepper (the bundle size is chosen on the product page): the bin sits at the row's right end.
+                    {(line.tiers || line.fixedQty) && (
+                      // Bundle and pack lines have no stepper (the size is chosen on the product page): the bin sits at the row's right end.
                       <button
                         type="button"
                         onClick={() => remove(line.variantId)}
@@ -240,10 +242,9 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                 )}
                 {!line.available && <p className="mt-1 text-[0.74rem] font-semibold text-berry-600">Sold out — remove to continue</p>}
 
-                {!(line.tiers && savedPct != null) && (
-                  <div className={cn("mt-auto flex items-center pt-2", line.fixedQty ? "justify-end" : "justify-between")}>
-                    {/* Packs: the pack chosen on the product page is the quantity, so no stepper. */}
-                    <div className={line.fixedQty ? "hidden" : "flex items-center rounded-lg bg-cream ring-1 ring-line"} role="group" aria-label={`Quantity for ${line.productName}`}>
+                {!(line.tiers && savedPct != null) && !line.fixedQty && (
+                  <div className="mt-auto flex items-center justify-between pt-2">
+                    <div className="flex items-center rounded-lg bg-cream ring-1 ring-line" role="group" aria-label={`Quantity for ${line.productName}`}>
                       <button
                         type="button"
                         onClick={() => setQuantity(line.variantId, line.quantity - 1)}

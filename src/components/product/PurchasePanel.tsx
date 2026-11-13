@@ -575,7 +575,8 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   const variant = findVariant(view, selection);
   // Packs sold as one variant at a higher quantity (story.packs): Shopify's automatic discounts do the pricing.
   const packTiers = view.story?.packs && view.story.packs.length > 1 ? view.story.packs : null;
-  const [packSize, setPackSize] = useState(1);
+  // The page opens on the highlighted pack (the tagged one, e.g. the Buy 2 Get 1 Free 3 Pack), else the single.
+  const [packSize, setPackSize] = useState(packTiers?.find((t) => t.tag)?.size ?? 1);
   const units = packTiers ? packSize : 1;
   const tierTotal = packTiers && variant ? packTotal(packTiers, variant.price, units, baseVariant(variant.id)?.price ?? variant.price) : 0;
   const hasPack = view.packOptionName !== null || packTiers !== null;
