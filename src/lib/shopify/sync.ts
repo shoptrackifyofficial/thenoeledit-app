@@ -68,6 +68,7 @@ type ProductNode = {
   perks: { value: string } | null;
   offerEndsAt: { value: string } | null;
   giftFor: { value: string } | null;
+  customersCount: { value: string } | null;
   noelStory: { value: string } | null;
 };
 
@@ -116,6 +117,7 @@ query Products($query: String!, $after: String, $first: Int!) {
       perks: metafield(namespace: "custom", key: "perks") { value }
       offerEndsAt: metafield(namespace: "custom", key: "sale_ends_at") { value }
       giftFor: metafield(namespace: "custom", key: "gift_for") { value }
+      customersCount: metafield(namespace: "custom", key: "customers_count") { value }
       noelStory: metafield(namespace: "custom", key: "noel_story") { value }
     }
   }
@@ -196,6 +198,11 @@ function futureIso(field: { value: string } | null): string | null {
   return Number.isNaN(time) || time <= Date.now() ? null : new Date(time).toISOString();
 }
 
+function wholeNumber(field: { value: string } | null | undefined): number | null {
+  const n = Number.parseInt(field?.value?.trim() ?? "", 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 function toRecord(p: ProductNode): ProductRecord {
   if (p.variants.pageInfo.hasNextPage) console.warn(`[sync] ${p.handle}: more than ${VARIANT_LIMIT} variants, the rest are not synced`);
   if (p.media.pageInfo.hasNextPage) console.warn(`[sync] ${p.handle}: more than ${MEDIA_LIMIT} media, the rest are not synced`);
@@ -219,6 +226,7 @@ function toRecord(p: ProductNode): ProductRecord {
     perks: normalizePerks(p.perks),
     offerEndsAt: futureIso(p.offerEndsAt),
     giftFor: p.giftFor?.value?.trim() || null,
+    customersCount: wholeNumber(p.customersCount),
     story: parseStory(p.noelStory?.value),
   };
 }

@@ -114,6 +114,8 @@ export type BagVariant = {
   offerEndsAt?: string | null;
   /** What a bundle is made of ("camera"), for "3 cameras" in the bag. */
   bundleNoun?: string;
+  /** A one-tap extra offered in the bag while this product is in it (see story.bump). */
+  bump?: { variantId: string; headline: string; text: string; productName: string; variantLabel: string; price: number; compareAtPrice: number | null; image: string | null; href: string };
 };
 export type BagCatalog = { currency: string; demo: boolean; payments?: PaymentMethod[]; variants: Record<string, BagVariant> };
 
@@ -126,7 +128,25 @@ export async function getOfferDeadline(): Promise<string | null> {
 export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
   const [products, currency, catOf, payments] = await Promise.all([getAllProducts(), storeCurrency(), categoryLookup(), getPaymentMethods()]);
   const variants: BagCatalog["variants"] = {};
+  const bumpFor = (p: ProductRecord): BagVariant["bump"] => {
+    const cfg = p.story?.bump;
+    const target = cfg ? products.find((x) => x.handle === cfg.handle && x.id !== p.id) : undefined;
+    const v = target?.variants.find((x) => x.availableForSale);
+    if (!cfg || !target || !v) return undefined;
+    return {
+      variantId: v.id,
+      headline: cfg.headline || `Add the ${target.story?.shortName || target.title}`,
+      text: cfg.text,
+      productName: target.story?.shortName || target.title,
+      variantLabel: "",
+      price: v.price,
+      compareAtPrice: v.compareAtPrice,
+      image: v.image ?? target.media.find((m) => m.type === "image")?.url ?? null,
+      href: `/products/${target.handle}`,
+    };
+  };
   for (const p of products) {
+    const bump = bumpFor(p);
     const tiered = p.story?.bundle ?? p.story?.multi ?? null;
     const fallback = p.media.find((m) => m.type === "image")?.url ?? null;
     for (const v of p.variants) {
@@ -149,6 +169,7 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         productId: p.id,
         category: catOf(p).title,
         offerEndsAt: p.offerEndsAt,
+        ...(bump ? { bump } : {}),
         ...(tiered ? { bundleNoun: tiered.noun } : {}),
         ...(tiered?.discounts.length ? { tiers: { discounts: tiered.discounts, codePrefix: tiered.codePrefix, ...(tiered.basePct != null ? { basePct: tiered.basePct } : {}) } } : {}),
       };

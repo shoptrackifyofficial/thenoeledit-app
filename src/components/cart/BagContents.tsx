@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
  * Shopify accepts. `onNavigate` closes the drawer when a link is followed.
  */
 export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: () => void; variant?: "drawer" | "page" }) {
-  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, removeMany, checkout, hydrated, loading, demo, payments } =
+  const { lines, subtotal, savings, currency, freeShipping, setQuantity, remove, removeMany, add, checkout, hydrated, loading, demo, payments } =
     useCart();
   const budget50 = useLocalBand(50, currency);
   const [pending, setPending] = useState(false);
@@ -45,6 +45,8 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
     }
     return out;
   })();
+  // One-tap extra (story.bump) from the first product in the bag that offers one, until it is in the bag.
+  const bump = lines.find((l) => l.bump && !lines.some((x) => x.variantId === l.bump!.variantId))?.bump ?? null;
   const codes = [...new Set(lines.map((l) => l.couponCode).filter((c): c is string => c !== null))];
   const original = Math.round((subtotal + savings) * 100) / 100;
 
@@ -277,6 +279,40 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
           );
         })}
       </ul>
+
+      {bump && (
+        <div className={cn("mx-3 mt-1 flex items-center gap-3 rounded-2xl border-2 border-dashed border-gold-500 bg-gold-100/60 p-3", variant === "page" && "mx-0")}>
+          <Link href={bump.href} onClick={onNavigate} className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-cream ring-1 ring-line">
+            {bump.image && <Image src={bump.image} alt="" fill sizes="64px" className="object-cover" />}
+          </Link>
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.62rem] leading-none font-bold tracking-[0.12em] text-gold-700 uppercase">Add to your order</p>
+            <p className="mt-1 text-[0.88rem] leading-tight font-semibold">{bump.headline}</p>
+            {bump.text && <p className="mt-0.5 line-clamp-2 text-[0.74rem] leading-snug text-ink-soft">{bump.text}</p>}
+            <p className="numeral mt-1 flex items-baseline gap-1.5 text-[0.95rem] font-semibold">
+              {formatMoney(bump.price, currency)}
+              {bump.compareAtPrice != null && bump.compareAtPrice > bump.price && <s className="text-[0.74rem] font-normal text-ink-faint">{formatMoney(bump.compareAtPrice, currency)}</s>}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              add(bump.variantId, 1, {
+                productName: bump.productName,
+                variantLabel: bump.variantLabel,
+                price: bump.price,
+                compareAtPrice: bump.compareAtPrice,
+                image: bump.image,
+                href: bump.href,
+                available: true,
+              })
+            }
+            className="btn btn-primary shrink-0 px-3.5 py-2 text-[0.8rem]"
+          >
+            <Icon name="plus" className="size-3.5" /> Add
+          </button>
+        </div>
+      )}
 
       {/* ── Summary card ──────────────────────────────────────────────── */}
       <div

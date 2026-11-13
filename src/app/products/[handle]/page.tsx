@@ -20,6 +20,7 @@ import { site } from "@/content/site";
 import { getProducts } from "@/lib/catalog";
 import { PurchaseFeedback } from "@/components/product/PurchaseFeedback";
 import { ReviewRating } from "@/components/product/ReviewRating";
+import { TrustedBy } from "@/components/product/TrustedBy";
 import { ReviewsSection } from "@/components/product/ReviewsSection";
 import { reviewOverviewFor, reviewPageFor } from "@/lib/reviews/feed";
 import { byDiscount, getCardViews, getProductView } from "@/lib/commerce/views";
@@ -168,6 +169,7 @@ export default async function ProductPage({ params }: Props) {
             <h1 className="display-lg mt-2 text-wrap text-[clamp(1.75rem,1.4rem+1.4vw,2.5rem)]">
               {view.name}
             </h1>
+            {view.customersCount != null && <TrustedBy count={view.customersCount} className="mt-3" />}
             {view.giftFor && (
               <p className="mt-3 flex items-start gap-2 text-[0.95rem] text-ink-soft">
                 <span className="accent text-[1.15rem] leading-none text-berry-600">for</span>

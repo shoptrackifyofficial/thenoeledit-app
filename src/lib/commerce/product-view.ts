@@ -68,6 +68,8 @@ export type ProductView = {
   descriptionHtml: string;
   summary: string;
   giftFor: string | null;
+  /** The "Trusted by N customers" figure (custom.customers_count), or null. */
+  customersCount: number | null;
   story: ProductStory | null;
   /** An optional extra sold alongside this product (see story.addon), or null. */
   addon: ViewAddon | null;
@@ -208,6 +210,7 @@ export function buildProductView(
     descriptionHtml: sanitizeHtml(record.descriptionHtml),
     summary: record.seo.description || plainText(record.descriptionHtml, 220),
     giftFor: record.giftFor,
+    customersCount: record.customersCount ?? null,
     story: record.story ?? null,
     delivery: record.story?.delivery ?? { minDays: site.delivery.minDays, maxDays: site.delivery.maxDays, note: "" },
     multi: record.story?.multi

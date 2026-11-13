@@ -46,6 +46,10 @@ export type ProductStory = {
   optionLabels: Record<string, string>;
   /** Display names for option values, e.g. { "4 Templates": "4 Stencils" } (Shopify keeps its own values). */
   valueLabels: Record<string, string>;
+  /** Badge text on a pack card, keyed by the pack's unit count, e.g. { "3": "Buy 2 Get 1 Free" } (replaces the default tags). */
+  packTags: Record<string, string>;
+  /** A product offered as a one-tap extra in the bag while this product is in it (priced at its own Shopify sale price). */
+  bump: { handle: string; headline: string; text: string } | null;
   /** Portrait demo clips for the "See it in action" row (Shopify-hosted mp4). */
   videos: { src: string; poster: string | null; alt: string }[];
   /** Delivery time for this product when it differs from the site default (e.g. 7–15 days during high demand). */
@@ -143,6 +147,8 @@ export type ProductRecord = {
   offerEndsAt: string | null;
   /** `custom.gift_for` metafield — "Who it's for" line, e.g. "Coffee lovers, new homeowners". */
   giftFor: string | null;
+  /** `custom.customers_count` metafield — "Trusted by N customers" figure; null when not set. */
+  customersCount?: number | null;
   /** `custom.noel_story` metafield — rich "how it works" content; absent on older synced records. */
   story?: ProductStory | null;
 };

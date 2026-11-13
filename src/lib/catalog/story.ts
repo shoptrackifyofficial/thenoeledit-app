@@ -112,6 +112,17 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
       }
     : null;
 
+  const packTags = Object.fromEntries(
+    Object.entries(obj(j.packTags))
+      .map(([k, v]) => [text(k, 4), text(v, 28)] as const)
+      .filter(([k, v]) => /^\d{1,2}$/.test(k) && v),
+  );
+
+  const bp = obj(j.bump);
+  const bump = /^[a-z0-9-]{3,200}$/.test(text(bp.handle, 200))
+    ? { handle: text(bp.handle, 200), headline: text(bp.headline, 80), text: text(bp.text, 160) }
+    : null;
+
   const dv = obj(j.delivery);
   const dMin = Number(dv.minDays);
   const dMax = Number(dv.maxDays);
@@ -131,6 +142,8 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
     delivery,
     shortName: text(j.shortName, 80),
     addon,
+    bump,
+    packTags,
     multi,
     optionLabels: labels,
     valueLabels,
@@ -173,5 +186,5 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
           }
         : null,
   };
-  return story.how || story.designs || story.details || story.addon || story.multi || story.box || story.delivery || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
+  return story.how || story.designs || story.details || story.addon || story.bump || Object.keys(story.packTags).length > 0 || story.multi || story.box || story.delivery || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
 }

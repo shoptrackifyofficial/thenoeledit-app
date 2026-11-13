@@ -22,11 +22,14 @@ const ID = "gid://shopify/Product/15492437344483";
 const HEADLESS_CHANNEL = "gid://shopify/Publication/225905705187";
 const APPLY = process.argv.includes("--apply");
 const OFFER_DAYS = 4;
+const CUSTOMERS_COUNT = 219200;
 
 const HANDLE = "fascia-ring-vibration-massager";
-const TITLE = "Fascia Ring Vibration Body Massager";
+const TITLE =
+  "Multifunctional Full-Body Fascia Ring Vibration Body Fitness Massager For Fat Burning & Shaping"; // the store owner's own title: do not shorten
+const SHORT_NAME = "Fascia Ring Vibration Massager"; // for the bag and the floating buy bar
 const BRAND = "The Noel Edit";
-const SEO_TITLE = `Fascia Ring Vibration Massager | ${BRAND}`;
+const SEO_TITLE = `Fascia Ring Vibration Massager | ${BRAND}`; // as edited in Shopify
 const SEO_DESC =
   "Rechargeable fascia ring body massager with 5 vibration levels. Hold it or strap it on for waist, arms, legs and back. Free shipping on every order.";
 
@@ -43,7 +46,8 @@ const SRC = {
   battery: "Sfc80eb0850fd4e7c9131341ad4dc221f2", // Type-C fast charging, battery cut-away
 } as const;
 type Key = keyof typeof SRC;
-const srcUrl = (k: Key) => `https://ae-pic-a1.aliexpress-media.com/kf/${SRC[k]}.jpg`;
+const srcUrl = (k: Key) =>
+  `https://ae-pic-a1.aliexpress-media.com/kf/${SRC[k]}.jpg`;
 const fileName = (k: Key) => `fascia-ring-${k}`;
 
 const DESCRIPTION_HTML = [
@@ -71,13 +75,22 @@ const DESCRIPTION_HTML = [
 const INFO = [
   { label: "Vibration levels", value: "5, switched with a single button" },
   { label: "Motor", value: "Up to 20,800 RPM" },
-  { label: "Use", value: "Handheld with the comfort grip, or worn with the adjustable belt" },
-  { label: "Use on", value: "Waist and abdomen, back, shoulders, arms, thighs, calves and hips" },
+  {
+    label: "Use",
+    value: "Handheld with the comfort grip, or worn with the adjustable belt",
+  },
+  {
+    label: "Use on",
+    value: "Waist and abdomen, back, shoulders, arms, thighs, calves and hips",
+  },
   { label: "Battery", value: "Built-in and rechargeable, charged by USB-C" },
   { label: "Product size", value: "13 x 13 cm (5.12 x 5.12 in)" },
   { label: "Massage nodes", value: "5 rounded nodes on one edge of the ring" },
   { label: "Display", value: "Small screen showing the current level" },
-  { label: "In the box", value: "Fascia ring massager, adjustable waist belt, USB-C charging cable" },
+  {
+    label: "In the box",
+    value: "Fascia ring massager, adjustable waist belt, USB-C charging cable",
+  },
   {
     label: "Care & safety",
     value:
@@ -92,7 +105,8 @@ const PERKS = [
   "Compact 13 x 13 cm ring",
   "Waist, arms, legs and back",
 ];
-const GIFT_FOR = "Anyone who sits a lot or loves a workout: gym-goers, desk workers, new year fitness starters and self-care fans";
+const GIFT_FOR =
+  "Anyone who sits a lot or loves a workout: gym-goers, desk workers, new year fitness starters and self-care fans";
 
 /* ── pricing (mirrors import-vendor-products.ts) ─────────────────────── */
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -100,12 +114,26 @@ const round99 = (n: number) => round2(Math.max(1, Math.round(n)) - 0.01);
 const newPrice = (supplier: number) => round99(supplier + 2.99 + 30);
 
 type Fetched = {
-  product: { id: string; handle: string; title: string; tags: string[]; variants: { nodes: { id: string; title: string; price: string; compareAtPrice: string | null }[] } };
+  product: {
+    id: string;
+    handle: string;
+    title: string;
+    tags: string[];
+    customersCount: { value: string } | null;
+    variants: {
+      nodes: {
+        id: string;
+        title: string;
+        price: string;
+        compareAtPrice: string | null;
+      }[];
+    };
+  };
 };
 
 async function fetchProduct(): Promise<Fetched["product"]> {
   const d = await adminRequest<Fetched>(
-    `query($id: ID!) { product(id: $id) { id handle title tags variants(first: 50) { nodes { id title price compareAtPrice } } } }`,
+    `query($id: ID!) { product(id: $id) { id handle title tags customersCount: metafield(namespace: "custom", key: "customers_count") { value } variants(first: 50) { nodes { id title price compareAtPrice } } } }`,
     { id: ID },
   );
   return d.product;
@@ -115,19 +143,36 @@ async function fetchProduct(): Promise<Fetched["product"]> {
 async function hostedImage(k: Key, preview: boolean): Promise<string | null> {
   const stem = fileName(k);
   const find = async () => {
-    const r = await adminRequest<{ files: { nodes: { fileStatus?: string; image?: { url: string } | null }[] } }>(
+    const r = await adminRequest<{
+      files: {
+        nodes: { fileStatus?: string; image?: { url: string } | null }[];
+      };
+    }>(
       `query($q: String!) { files(first: 5, query: $q) { nodes { ... on MediaImage { fileStatus image { url } } } } }`,
       { q: `filename:${stem}*` },
     );
-    const hit = r.files.nodes.find((n) => n.fileStatus === "READY" && n.image?.url);
+    const hit = r.files.nodes.find(
+      (n) => n.fileStatus === "READY" && n.image?.url,
+    );
     return hit ? hit.image!.url.split("?")[0]! : null;
   };
   const existing = await find();
   if (existing || preview) return existing;
 
-  const created = await adminRequest<{ fileCreate: { files: { id: string }[]; userErrors: { message: string }[] } }>(
+  const created = await adminRequest<{
+    fileCreate: { files: { id: string }[]; userErrors: { message: string }[] };
+  }>(
     `mutation($files: [FileCreateInput!]!) { fileCreate(files: $files) { files { id } userErrors { message } } }`,
-    { files: [{ originalSource: srcUrl(k), filename: `${stem}.jpg`, contentType: "IMAGE", alt: "Fascia ring massager" }] },
+    {
+      files: [
+        {
+          originalSource: srcUrl(k),
+          filename: `${stem}.jpg`,
+          contentType: "IMAGE",
+          alt: "Fascia ring massager",
+        },
+      ],
+    },
     { retries: 1 },
   );
   const cerr = created.fileCreate.userErrors[0]?.message;
@@ -150,73 +195,109 @@ async function main() {
       title: "Hold it, or strap it on",
       text: "Grip the ring to work along arms and legs, or run the adjustable belt through it and wear it hands-free around your waist or back.",
       image: await img("twoWays"),
-      imageAlt: "Fascia ring used handheld on the arm, and worn on a belt at the waist",
+      imageAlt:
+        "Fascia ring used handheld on the arm, and worn on a belt at the waist",
     },
     {
       eyebrow: "Comfort grip",
       title: "Handheld and easy on the wrist",
       text: "A shaped handle sits naturally in your hand, with five rounded nodes that glide over the skin without any strain.",
       image: await img("handheld"),
-      imageAlt: "Handheld body massager in black and pink with 5 speed levels, comfort grip and waist and arm use",
+      imageAlt:
+        "Handheld body massager in black and pink with 5 speed levels, comfort grip and waist and arm use",
     },
     {
       eyebrow: "Arms",
       title: "Deep vibration for sore arms",
       text: "Glide the nodes along your upper arm for a steady, soothing vibration after carrying, lifting or a long day at a desk.",
       image: await img("arm"),
-      imageAlt: "A woman using the pink fascia ring on her upper arm, with vibration ripples",
+      imageAlt:
+        "A woman using the pink fascia ring on her upper arm, with vibration ripples",
     },
     {
       eyebrow: "Legs",
       title: "Thighs and calves, covered",
       text: "Work the ring over thighs and calves after a run or a long day on your feet. The level shows on the small screen.",
       image: await img("thigh"),
-      imageAlt: "A hand holding the black fascia ring against a thigh, with vibration ripples",
+      imageAlt:
+        "A hand holding the black fascia ring against a thigh, with vibration ripples",
     },
     {
       eyebrow: "Everywhere you need it",
       title: "One ring, six places",
       text: "Abdomen, shoulder ridge, back, hands, buttocks and legs: hold it or belt it on wherever you feel tight.",
       image: await img("zones"),
-      imageAlt: "Six ways to use the ring: abdomen, shoulder ridge, back, hand, buttocks and legs",
+      imageAlt:
+        "Six ways to use the ring: abdomen, shoulder ridge, back, hand, buttocks and legs",
     },
     {
       eyebrow: "Your pace",
       title: "5 levels, one button",
       text: "Tap once to step through five vibration levels, from gentle wind-down to a deeper session. The screen shows where you are.",
       image: await img("levels"),
-      imageAlt: "The pink fascia ring with its level display, button and USB-C port, labelled 5 levels of intensity adjustment",
+      imageAlt:
+        "The pink fascia ring with its level display, button and USB-C port, labelled 5 levels of intensity adjustment",
     },
     {
       eyebrow: "Cordless",
       title: "Charge over USB-C, go anywhere",
       text: "A built-in rechargeable battery means no cable while you use it. Top it up from any USB-C port and toss it in your gym bag.",
       image: await img("battery"),
-      imageAlt: "Cut-away of the black fascia ring showing its battery, with a USB-C cable charging it",
+      imageAlt:
+        "Cut-away of the black fascia ring showing its battery, with a USB-C cable charging it",
     },
   ];
   const features = candidates.filter((f) => Boolean(f.image));
-  for (const f of candidates) if (!f.image) console.warn(`! skipped feature "${f.title}": picture not hosted yet (run with --apply)`);
+  for (const f of candidates)
+    if (!f.image)
+      console.warn(
+        `! skipped feature "${f.title}": picture not hosted yet (run with --apply)`,
+      );
   const howImage = (await img("hero")) || null;
 
   const story = {
     version: 2,
-    shortName: TITLE,
-    delivery: { minDays: 5, maxDays: 11, note: "Counted from the day you order" },
-    optionLabels: { Color: "Colour" },
+    shortName: SHORT_NAME,
+    delivery: {
+      minDays: 5,
+      maxDays: 11,
+      note: "Counted from the day you order",
+    },
+    optionLabels: { Color: "Colour", Pack: "Pack" },
     valueLabels: {},
+    // Pack cards: 2 Pack keeps the default "Most gifted" tag, 3 Pack is buy 2, get 1 free (see fascia-ring-packs.ts).
+    packTags: { "3": "Buy 2 Get 1 Free" },
+    // One-tap extra in the bag while this product is in it, priced at its own Shopify sale price.
+    bump: {
+      handle: "heated-neck-shoulder-massager",
+      headline: "Add the heated 5-finger body massager",
+      text: "Cordless, with 3 kneading modes and 2 heat settings for your neck, shoulders, arms and legs.",
+    },
     how: {
       eyebrow: "How to use",
       title: "Hold it, or belt it on",
       accent: "belt it on",
       intro: "No app, no setup. Charge it, press the button and go.",
       image: howImage,
-      imageAlt: "The fascia ring with its grey belt, and a woman wearing it at the waist",
+      imageAlt:
+        "The fascia ring with its grey belt, and a woman wearing it at the waist",
       steps: [
-        { title: "Charge it", text: "Plug in the USB-C cable until the battery is full." },
-        { title: "Press the button", text: "Hold to switch on, then tap to step through the 5 levels. The screen shows your level." },
-        { title: "Hold it or belt it", text: "Grip the handle for arms and legs, or thread the belt through the ring and fasten it round your waist or back." },
-        { title: "Glide and relax", text: "Move the nodes slowly over the area. Switch off when you are done." },
+        {
+          title: "Charge it",
+          text: "Plug in the USB-C cable until the battery is full.",
+        },
+        {
+          title: "Press the button",
+          text: "Hold to switch on, then tap to step through the 5 levels. The screen shows your level.",
+        },
+        {
+          title: "Hold it or belt it",
+          text: "Grip the handle for arms and legs, or thread the belt through the ring and fasten it round your waist or back.",
+        },
+        {
+          title: "Glide and relax",
+          text: "Move the nodes slowly over the area. Switch off when you are done.",
+        },
       ],
     },
     videos: [],
@@ -226,9 +307,26 @@ async function main() {
       eyebrow: "At a glance",
       title: "A gift for a stronger new year",
       accent: "stronger",
-      occasions: ["Christmas", "Birthdays", "New year fitness", "Self-care night", "Secret Santa"],
-      recipients: ["Her", "Gym-goers", "Desk workers", "Mum", "Anyone who needs to unwind"],
-      holidays: ["Christmas", "New Year's Day", "Valentine's Day", "Mother's Day"],
+      occasions: [
+        "Christmas",
+        "Birthdays",
+        "New year fitness",
+        "Self-care night",
+        "Secret Santa",
+      ],
+      recipients: [
+        "Her",
+        "Gym-goers",
+        "Desk workers",
+        "Mum",
+        "Anyone who needs to unwind",
+      ],
+      holidays: [
+        "Christmas",
+        "New Year's Day",
+        "Valentine's Day",
+        "Mother's Day",
+      ],
     },
   };
 
@@ -239,71 +337,177 @@ async function main() {
   const priced = product.tags.includes("noel-priced");
   const updates = product.variants.nodes.map((v) => {
     const price = newPrice(Number(v.price));
-    return { id: v.id, title: v.title, from: Number(v.price), price, compareAtPrice: round2(price * 2) };
+    return {
+      id: v.id,
+      title: v.title,
+      from: Number(v.price),
+      price,
+      compareAtPrice: round2(price * 2),
+    };
   });
 
-  if (SEO_TITLE.length > 60) throw new Error(`SEO title ${SEO_TITLE.length} chars (max 60)`);
-  if (SEO_DESC.length > 155) throw new Error(`Meta description ${SEO_DESC.length} chars (max 155)`);
+  if (SEO_TITLE.length > 60)
+    throw new Error(`SEO title ${SEO_TITLE.length} chars (max 60)`);
+  if (SEO_DESC.length > 155)
+    throw new Error(`Meta description ${SEO_DESC.length} chars (max 155)`);
 
   if (!APPLY) {
-    console.log(JSON.stringify({ title: TITLE, handle: HANDLE, seo: { title: SEO_TITLE, description: SEO_DESC }, story, perks: PERKS, giftFor: GIFT_FOR, offerEnds }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          title: TITLE,
+          handle: HANDLE,
+          seo: { title: SEO_TITLE, description: SEO_DESC },
+          story,
+          perks: PERKS,
+          giftFor: GIFT_FOR,
+          offerEnds,
+        },
+        null,
+        2,
+      ),
+    );
     console.log(`\nSEO title ${SEO_TITLE.length}c, meta ${SEO_DESC.length}c`);
     console.log(priced ? "Prices: already set (noel-priced)" : "Prices:");
-    if (!priced) for (const u of updates) console.log(`  ${u.title.padEnd(20)} $${u.from} -> $${u.price}  (compare-at $${u.compareAtPrice})`);
-    console.log("\nPreview only. Re-run with --apply to write this to Shopify.");
+    if (!priced)
+      for (const u of updates)
+        console.log(
+          `  ${u.title.padEnd(20)} $${u.from} -> $${u.price}  (compare-at $${u.compareAtPrice})`,
+        );
+    console.log(
+      "\nPreview only. Re-run with --apply to write this to Shopify.",
+    );
     return;
   }
 
   // 1. title, handle, SEO, description
-  const u = await adminRequest<{ productUpdate: { userErrors: { message: string }[] } }>(
+  const u = await adminRequest<{
+    productUpdate: { userErrors: { message: string }[] };
+  }>(
     `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`,
-    { p: { id: ID, title: TITLE, handle: HANDLE, redirectNewHandle: false, descriptionHtml: DESCRIPTION_HTML, seo: { title: SEO_TITLE, description: SEO_DESC } } },
+    {
+      p: {
+        id: ID,
+        title: TITLE,
+        handle: HANDLE,
+        redirectNewHandle: false,
+        descriptionHtml: DESCRIPTION_HTML,
+        seo: { title: SEO_TITLE, description: SEO_DESC },
+      },
+    },
     { retries: 1 },
   );
-  if (u.productUpdate.userErrors.length) throw new Error(`product: ${JSON.stringify(u.productUpdate.userErrors)}`);
+  if (u.productUpdate.userErrors.length)
+    throw new Error(`product: ${JSON.stringify(u.productUpdate.userErrors)}`);
 
   // 2. prices (once)
   if (!priced) {
-    const r = await adminRequest<{ productVariantsBulkUpdate: { userErrors: { message: string }[] } }>(
+    const r = await adminRequest<{
+      productVariantsBulkUpdate: { userErrors: { message: string }[] };
+    }>(
       `mutation($id:ID!,$v:[ProductVariantsBulkInput!]!){ productVariantsBulkUpdate(productId:$id, variants:$v){ userErrors{ message } } }`,
-      { id: ID, v: updates.map((x) => ({ id: x.id, price: x.price.toFixed(2), compareAtPrice: x.compareAtPrice.toFixed(2) })) },
+      {
+        id: ID,
+        v: updates.map((x) => ({
+          id: x.id,
+          price: x.price.toFixed(2),
+          compareAtPrice: x.compareAtPrice.toFixed(2),
+        })),
+      },
       { retries: 1 },
     );
-    if (r.productVariantsBulkUpdate.userErrors.length) throw new Error(`prices: ${JSON.stringify(r.productVariantsBulkUpdate.userErrors)}`);
+    if (r.productVariantsBulkUpdate.userErrors.length)
+      throw new Error(
+        `prices: ${JSON.stringify(r.productVariantsBulkUpdate.userErrors)}`,
+      );
   }
 
   // 3. metafields
-  const mf = await adminRequest<{ metafieldsSet: { userErrors: { message: string }[] } }>(
+  const mf = await adminRequest<{
+    metafieldsSet: { userErrors: { message: string }[] };
+  }>(
     `mutation($m: [MetafieldsSetInput!]!) { metafieldsSet(metafields: $m) { userErrors { message } } }`,
     {
       m: [
-        { ownerId: ID, namespace: "custom", key: "noel_story", type: "json", value: JSON.stringify(story) },
-        { ownerId: ID, namespace: "custom", key: "perks", type: "list.single_line_text_field", value: JSON.stringify(PERKS) },
-        { ownerId: ID, namespace: "custom", key: "gift_for", type: "single_line_text_field", value: GIFT_FOR },
-        { ownerId: ID, namespace: "custom", key: "sale_ends_at", type: "date_time", value: offerEnds },
+        {
+          ownerId: ID,
+          namespace: "custom",
+          key: "noel_story",
+          type: "json",
+          value: JSON.stringify(story),
+        },
+        {
+          ownerId: ID,
+          namespace: "custom",
+          key: "perks",
+          type: "list.single_line_text_field",
+          value: JSON.stringify(PERKS),
+        },
+        {
+          ownerId: ID,
+          namespace: "custom",
+          key: "gift_for",
+          type: "single_line_text_field",
+          value: GIFT_FOR,
+        },
+        {
+          ownerId: ID,
+          namespace: "custom",
+          key: "sale_ends_at",
+          type: "date_time",
+          value: offerEnds,
+        },
+        // "Trusted by N customers worldwide" on the product page: only seeded when empty, so edits in Shopify admin stay.
+        ...(product.customersCount
+          ? []
+          : [
+              {
+                ownerId: ID,
+                namespace: "custom",
+                key: "customers_count",
+                type: "number_integer",
+                value: String(CUSTOMERS_COUNT),
+              },
+            ]),
       ],
     },
     { retries: 1 },
   );
-  if (mf.metafieldsSet.userErrors.length) throw new Error(`metafields: ${JSON.stringify(mf.metafieldsSet.userErrors)}`);
+  if (mf.metafieldsSet.userErrors.length)
+    throw new Error(
+      `metafields: ${JSON.stringify(mf.metafieldsSet.userErrors)}`,
+    );
 
   // 4. tags
-  const t = await adminRequest<{ tagsAdd: { userErrors: { message: string }[] } }>(
+  const t = await adminRequest<{
+    tagsAdd: { userErrors: { message: string }[] };
+  }>(
     `mutation($id: ID!, $t: [String!]!) { tagsAdd(id: $id, tags: $t) { userErrors { message } } }`,
-    { id: ID, t: ["noel-edit", "category:for-her", ...(priced ? [] : ["noel-priced"])] },
+    {
+      id: ID,
+      t: ["noel-edit", "category:for-her", ...(priced ? [] : ["noel-priced"])],
+    },
     { retries: 1 },
   );
-  if (t.tagsAdd.userErrors.length) throw new Error(`tags: ${JSON.stringify(t.tagsAdd.userErrors)}`);
+  if (t.tagsAdd.userErrors.length)
+    throw new Error(`tags: ${JSON.stringify(t.tagsAdd.userErrors)}`);
 
   // 5. sales channel
-  const pub = await adminRequest<{ publishablePublish: { userErrors: { message: string }[] } }>(
+  const pub = await adminRequest<{
+    publishablePublish: { userErrors: { message: string }[] };
+  }>(
     `mutation($id: ID!, $in: [PublicationInput!]!) { publishablePublish(id: $id, input: $in) { userErrors { message } } }`,
     { id: ID, in: [{ publicationId: HEADLESS_CHANNEL }] },
     { retries: 1 },
   );
-  if (pub.publishablePublish.userErrors.length) throw new Error(`publish: ${JSON.stringify(pub.publishablePublish.userErrors)}`);
+  if (pub.publishablePublish.userErrors.length)
+    throw new Error(
+      `publish: ${JSON.stringify(pub.publishablePublish.userErrors)}`,
+    );
 
-  console.log(`Done. /products/${HANDLE} written (${features.length} features, ${INFO.length} spec rows). Offer ends ${offerEnds}.`);
+  console.log(
+    `Done. /products/${HANDLE} written (${features.length} features, ${INFO.length} spec rows). Offer ends ${offerEnds}.`,
+  );
 }
 
 main().catch((e) => {

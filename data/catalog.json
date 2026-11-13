@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "syncedAt": "2026-11-13T10:56:52.954Z",
+  "syncedAt": "2026-11-13T11:19:02.304Z",
   "shop": {
     "domain": "trackify-com.myshopify.com",
     "name": "Trackify",
@@ -10,7 +10,7 @@
     "fascia-ring-vibration-massager": {
       "id": "gid://shopify/Product/15492437344483",
       "handle": "fascia-ring-vibration-massager",
-      "title": "Multifunctional Full-Body Ring Vibration Body Fitness Massager For Fat Burning & Shaping",
+      "title": "Multifunctional Full-Body Fascia Ring Vibration Body Fitness Massager For Fat Burning & Shaping",
       "vendor": "TheNoelEdit",
       "productType": null,
       "tags": [
@@ -20,7 +20,7 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-13T07:22:06Z",
-      "updatedAt": "2026-11-13T10:56:37Z",
+      "updatedAt": "2026-11-13T11:19:00Z",
       "descriptionHtml": "<p>One compact ring, two ways to use it. Hold it by the comfort grip and glide the five massage nodes over your arms, thighs and calves, or slip the adjustable belt through and wear it hands-free around your waist, back or hips. Five vibration levels let you start gentle after a long day of sitting and go deeper after a workout. Rechargeable over USB-C, small enough for the gym bag.</p>\n<h3>Why you will love it</h3>\n<ul>\n<li>\n<strong>Handheld or wearable.</strong> Use the grip for arms and legs, or strap it on with the belt for waist, back and abdomen.</li>\n<li>\n<strong>5 intensity levels.</strong> One button switches freely between gentle and deep vibration.</li>\n<li>\n<strong>Powerful motor.</strong> Up to 20,800 RPM for a strong, even vibration.</li>\n<li>\n<strong>Comfort grip.</strong> A shaped handle keeps your hand relaxed during longer sessions.</li>\n<li>\n<strong>Cordless.</strong> Built-in rechargeable battery, charged through any USB-C port.</li>\n</ul>\n<h3>Specifications</h3>\n<ul>\n<li>Size: 13 x 13 cm</li>\n<li>Vibration: 5 intensity levels, motor up to 20,800 RPM</li>\n<li>Power: built-in rechargeable battery, USB-C charging</li>\n<li>Use: handheld, or worn with the adjustable belt</li>\n</ul>\n<h3>In the box</h3>\n<ul>\n<li>Fascia ring massager x 1</li>\n<li>Adjustable waist belt x 1</li>\n<li>USB-C charging cable x 1</li>\n</ul>\n<p><em>A wellness product, not a medical device. Do not use on broken skin or while asleep. If you are pregnant, have a pacemaker or a medical condition, check with your doctor first.</em></p>",
       "seo": {
         "title": "Fascia Ring Vibration Massager | The Noel Edit",
@@ -33,35 +33,101 @@
             "Black",
             "Pink"
           ]
+        },
+        {
+          "name": "Pack",
+          "values": [
+            "1 Pack",
+            "2 Pack",
+            "3 Pack"
+          ]
         }
       ],
       "availableForSale": true,
       "variants": [
         {
           "id": "gid://shopify/ProductVariant/68556794495203",
-          "title": "Black",
+          "title": "Black / 1 Pack",
           "sku": "14:193#B",
           "price": 44.99,
-          "compareAtPrice": 89.98,
+          "compareAtPrice": null,
           "availableForSale": true,
           "stock": null,
           "options": {
-            "Color": "Black"
+            "Color": "Black",
+            "Pack": "1 Pack"
           },
           "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sd83ff167629846e6a335ce9b726cfc4fM.webp?v=1794554530"
         },
         {
           "id": "gid://shopify/ProductVariant/68556794527971",
-          "title": "Pink",
+          "title": "Pink / 1 Pack",
           "sku": "14:175#A",
           "price": 43.99,
+          "compareAtPrice": null,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "Pink",
+            "Pack": "1 Pack"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se699007fb54743b282dd3848d7933bba3_b1aef296-e68e-4a6d-8d4e-a4aa24d03452.webp?v=1794554530"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/68566523445475",
+          "title": "Black / 2 Pack",
+          "sku": "14:193#B",
+          "price": 80.99,
+          "compareAtPrice": 89.98,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "Black",
+            "Pack": "2 Pack"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-black.jpg?v=1794568418"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/68566523478243",
+          "title": "Black / 3 Pack",
+          "sku": "14:193#B",
+          "price": 89.98,
+          "compareAtPrice": 134.97,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "Black",
+            "Pack": "3 Pack"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-black.jpg?v=1794568418"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/68566523511011",
+          "title": "Pink / 2 Pack",
+          "sku": "14:175#A",
+          "price": 78.99,
           "compareAtPrice": 87.98,
           "availableForSale": true,
           "stock": null,
           "options": {
-            "Color": "Pink"
+            "Color": "Pink",
+            "Pack": "2 Pack"
           },
-          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se699007fb54743b282dd3848d7933bba3_b1aef296-e68e-4a6d-8d4e-a4aa24d03452.webp?v=1794554530"
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-pink.jpg?v=1794568418"
+        },
+        {
+          "id": "gid://shopify/ProductVariant/68566523543779",
+          "title": "Pink / 3 Pack",
+          "sku": "14:175#A",
+          "price": 87.98,
+          "compareAtPrice": 131.97,
+          "availableForSale": true,
+          "stock": null,
+          "options": {
+            "Color": "Pink",
+            "Pack": "3 Pack"
+          },
+          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-pink.jpg?v=1794568418"
         }
       ],
       "media": [
@@ -232,6 +298,38 @@
           "height": 1001,
           "alt": null,
           "variantId": "gid://shopify/ProductVariant/68556794495203"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-black.jpg?v=1794568418",
+          "width": 1001,
+          "height": 1001,
+          "alt": "2 Pack, black",
+          "variantId": "gid://shopify/ProductVariant/68566523445475"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-black.jpg?v=1794568418",
+          "width": 1001,
+          "height": 1001,
+          "alt": "3 Pack, black",
+          "variantId": "gid://shopify/ProductVariant/68566523478243"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-pink.jpg?v=1794568418",
+          "width": 1001,
+          "height": 1001,
+          "alt": "2 Pack, pink",
+          "variantId": "gid://shopify/ProductVariant/68566523511011"
+        },
+        {
+          "type": "image",
+          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-pink.jpg?v=1794568418",
+          "width": 1001,
+          "height": 1001,
+          "alt": "3 Pack, pink",
+          "variantId": "gid://shopify/ProductVariant/68566523543779"
         }
       ],
       "perks": [
@@ -243,6 +341,7 @@
       ],
       "offerEndsAt": "2026-11-17T23:59:00.000Z",
       "giftFor": "Anyone who sits a lot or loves a workout: gym-goers, desk workers, new year fitness starters and self-care fans",
+      "customersCount": 219200,
       "story": {
         "box": null,
         "delivery": {
@@ -250,11 +349,20 @@
           "maxDays": 11,
           "note": "Counted from the day you order"
         },
-        "shortName": "Fascia Ring Vibration Body Massager",
+        "shortName": "Fascia Ring Vibration Massager",
         "addon": null,
+        "bump": {
+          "handle": "heated-neck-shoulder-massager",
+          "headline": "Add the heated 5-finger body massager",
+          "text": "Cordless, with 3 kneading modes and 2 heat settings for your neck, shoulders, arms and legs."
+        },
+        "packTags": {
+          "3": "Buy 2 Get 1 Free"
+        },
         "multi": null,
         "optionLabels": {
-          "Color": "Colour"
+          "Color": "Colour",
+          "Pack": "Pack"
         },
         "valueLabels": {},
         "videos": [],
@@ -555,6 +663,7 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who carries stress in their neck and shoulders: desk workers, parents, grandparents and gamers",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": {
@@ -564,6 +673,8 @@
         },
         "shortName": "Wireless Heated 5-Finger Body Massager for Neck, Shoulders, Arms & Legs",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Specifications": "Finish",
@@ -971,11 +1082,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Her: a colourful statement set for parties, weddings and evening wear",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Crystal drop necklace and earrings set",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -1242,11 +1356,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a sunny, delicate ring",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Sun adjustable ring",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Main Stone Color": "Style"
@@ -2007,11 +2124,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a bold gold cuff",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Gold cuff bracelet",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -2414,11 +2534,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a classic pearl necklace",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Pearl beaded necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -2855,11 +2978,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a minimalist pearl necklace",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Freshwater pearl necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -3753,11 +3879,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a sparkly heart necklace",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Heart pendant clavicle necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -4012,11 +4141,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a pretty bow and pearls",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Pearl bow choker set",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Metal Color": "Piece"
@@ -4317,11 +4449,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a bold, vintage-style chain",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Chunky chain pearl necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Metal Color": "Colour"
@@ -4551,11 +4686,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a classic pearl choker",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Pearl choker necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -4839,11 +4977,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a dainty pearl look",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Pearl heart pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -5084,11 +5225,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Her: a classic sparkling pendant for weddings, parties and Christmas",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Solitaire pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -5304,11 +5448,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Her: a simple, sparkling solitaire-style necklace",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Round stone pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -5544,11 +5691,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Friends, girlfriends, mums and wives: a sparkling flower to open on Christmas morning",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Flower jewellery set",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Gem Color": "Piece"
@@ -5896,11 +6046,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Her: a sparkling statement necklace for parties, Christmas and birthdays",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Water drop pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Gem Color": "Drop colour"
@@ -6416,11 +6569,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Her: a meaningful cross necklace for Christmas, birthdays and special days",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Cross pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Gem Color": "Style"
@@ -6679,11 +6835,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Her: a delicate everyday necklace for birthdays, anniversaries and Christmas",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Y-shaped pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Gem Color": "Colour"
@@ -6958,11 +7117,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who wants a room, window or wall that lights up for Christmas",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Smart LED curtain lights",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -7173,11 +7335,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a warm, glowing room: bedrooms, mantels, parties and porches",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "LED vine branch lights",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -7506,11 +7671,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Anyone who loves a bold pearl-and-cross look",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Pearl cross pendant necklace",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -8235,6 +8403,7 @@
       "perks": [],
       "offerEndsAt": null,
       "giftFor": null,
+      "customersCount": null,
       "story": null
     },
     "new-super-thickened-warm-winter-blankets-for-beds-artificial-lamb-cashmere-weighted-blankets-soft-fluffy-warmth-comforter-duvet": {
@@ -9159,6 +9328,7 @@
       "perks": [],
       "offerEndsAt": null,
       "giftFor": null,
+      "customersCount": null,
       "story": null
     },
     "xmas-24-day-countdown-box": {
@@ -9332,11 +9502,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Highland cow fans, families, kids and anyone who loves a festive countdown",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Highland Cow Advent Calendar",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -9771,6 +9944,7 @@
       ],
       "offerEndsAt": null,
       "giftFor": "The best gift for the woman who spends most of her time in the kitchen: carols at the fridge, a glow after dark",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": {
@@ -9780,6 +9954,8 @@
         },
         "shortName": "NFC music box magnet",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Color": "Design"
@@ -10101,6 +10277,7 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Crafters, gift-wrappers, organisers, students and anyone who loves a neat label",
+      "customersCount": null,
       "story": {
         "box": {
           "included": [
@@ -10120,6 +10297,8 @@
           "name": "Satin ribbon",
           "intro": "Print a name, date or message on 12 mm satin ribbon, then tie it on. Any colours, any amount."
         },
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "color": "Colour"
@@ -10712,11 +10891,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Gift-wrappers, wedding planners, crafters and anyone who loves a personal finishing touch",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "Satin ribbon",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": {
           "option": "Color",
           "noun": "ribbon",
@@ -11094,11 +11276,14 @@
       ],
       "offerEndsAt": null,
       "giftFor": "Coffee lovers, couples, friends, colleagues and anyone who likes a little café magic at home",
+      "customersCount": null,
       "story": {
         "box": null,
         "delivery": null,
         "shortName": "",
         "addon": null,
+        "bump": null,
+        "packTags": {},
         "multi": null,
         "optionLabels": {
           "Color": "Stencil pack",

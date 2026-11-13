@@ -71,6 +71,7 @@ function PackCards({
 }) {
   const rows = values.map((value) => ({ value, combo: findVariant(view, { ...selection, [name]: value }) }));
   const maxUnits = Math.max(...rows.map((r) => r.combo?.units ?? 1));
+  const singleImage = rows.find((r) => (r.combo?.units ?? 1) === 1)?.combo?.image ?? null;
   const cards = rows.map(({ value, combo }) => {
     const units = combo?.units ?? 1;
     return {
@@ -79,10 +80,11 @@ function PackCards({
       checked: selection[name] === value,
       units,
       label: combo ? `${units} Pack` : value,
-      tag: units === 2 ? "Most gifted" : units === maxUnits && units > 2 ? "Best value" : null,
+      tag: view.story?.packTags[String(units)] ?? (units === 2 ? "Most gifted" : units === maxUnits && units > 2 ? "Best value" : null),
       featured: units === maxUnits && units > 1,
-      unitPrice: combo ? Math.floor((combo.price / units) * 100 + 1e-6) / 100 : null,
       img: combo?.image ?? view.cardImage?.url ?? null,
+      // A pack with its own photo (several units in one picture) is shown as is; otherwise one photo is fanned out.
+      ownPhoto: units > 1 && Boolean(combo?.image) && combo?.image !== singleImage,
     };
   });
 
@@ -103,7 +105,13 @@ function PackCards({
     </span>
   );
 
-  const Fan = ({ src, units, sizes }: { src: string; units: number; sizes: string }) => {
+  const Fan = ({ src, units, sizes, own }: { src: string; units: number; sizes: string; own?: boolean }) => {
+    if (own)
+      return (
+        <span className="absolute inset-0 overflow-hidden rounded-lg">
+          <Image src={src} alt="" fill sizes={sizes} className="object-cover" />
+        </span>
+      );
     const n = Math.min(Math.max(units, 1), 3);
     const step = n === 2 ? 24 : 16;
     const width = 100 - (n - 1) * step;
@@ -158,7 +166,7 @@ function PackCards({
               </span>
             )}
             <Dot checked={c.checked} featured={c.featured} />
-            <span className="relative block h-12 w-16 shrink-0">{c.img && <Fan src={c.img} units={c.units} sizes="48px" />}</span>
+            <span className="relative block h-12 w-16 shrink-0">{c.img && <Fan src={c.img} units={c.units} own={c.ownPhoto} sizes="48px" />}</span>
             <span className="flex min-w-0 flex-1 flex-col">
               <span className="text-[0.95rem] font-semibold">{c.label}</span>
               {c.combo?.compareAtPercent ? (
@@ -169,12 +177,10 @@ function PackCards({
             {c.combo && (
               <span className="flex shrink-0 flex-col items-end">
                 <span className={cn("numeral text-[1.2rem] leading-none font-semibold", c.featured && "text-berry-600")}>
-                  {formatMoney(c.units > 1 && c.unitPrice != null ? c.unitPrice : c.combo.price, view.currency)}
-                  {c.units > 1 && <span className="ml-1 font-sans text-[0.68rem] font-medium text-ink-soft">each</span>}
+                  {formatMoney(c.combo.price, view.currency)}
                 </span>
-                <span className="numeral mt-1 flex gap-1.5 text-[0.7rem] text-ink-soft">
+                <span className="numeral mt-1 flex gap-1.5 text-[0.92rem] font-medium text-ink-soft">
                   {c.combo.compareAtPrice != null && <s>{formatMoney(c.combo.compareAtPrice, view.currency)}</s>}
-                  {c.units > 1 && <span>{formatMoney(c.combo.price, view.currency)} total</span>}
                 </span>
               </span>
             )}
@@ -216,17 +222,15 @@ function PackCards({
             <span className="absolute top-2.5 right-2.5">
               <Dot checked={c.checked} featured={c.featured} />
             </span>
-            <span className="relative block aspect-[4/3] w-full max-w-28">{c.img && <Fan src={c.img} units={c.units} sizes="112px" />}</span>
+            <span className="relative block aspect-[4/3] w-full max-w-28">{c.img && <Fan src={c.img} units={c.units} own={c.ownPhoto} sizes="112px" />}</span>
             <span className="mt-2.5 text-[0.9rem] font-semibold">{c.label}</span>
             {c.combo && (
               <>
                 <span className={cn("numeral mt-0.5 text-[1.35rem] leading-tight font-semibold", c.featured && "text-berry-600")}>
-                  {formatMoney(c.units > 1 && c.unitPrice != null ? c.unitPrice : c.combo.price, view.currency)}
-                  {c.units > 1 && <span className="ml-1 font-sans text-[0.72rem] font-medium text-ink-soft">each</span>}
+                  {formatMoney(c.combo.price, view.currency)}
                 </span>
-                <span className="numeral flex gap-1.5 text-[0.72rem] text-ink-soft">
+                <span className="numeral flex gap-1.5 text-[0.95rem] font-medium text-ink-soft">
                   {c.combo.compareAtPrice != null && <s>{formatMoney(c.combo.compareAtPrice, view.currency)}</s>}
-                  {c.units > 1 && <span>{formatMoney(c.combo.price, view.currency)} total</span>}
                 </span>
                 {c.combo.compareAtPercent ? (
                   <span className="numeral mt-1.5 rounded-md bg-pine-900 px-2 py-0.5 text-[0.7rem] text-snow">
