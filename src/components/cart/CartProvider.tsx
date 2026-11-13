@@ -14,6 +14,7 @@ import {
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import type { BagCatalog, BagVariant } from "@/lib/commerce/views";
 import { originalPrice, round2, tierBase, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
+import { packTotal } from "@/lib/commerce/packs";
 import { site } from "@/content/site";
 import type { PaymentMethod } from "@/lib/shopify/payments";
 import {
@@ -175,10 +176,39 @@ export function CartProvider({ children }: { children: ReactNode }) {
     for (const { line, data } of resolved) {
       if (data.tiers && data.productId) unitsOf.set(data.productId, (unitsOf.get(data.productId) ?? 0) + line.quantity);
     }
+    // A pack is a quantity of one product: what the bag charges for it is what Shopify's automatic pack
+    // discounts take off (see lib/commerce/packs.ts), shared out over the product's lines.
+    const packs = new Map<string, { units: number; gross: number; catalogGross: number }>();
+    resolved.forEach(({ line, data }, i) => {
+      if (!data.packs || !data.productId) return;
+      const lp = localized ? Number.parseFloat(livePrices[i]!.amount) : NaN;
+      const p = Number.isFinite(lp) ? lp : data.price;
+      const s = packs.get(data.productId) ?? { units: 0, gross: 0, catalogGross: 0 };
+      s.units += line.quantity;
+      s.gross += p * line.quantity;
+      s.catalogGross += data.price * line.quantity;
+      packs.set(data.productId, s);
+    });
     const out = resolved.map(({ line, data }, i): ResolvedLine => {
       const live = localized ? livePrices[i]! : null;
       const liveAmount = live ? Number.parseFloat(live.amount) : NaN;
       const price = Number.isFinite(liveAmount) ? liveAmount : data.price;
+      const pack = data.packs && data.productId ? packs.get(data.productId) : undefined;
+      if (pack && data.packs) {
+        const total = packTotal(data.packs, pack.gross / pack.units, pack.units, pack.catalogGross / pack.units) * (pack.units > 0 ? 1 : 0);
+        const factor = pack.gross > 0 ? Math.min(1, total / pack.gross) : 1;
+        const list = round2(price * line.quantity);
+        return {
+          ...line,
+          ...data,
+          price,
+          compareAtPrice: null,
+          lineTotal: round2(list * factor),
+          listTotal: list,
+          savedPercent: factor < 0.9999 ? Math.round((1 - factor) * 100) : null,
+          couponCode: null,
+        };
+      }
       const liveCompare = live?.compareAtAmount != null ? Number.parseFloat(live.compareAtAmount) : NaN;
       // A compare-at price is only ever Shopify's own, in the visitor's currency.
       const compareAtPrice = live ? (Number.isFinite(liveCompare) ? liveCompare : null) : data.compareAtPrice;

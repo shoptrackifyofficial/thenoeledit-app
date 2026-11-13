@@ -112,11 +112,28 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
       }
     : null;
 
-  const packTags = Object.fromEntries(
-    Object.entries(obj(j.packTags))
-      .map(([k, v]) => [text(k, 4), text(v, 28)] as const)
-      .filter(([k, v]) => /^\d{1,2}$/.test(k) && v),
-  );
+  const packs = (Array.isArray(j.packs) ? j.packs : [])
+    .map((p) => {
+      const o = obj(p);
+      const size = Number(o.size);
+      const free = Number(o.freeUnits);
+      const saving = Number(o.saving);
+      return {
+        size,
+        freeUnits: Number.isInteger(free) && free > 0 && free < size ? free : 0,
+        saving: Number.isFinite(saving) && saving > 0 ? Math.round(saving * 100) / 100 : 0,
+        label: text(o.label, 30),
+        tag: text(o.tag, 28),
+        images: Object.fromEntries(
+          Object.entries(obj(o.images))
+            .map(([k, v]) => [text(k, 40), url(v)] as const)
+            .filter(([k, v]) => k && v),
+        ),
+      };
+    })
+    .filter((p) => Number.isInteger(p.size) && p.size >= 1 && p.size <= 10)
+    .sort((a, b) => a.size - b.size)
+    .slice(0, 5);
 
   const bp = obj(j.bump);
   const bump = /^[a-z0-9-]{3,200}$/.test(text(bp.handle, 200))
@@ -143,7 +160,7 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
     shortName: text(j.shortName, 80),
     addon,
     bump,
-    packTags,
+    packs,
     multi,
     optionLabels: labels,
     valueLabels,
@@ -186,5 +203,5 @@ export function parseStory(raw: string | null | undefined): ProductStory | null 
           }
         : null,
   };
-  return story.how || story.designs || story.details || story.addon || story.bump || Object.keys(story.packTags).length > 0 || story.multi || story.box || story.delivery || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
+  return story.how || story.designs || story.details || story.addon || story.bump || story.packs.length > 1 || story.multi || story.box || story.delivery || story.shortName || features.length > 0 || info.length > 0 || videos.length > 0 ? story : null;
 }

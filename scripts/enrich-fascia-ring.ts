@@ -185,6 +185,21 @@ async function hostedImage(k: Key, preview: boolean): Promise<string | null> {
   throw new Error(`Timed out waiting for Shopify to process ${k}`);
 }
 
+/** The 2 / 3 pack photos hosted as Shopify Files by fascia-ring-packs.ts, per colour (option value). */
+async function packImages(n: number): Promise<Record<string, string>> {
+  const out: Record<string, string> = {};
+  for (const [colour, file] of [["Pink", "pink"], ["Black", "black"]] as const) {
+    const r = await adminRequest<{ files: { nodes: { fileStatus?: string; image?: { url: string } | null }[] } }>(
+      `query($q: String!) { files(first: 5, query: $q) { nodes { ... on MediaImage { fileStatus image { url } } } } }`,
+      { q: `filename:fascia-ring-bundle-${n}-${file}*` },
+    );
+    const hit = r.files.nodes.find((f) => f.fileStatus === "READY" && f.image?.url);
+    if (hit) out[colour] = hit.image!.url.split("?")[0]!;
+    else console.warn(`! ${n} Pack ${colour} photo is not hosted yet: run fascia-ring-packs.ts --apply first`);
+  }
+  return out;
+}
+
 async function main() {
   const product = await fetchProduct();
   const img = async (k: Key) => (await hostedImage(k, !APPLY)) ?? "";
@@ -265,8 +280,13 @@ async function main() {
     },
     optionLabels: { Color: "Colour", Pack: "Pack" },
     valueLabels: {},
-    // Pack cards: 2 Pack keeps the default "Most gifted" tag, 3 Pack is buy 2, get 1 free (see fascia-ring-packs.ts).
-    packTags: { "3": "Buy 2 Get 1 Free" },
+    // Packs are a cart quantity of one variant; Shopify's automatic discounts price them (see fascia-ring-packs.ts,
+    // which creates them) and the storefront mirrors the same savings (src/lib/commerce/packs.ts).
+    packs: [
+      { size: 1, label: "1 Pack" },
+      { size: 2, label: "2 Pack", saving: 8.99, images: await packImages(2) },
+      { size: 3, label: "3 Pack", freeUnits: 1, tag: "Buy 2 Get 1 Free", images: await packImages(3) },
+    ],
     // One-tap extra in the bag while this product is in it, priced at its own Shopify sale price.
     bump: {
       handle: "heated-neck-shoulder-massager",

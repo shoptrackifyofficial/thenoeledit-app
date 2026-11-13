@@ -203,7 +203,7 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                     {line.variantLabel && (
                       <p className="truncate text-[0.74rem] text-ink-soft">
                         {line.variantLabel}
-                        {line.tiers && line.quantity > 1 && <span className="font-semibold text-ink"> × {line.quantity}</span>}
+                        {(line.tiers || line.fixedQty) && line.quantity > 1 && <span className="font-semibold text-ink"> × {line.quantity}</span>}
                       </p>
                     )}
                   </div>
@@ -241,8 +241,9 @@ export function BagContents({ onNavigate, variant = "drawer" }: { onNavigate?: (
                 {!line.available && <p className="mt-1 text-[0.74rem] font-semibold text-berry-600">Sold out — remove to continue</p>}
 
                 {!(line.tiers && savedPct != null) && (
-                  <div className="mt-auto flex items-center justify-between pt-2">
-                    <div className="flex items-center rounded-lg bg-cream ring-1 ring-line" role="group" aria-label={`Quantity for ${line.productName}`}>
+                  <div className={cn("mt-auto flex items-center pt-2", line.fixedQty ? "justify-end" : "justify-between")}>
+                    {/* Packs: the pack chosen on the product page is the quantity, so no stepper. */}
+                    <div className={line.fixedQty ? "hidden" : "flex items-center rounded-lg bg-cream ring-1 ring-line"} role="group" aria-label={`Quantity for ${line.productName}`}>
                       <button
                         type="button"
                         onClick={() => setQuantity(line.variantId, line.quantity - 1)}

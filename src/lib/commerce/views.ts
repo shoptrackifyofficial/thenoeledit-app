@@ -11,7 +11,8 @@ import {
   type CategoryInfo,
 } from "@/lib/catalog";
 import type { ProductRecord } from "@/lib/catalog/types";
-import { buildCardView, buildProductView, type CardView, type ProductView } from "@/lib/commerce/product-view";
+import type { PackTier } from "@/lib/commerce/packs";
+import { buildCardView, buildProductView, packOptionOf, type CardView, type ProductView } from "@/lib/commerce/product-view";
 import { site } from "@/content/site";
 import { getPaymentMethods, type PaymentMethod } from "@/lib/shopify/payments";
 
@@ -114,6 +115,10 @@ export type BagVariant = {
   offerEndsAt?: string | null;
   /** What a bundle is made of ("camera"), for "3 cameras" in the bag. */
   bundleNoun?: string;
+  /** Sold in packs (1 / 2 / 3 Pack): the pack is the quantity, so the bag shows no quantity stepper. */
+  fixedQty?: true;
+  /** Pack savings (Shopify automatic discounts, mirrored: see lib/commerce/packs.ts); set when the pack is a cart quantity. */
+  packs?: PackTier[];
   /** A one-tap extra offered in the bag while this product is in it (see story.bump). */
   bump?: { variantId: string; headline: string; text: string; productName: string; variantLabel: string; price: number; compareAtPrice: number | null; image: string | null; href: string };
 };
@@ -170,6 +175,8 @@ export async function getBagCatalog(demo: boolean): Promise<BagCatalog> {
         category: catOf(p).title,
         offerEndsAt: p.offerEndsAt,
         ...(bump ? { bump } : {}),
+        ...(packOptionOf(p) || (p.story?.packs.length ?? 0) > 1 ? { fixedQty: true as const } : {}),
+        ...((p.story?.packs.length ?? 0) > 1 ? { packs: p.story!.packs } : {}),
         ...(tiered ? { bundleNoun: tiered.noun } : {}),
         ...(tiered?.discounts.length ? { tiers: { discounts: tiered.discounts, codePrefix: tiered.codePrefix, ...(tiered.basePct != null ? { basePct: tiered.basePct } : {}) } } : {}),
       };

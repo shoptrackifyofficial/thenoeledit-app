@@ -7,6 +7,7 @@ import { useCart } from "@/components/cart/CartProvider";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { LowStockAlert } from "@/components/product/LowStockAlert";
 import { BoxContents } from "@/components/product/BoxContents";
+import { PackCards, type PackCard } from "@/components/product/PackCards";
 import { RibbonPicker, type RibbonOffer } from "@/components/product/RibbonPicker";
 import { SaleCountdown } from "@/components/product/SaleCountdown";
 import { Icon } from "@/components/ui/Icon";
@@ -16,6 +17,7 @@ import { site } from "@/content/site";
 import { trackCustomizeProduct, trackViewItem } from "@/lib/analytics";
 import type { ProductView, ViewVariant } from "@/lib/commerce/product-view";
 import { localizeProductView } from "@/lib/commerce/localize";
+import { packTotal } from "@/lib/commerce/packs";
 import { originalPrice, round2, tierBase, tierCode, tierPercent, tierPrice } from "@/lib/commerce/tiers";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -54,197 +56,30 @@ const shortName = (value: string) => {
   return v.charAt(0).toUpperCase() + v.slice(1);
 };
 
-/* ── Pack cards (reference "cards" mode) ─────────────────────────────── */
+/* ── Pack cards ─────────────────────────────────────────────────────── */
 
-function PackCards({
-  name,
-  values,
-  selection,
-  view,
-  onChoose,
-}: {
-  name: string;
-  values: string[];
-  selection: Record<string, string>;
-  view: ProductView;
-  onChoose: (name: string, value: string) => void;
-}) {
+/** Cards for a product whose pack is a Shopify option (1 Pack / 2 Pack variants). */
+function optionPackCards(name: string, values: string[], selection: Record<string, string>, view: ProductView): PackCard[] {
   const rows = values.map((value) => ({ value, combo: findVariant(view, { ...selection, [name]: value }) }));
   const maxUnits = Math.max(...rows.map((r) => r.combo?.units ?? 1));
   const singleImage = rows.find((r) => (r.combo?.units ?? 1) === 1)?.combo?.image ?? null;
-  const cards = rows.map(({ value, combo }) => {
+  return rows.map(({ value, combo }) => {
     const units = combo?.units ?? 1;
     return {
-      value,
-      combo,
-      checked: selection[name] === value,
-      units,
+      key: value,
       label: combo ? `${units} Pack` : value,
-      tag: view.story?.packTags[String(units)] ?? (units === 2 ? "Most gifted" : units === maxUnits && units > 2 ? "Best value" : null),
+      units,
+      price: combo?.price ?? 0,
+      compare: combo?.compareAtPrice ?? null,
+      tag: units === 2 ? "Most gifted" : units === maxUnits && units > 2 ? "Best value" : null,
       featured: units === maxUnits && units > 1,
+      checked: selection[name] === value,
+      available: Boolean(combo),
       img: combo?.image ?? view.cardImage?.url ?? null,
       // A pack with its own photo (several units in one picture) is shown as is; otherwise one photo is fanned out.
       ownPhoto: units > 1 && Boolean(combo?.image) && combo?.image !== singleImage,
     };
   });
-
-  const surface = (c: (typeof cards)[number]) =>
-    c.featured
-      ? cn("bg-gold-100", c.checked ? "border-gold-600" : "border-gold-300 hover:border-gold-600")
-      : cn("bg-surface", c.checked ? "border-berry-600 shadow-ribbon" : "border-line hover:border-berry-500");
-
-  const Dot = ({ checked, featured }: { checked: boolean; featured: boolean }) => (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "grid size-5 place-items-center rounded-full border-2 transition-colors",
-        checked ? (featured ? "border-gold-600 bg-gold-600" : "border-berry-600 bg-berry-600") : "border-line bg-surface",
-      )}
-    >
-      {checked && <Icon name="check" className="size-3 text-snow" strokeWidth={3} />}
-    </span>
-  );
-
-  const Fan = ({ src, units, sizes, own }: { src: string; units: number; sizes: string; own?: boolean }) => {
-    if (own)
-      return (
-        <span className="absolute inset-0 overflow-hidden rounded-lg">
-          <Image src={src} alt="" fill sizes={sizes} className="object-cover" />
-        </span>
-      );
-    const n = Math.min(Math.max(units, 1), 3);
-    const step = n === 2 ? 24 : 16;
-    const width = 100 - (n - 1) * step;
-    return (
-      <span className="absolute inset-0">
-        {Array.from({ length: n }, (_, i) => (
-          <span
-            key={i}
-            className="absolute inset-y-0 overflow-hidden rounded-lg ring-2 ring-snow"
-            style={{ left: `${i * step}%`, width: `${width}%`, zIndex: i }}
-          >
-            <Image src={src} alt="" fill sizes={sizes} className="object-cover" />
-          </span>
-        ))}
-      </span>
-    );
-  };
-
-  return (
-    <fieldset className="min-w-0">
-      <legend className="mb-3 text-[0.95rem] font-semibold">Choose your pack</legend>
-
-      {/* Phones: stacked rows */}
-      <div className="grid gap-3.5 pt-2 sm:hidden">
-        {cards.map((c) => (
-          <label
-            key={c.value}
-            className={cn(
-              "relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 px-3 py-3 transition-[border-color,transform] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500 motion-safe:active:scale-[0.985]",
-              surface(c),
-              !c.combo && "cursor-not-allowed opacity-50",
-            )}
-          >
-            <input
-              type="radio"
-              name={`${name}-m`}
-              value={c.value}
-              checked={c.checked}
-              onChange={() => onChoose(name, c.value)}
-              disabled={!c.combo}
-              className="sr-only"
-            />
-            {c.tag && (
-              <span
-                className={cn(
-                  "absolute -top-2.5 right-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.6rem] leading-none font-bold tracking-[0.1em] text-snow uppercase",
-                  c.featured ? "bg-linear-to-r from-gold-600 to-gold-500" : "bg-berry-600",
-                )}
-              >
-                <Icon name={c.featured ? "gift" : "star"} className="size-3" />
-                {c.tag}
-              </span>
-            )}
-            <Dot checked={c.checked} featured={c.featured} />
-            <span className="relative block h-12 w-16 shrink-0">{c.img && <Fan src={c.img} units={c.units} own={c.ownPhoto} sizes="48px" />}</span>
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="text-[0.95rem] font-semibold">{c.label}</span>
-              {c.combo?.compareAtPercent ? (
-                <span className="numeral text-[0.75rem] font-semibold text-berry-600">Save {formatMoney(round2((c.combo.compareAtPrice ?? c.combo.price) - c.combo.price), view.currency)}</span>
-              ) : null}
-              {c.combo && !c.combo.availableForSale && <span className="text-[0.72rem] text-ink-soft">Sold out</span>}
-            </span>
-            {c.combo && (
-              <span className="flex shrink-0 flex-col items-end">
-                <span className={cn("numeral text-[1.2rem] leading-none font-semibold", c.featured && "text-berry-600")}>
-                  {formatMoney(c.combo.price, view.currency)}
-                </span>
-                <span className="numeral mt-1 flex gap-1.5 text-[0.92rem] font-medium text-ink-soft">
-                  {c.combo.compareAtPrice != null && <s>{formatMoney(c.combo.compareAtPrice, view.currency)}</s>}
-                </span>
-              </span>
-            )}
-          </label>
-        ))}
-      </div>
-
-      {/* Tablet + desktop: photo cards */}
-      <div className="hidden gap-3 pt-2 sm:grid" style={{ gridTemplateColumns: `repeat(${cards.length}, minmax(0, 1fr))` }}>
-        {cards.map((c) => (
-          <label
-            key={c.value}
-            className={cn(
-              "relative flex cursor-pointer flex-col items-center rounded-2xl border-2 px-3 pb-3.5 text-center transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold-500",
-              c.tag ? "pt-8" : "pt-6",
-              surface(c),
-              !c.combo && "cursor-not-allowed opacity-50",
-            )}
-          >
-            <input
-              type="radio"
-              name={`${name}-d`}
-              value={c.value}
-              checked={c.checked}
-              onChange={() => onChoose(name, c.value)}
-              disabled={!c.combo}
-              className="sr-only"
-            />
-            {c.tag && (
-              <span
-                className={cn(
-                  "absolute -top-px -left-px rounded-tl-2xl rounded-br-xl px-2.5 py-1.5 text-[0.62rem] leading-none font-bold tracking-[0.08em] text-snow uppercase",
-                  c.featured ? "bg-gold-600" : "bg-berry-600",
-                )}
-              >
-                {c.tag}
-              </span>
-            )}
-            <span className="absolute top-2.5 right-2.5">
-              <Dot checked={c.checked} featured={c.featured} />
-            </span>
-            <span className="relative block aspect-[4/3] w-full max-w-28">{c.img && <Fan src={c.img} units={c.units} own={c.ownPhoto} sizes="112px" />}</span>
-            <span className="mt-2.5 text-[0.9rem] font-semibold">{c.label}</span>
-            {c.combo && (
-              <>
-                <span className={cn("numeral mt-0.5 text-[1.35rem] leading-tight font-semibold", c.featured && "text-berry-600")}>
-                  {formatMoney(c.combo.price, view.currency)}
-                </span>
-                <span className="numeral flex gap-1.5 text-[0.95rem] font-medium text-ink-soft">
-                  {c.combo.compareAtPrice != null && <s>{formatMoney(c.combo.compareAtPrice, view.currency)}</s>}
-                </span>
-                {c.combo.compareAtPercent ? (
-                  <span className="numeral mt-1.5 rounded-md bg-pine-900 px-2 py-0.5 text-[0.7rem] text-snow">
-                    Save {formatMoney(round2((c.combo.compareAtPrice ?? c.combo.price) - c.combo.price), view.currency)}
-                  </span>
-                ) : null}
-                {!c.combo.availableForSale && <span className="mt-1 text-[0.72rem] text-ink-soft">Sold out</span>}
-              </>
-            )}
-          </label>
-        ))}
-      </div>
-    </fieldset>
-  );
 }
 
 /* ── "Free shipping unlocked" strip ────────────────────────────────────── */
@@ -738,7 +573,12 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   const [showSticky, setShowSticky] = useState(false);
 
   const variant = findVariant(view, selection);
-  const hasPack = view.packOptionName !== null;
+  // Packs sold as one variant at a higher quantity (story.packs): Shopify's automatic discounts do the pricing.
+  const packTiers = view.story?.packs && view.story.packs.length > 1 ? view.story.packs : null;
+  const [packSize, setPackSize] = useState(1);
+  const units = packTiers ? packSize : 1;
+  const tierTotal = packTiers && variant ? packTotal(packTiers, variant.price, units, baseVariant(variant.id)?.price ?? variant.price) : 0;
+  const hasPack = view.packOptionName !== null || packTiers !== null;
 
   // Bundle mode: "how many, and which colour for each" (configured by the product's story).
   const cfg = view.story?.bundle ?? null;
@@ -777,11 +617,11 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
       ? bundleComplete && bundleLines.every((l) => l.variant.availableForSale)
       : Boolean(variant?.availableForSale);
   /** What the order costs right now (all cameras), for the shipping strip, the button and the sticky bar. */
-  const orderTotal = (ribbonOnly ? 0 : bundle ? bundleTotal : variant ? variant.price * (hasPack ? 1 : qty) : 0) + ribbonTotal;
+  const orderTotal = (ribbonOnly ? 0 : bundle ? bundleTotal : variant ? (packTiers ? tierTotal : variant.price * (hasPack ? 1 : qty)) : 0) + ribbonTotal;
 
   /** The scarcest variant in the order, when it is genuinely low (real Shopify stock only). */
   const lowStock = (() => {
-    const lines = bundle ? bundleLines : variant ? [{ variant, quantity: hasPack ? 1 : qty }] : [];
+    const lines = bundle ? bundleLines : variant ? [{ variant, quantity: packTiers ? units : hasPack ? 1 : qty }] : [];
     let worst: { left: number; wanted: number } | null = null;
     for (const { variant: v, quantity } of lines) {
       if (v.stock == null || v.stock > site.lowStockAt) continue;
@@ -831,8 +671,8 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
   const currentOffer = bundle ? offerFor(count, coloursFor(count)) : null;
 
   /** Struck-through value and saving shown in the floating bar. */
-  const stickyCompare = ribbonOnly ? ribbonOffer.compare : bundle ? (currentOffer?.compare ?? null) : (variant?.compareAtPrice ?? null);
-  const stickyPct = ribbonOnly ? ribbonOffer.pct : bundle ? (currentOffer?.pct ?? null) : (variant?.compareAtPercent ?? null);
+  const stickyCompare = ribbonOnly ? ribbonOffer.compare : bundle ? (currentOffer?.compare ?? null) : packTiers ? (variant && units > 1 ? round2(variant.price * units) : null) : (variant?.compareAtPrice ?? null);
+  const stickyPct = ribbonOnly ? ribbonOffer.pct : bundle ? (currentOffer?.pct ?? null) : packTiers ? (stickyCompare ? Math.round((1 - tierTotal / stickyCompare) * 100) : null) : (variant?.compareAtPercent ?? null);
 
   /** The template-pack choices (e.g. 4 or 12), each with its per-camera price for the current colour. */
   const packChoices: PackChoice[] =
@@ -1014,6 +854,36 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
       window.setTimeout(() => setAdded(false), 2200);
       return;
     }
+    if (packTiers && variant && canBuy) {
+      // The pack is the quantity of this one variant; picking another pack replaces the one already in the bag.
+      addBundle(
+        [
+          {
+            variantId: variant.id,
+            quantity: units,
+            snapshot: {
+              productName: view.name,
+              variantLabel: variant.label,
+              price: baseVariant(variant.id)?.price ?? variant.price,
+              compareAtPrice: null,
+              image: variant.image ?? view.cardImage?.url ?? null,
+              href: `${view.href}?variant=${numericId(variant.id)}`,
+              available: true,
+              productId: view.productId,
+              category: view.category.title,
+              // So the bag prices the pack right away, before its own catalog request returns.
+              fixedQty: true,
+              packs: packTiers,
+            },
+          },
+        ],
+        view.variants.map((v) => v.id),
+      );
+      addRibbons();
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 2200);
+      return;
+    }
     if (!variant || !canBuy) return;
     add(variant.id, hasPack ? 1 : qty, {
       productName: view.name,
@@ -1059,10 +929,9 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
               <PackCards
                 key={option.name}
                 name={option.name}
-                values={option.values}
-                selection={selection}
-                view={view}
-                onChoose={choose}
+                cards={optionPackCards(option.name, option.values, selection, view)}
+                currency={view.currency}
+                onPick={(value) => choose(option.name, value)}
               />
             );
           }
@@ -1147,6 +1016,33 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
             </fieldset>
           );
         })}
+        {packTiers && variant && !ribbonOnly && (
+          <PackCards
+            name="pack"
+            currency={view.currency}
+            onPick={(key) => {
+              setPackSize(Number(key));
+              setAdded(false);
+            }}
+            cards={packTiers.map((t) => {
+              const own = Object.entries(t.images).find(([colour]) => Object.values(variant.options).includes(colour))?.[1] ?? null;
+              return {
+                key: String(t.size),
+                label: t.label || `${t.size} Pack`,
+                units: t.size,
+                price: packTotal(packTiers, variant.price, t.size, baseVariant(variant.id)?.price ?? variant.price),
+                // Worked out from the single's real price: a single has no struck-through value.
+                compare: t.size > 1 ? round2(variant.price * t.size) : null,
+                tag: t.tag || null,
+                featured: t.freeUnits > 0,
+                checked: units === t.size,
+                available: variant.availableForSale,
+                img: own ?? variant.image ?? view.cardImage?.url ?? null,
+                ownPhoto: t.size > 1 && own !== null,
+              };
+            })}
+          />
+        )}
         {view.story?.box && !ribbonOnly && <BoxContents box={view.story.box} />}
         {ribbonView && (
           <RibbonPicker addon={ribbonView} currency={view.currency} quantities={ribbonQty} offer={ribbonOffer} optional={!ribbonOnly} onChange={setRibbon} />
@@ -1318,7 +1214,7 @@ export function PurchasePanel({ view: baseView, payments = [] }: { view: Product
                 ? `${count} ${bundle.noun}${count === 1 ? ` · ${shortName(picks[0]!)}` : "s"}`
                 : ribbonOnly
                   ? `${ribbonUnits || "No"} ribbon${ribbonUnits === 1 ? "" : "s"}`
-                  : `${variant?.label || view.name}${ribbonUnits ? ` + ${ribbonUnits} ribbon${ribbonUnits === 1 ? "" : "s"}` : ""}`}
+                  : `${variant?.label || view.name}${packTiers && units > 1 ? ` · ${units} Pack` : ""}${ribbonUnits ? ` + ${ribbonUnits} ribbon${ribbonUnits === 1 ? "" : "s"}` : ""}`}
             </p>
             {variant && (
               <p className="mt-0.5 flex min-w-0 items-center gap-x-1.5 overflow-hidden whitespace-nowrap tabular-nums">

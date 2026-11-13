@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "syncedAt": "2026-11-13T11:19:02.304Z",
+  "syncedAt": "2026-11-13T11:33:32.128Z",
   "shop": {
     "domain": "trackify-com.myshopify.com",
     "name": "Trackify",
@@ -20,7 +20,7 @@
       ],
       "status": "ACTIVE",
       "createdAt": "2026-11-13T07:22:06Z",
-      "updatedAt": "2026-11-13T11:19:00Z",
+      "updatedAt": "2026-11-13T11:33:27Z",
       "descriptionHtml": "<p>One compact ring, two ways to use it. Hold it by the comfort grip and glide the five massage nodes over your arms, thighs and calves, or slip the adjustable belt through and wear it hands-free around your waist, back or hips. Five vibration levels let you start gentle after a long day of sitting and go deeper after a workout. Rechargeable over USB-C, small enough for the gym bag.</p>\n<h3>Why you will love it</h3>\n<ul>\n<li>\n<strong>Handheld or wearable.</strong> Use the grip for arms and legs, or strap it on with the belt for waist, back and abdomen.</li>\n<li>\n<strong>5 intensity levels.</strong> One button switches freely between gentle and deep vibration.</li>\n<li>\n<strong>Powerful motor.</strong> Up to 20,800 RPM for a strong, even vibration.</li>\n<li>\n<strong>Comfort grip.</strong> A shaped handle keeps your hand relaxed during longer sessions.</li>\n<li>\n<strong>Cordless.</strong> Built-in rechargeable battery, charged through any USB-C port.</li>\n</ul>\n<h3>Specifications</h3>\n<ul>\n<li>Size: 13 x 13 cm</li>\n<li>Vibration: 5 intensity levels, motor up to 20,800 RPM</li>\n<li>Power: built-in rechargeable battery, USB-C charging</li>\n<li>Use: handheld, or worn with the adjustable belt</li>\n</ul>\n<h3>In the box</h3>\n<ul>\n<li>Fascia ring massager x 1</li>\n<li>Adjustable waist belt x 1</li>\n<li>USB-C charging cable x 1</li>\n</ul>\n<p><em>A wellness product, not a medical device. Do not use on broken skin or while asleep. If you are pregnant, have a pacemaker or a medical condition, check with your doctor first.</em></p>",
       "seo": {
         "title": "Fascia Ring Vibration Massager | The Noel Edit",
@@ -33,101 +33,35 @@
             "Black",
             "Pink"
           ]
-        },
-        {
-          "name": "Pack",
-          "values": [
-            "1 Pack",
-            "2 Pack",
-            "3 Pack"
-          ]
         }
       ],
       "availableForSale": true,
       "variants": [
         {
           "id": "gid://shopify/ProductVariant/68556794495203",
-          "title": "Black / 1 Pack",
+          "title": "Black",
           "sku": "14:193#B",
           "price": 44.99,
           "compareAtPrice": null,
           "availableForSale": true,
           "stock": null,
           "options": {
-            "Color": "Black",
-            "Pack": "1 Pack"
+            "Color": "Black"
           },
           "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Sd83ff167629846e6a335ce9b726cfc4fM.webp?v=1794554530"
         },
         {
           "id": "gid://shopify/ProductVariant/68556794527971",
-          "title": "Pink / 1 Pack",
+          "title": "Pink",
           "sku": "14:175#A",
           "price": 43.99,
           "compareAtPrice": null,
           "availableForSale": true,
           "stock": null,
           "options": {
-            "Color": "Pink",
-            "Pack": "1 Pack"
+            "Color": "Pink"
           },
           "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/Se699007fb54743b282dd3848d7933bba3_b1aef296-e68e-4a6d-8d4e-a4aa24d03452.webp?v=1794554530"
-        },
-        {
-          "id": "gid://shopify/ProductVariant/68566523445475",
-          "title": "Black / 2 Pack",
-          "sku": "14:193#B",
-          "price": 80.99,
-          "compareAtPrice": 89.98,
-          "availableForSale": true,
-          "stock": null,
-          "options": {
-            "Color": "Black",
-            "Pack": "2 Pack"
-          },
-          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-black.jpg?v=1794568418"
-        },
-        {
-          "id": "gid://shopify/ProductVariant/68566523478243",
-          "title": "Black / 3 Pack",
-          "sku": "14:193#B",
-          "price": 89.98,
-          "compareAtPrice": 134.97,
-          "availableForSale": true,
-          "stock": null,
-          "options": {
-            "Color": "Black",
-            "Pack": "3 Pack"
-          },
-          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-black.jpg?v=1794568418"
-        },
-        {
-          "id": "gid://shopify/ProductVariant/68566523511011",
-          "title": "Pink / 2 Pack",
-          "sku": "14:175#A",
-          "price": 78.99,
-          "compareAtPrice": 87.98,
-          "availableForSale": true,
-          "stock": null,
-          "options": {
-            "Color": "Pink",
-            "Pack": "2 Pack"
-          },
-          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-pink.jpg?v=1794568418"
-        },
-        {
-          "id": "gid://shopify/ProductVariant/68566523543779",
-          "title": "Pink / 3 Pack",
-          "sku": "14:175#A",
-          "price": 87.98,
-          "compareAtPrice": 131.97,
-          "availableForSale": true,
-          "stock": null,
-          "options": {
-            "Color": "Pink",
-            "Pack": "3 Pack"
-          },
-          "image": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-pink.jpg?v=1794568418"
         }
       ],
       "media": [
@@ -298,38 +232,6 @@
           "height": 1001,
           "alt": null,
           "variantId": "gid://shopify/ProductVariant/68556794495203"
-        },
-        {
-          "type": "image",
-          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-black.jpg?v=1794568418",
-          "width": 1001,
-          "height": 1001,
-          "alt": "2 Pack, black",
-          "variantId": "gid://shopify/ProductVariant/68566523445475"
-        },
-        {
-          "type": "image",
-          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-black.jpg?v=1794568418",
-          "width": 1001,
-          "height": 1001,
-          "alt": "3 Pack, black",
-          "variantId": "gid://shopify/ProductVariant/68566523478243"
-        },
-        {
-          "type": "image",
-          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-2pack-pink.jpg?v=1794568418",
-          "width": 1001,
-          "height": 1001,
-          "alt": "2 Pack, pink",
-          "variantId": "gid://shopify/ProductVariant/68566523511011"
-        },
-        {
-          "type": "image",
-          "url": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-3pack-pink.jpg?v=1794568418",
-          "width": 1001,
-          "height": 1001,
-          "alt": "3 Pack, pink",
-          "variantId": "gid://shopify/ProductVariant/68566523543779"
         }
       ],
       "perks": [
@@ -356,9 +258,38 @@
           "headline": "Add the heated 5-finger body massager",
           "text": "Cordless, with 3 kneading modes and 2 heat settings for your neck, shoulders, arms and legs."
         },
-        "packTags": {
-          "3": "Buy 2 Get 1 Free"
-        },
+        "packs": [
+          {
+            "size": 1,
+            "freeUnits": 0,
+            "saving": 0,
+            "label": "1 Pack",
+            "tag": "",
+            "images": {}
+          },
+          {
+            "size": 2,
+            "freeUnits": 0,
+            "saving": 8.99,
+            "label": "2 Pack",
+            "tag": "",
+            "images": {
+              "Pink": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-bundle-2-pink.jpg",
+              "Black": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-bundle-2-black.jpg"
+            }
+          },
+          {
+            "size": 3,
+            "freeUnits": 1,
+            "saving": 0,
+            "label": "3 Pack",
+            "tag": "Buy 2 Get 1 Free",
+            "images": {
+              "Pink": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-bundle-3-pink.jpg",
+              "Black": "https://cdn.shopify.com/s/files/1/0721/8869/0659/files/fascia-ring-bundle-3-black.jpg"
+            }
+          }
+        ],
         "multi": null,
         "optionLabels": {
           "Color": "Colour",
@@ -674,7 +605,7 @@
         "shortName": "Wireless Heated 5-Finger Body Massager for Neck, Shoulders, Arms & Legs",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Specifications": "Finish",
@@ -1089,7 +1020,7 @@
         "shortName": "Crystal drop necklace and earrings set",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -1363,7 +1294,7 @@
         "shortName": "Sun adjustable ring",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Main Stone Color": "Style"
@@ -2131,7 +2062,7 @@
         "shortName": "Gold cuff bracelet",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -2541,7 +2472,7 @@
         "shortName": "Pearl beaded necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -2985,7 +2916,7 @@
         "shortName": "Freshwater pearl necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -3886,7 +3817,7 @@
         "shortName": "Heart pendant clavicle necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Metal Color": "Style"
@@ -4148,7 +4079,7 @@
         "shortName": "Pearl bow choker set",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Metal Color": "Piece"
@@ -4456,7 +4387,7 @@
         "shortName": "Chunky chain pearl necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Metal Color": "Colour"
@@ -4693,7 +4624,7 @@
         "shortName": "Pearl choker necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -4984,7 +4915,7 @@
         "shortName": "Pearl heart pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -5232,7 +5163,7 @@
         "shortName": "Solitaire pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -5455,7 +5386,7 @@
         "shortName": "Round stone pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -5698,7 +5629,7 @@
         "shortName": "Flower jewellery set",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Gem Color": "Piece"
@@ -6053,7 +5984,7 @@
         "shortName": "Water drop pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Gem Color": "Drop colour"
@@ -6576,7 +6507,7 @@
         "shortName": "Cross pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Gem Color": "Style"
@@ -6842,7 +6773,7 @@
         "shortName": "Y-shaped pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Gem Color": "Colour"
@@ -7124,7 +7055,7 @@
         "shortName": "Smart LED curtain lights",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -7342,7 +7273,7 @@
         "shortName": "LED vine branch lights",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -7678,7 +7609,7 @@
         "shortName": "Pearl cross pendant necklace",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -9509,7 +9440,7 @@
         "shortName": "Highland Cow Advent Calendar",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {},
         "valueLabels": {},
@@ -9955,7 +9886,7 @@
         "shortName": "NFC music box magnet",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Color": "Design"
@@ -10298,7 +10229,7 @@
           "intro": "Print a name, date or message on 12 mm satin ribbon, then tie it on. Any colours, any amount."
         },
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "color": "Colour"
@@ -10898,7 +10829,7 @@
         "shortName": "Satin ribbon",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": {
           "option": "Color",
           "noun": "ribbon",
@@ -11283,7 +11214,7 @@
         "shortName": "",
         "addon": null,
         "bump": null,
-        "packTags": {},
+        "packs": [],
         "multi": null,
         "optionLabels": {
           "Color": "Stencil pack",

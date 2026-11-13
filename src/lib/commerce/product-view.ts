@@ -136,14 +136,18 @@ function gallery(record: ProductRecord): ViewMedia[] {
   );
 }
 
+/** Name of the "Pack" option (1 Pack / 2 Pack / 3 Pack…) when the product is sold in packs, else null. */
+export function packOptionOf(record: ProductRecord): string | null {
+  return record.options.find((o) => PACK_OPTION.test(o.name.trim()) && o.values.length > 1)?.name ?? null;
+}
+
 export function buildProductView(
   record: ProductRecord,
   currency: string,
   category: { slug: string; title: string },
   addonRecord: ProductRecord | null = null,
 ): ProductView {
-  const packName =
-    record.options.find((o) => PACK_OPTION.test(o.name.trim()) && o.values.length > 1)?.name ?? null;
+  const packName = packOptionOf(record);
   const unitsFor = (options: Record<string, string>) => (packName ? unitsOf(options[packName]) : 1);
 
   const variants: ViewVariant[] = record.variants.map((v) => {

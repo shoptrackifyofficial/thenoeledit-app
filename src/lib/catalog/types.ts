@@ -46,8 +46,11 @@ export type ProductStory = {
   optionLabels: Record<string, string>;
   /** Display names for option values, e.g. { "4 Templates": "4 Stencils" } (Shopify keeps its own values). */
   valueLabels: Record<string, string>;
-  /** Badge text on a pack card, keyed by the pack's unit count, e.g. { "3": "Buy 2 Get 1 Free" } (replaces the default tags). */
-  packTags: Record<string, string>;
+  /**
+   * Pack choices (1 / 2 / 3 Pack) for a product sold as one variant at a higher cart quantity; the savings mirror
+   * Shopify automatic discounts (see lib/commerce/packs.ts). Empty for products sold the ordinary way.
+   */
+  packs: import("@/lib/commerce/packs").PackTier[];
   /** A product offered as a one-tap extra in the bag while this product is in it (priced at its own Shopify sale price). */
   bump: { handle: string; headline: string; text: string } | null;
   /** Portrait demo clips for the "See it in action" row (Shopify-hosted mp4). */
